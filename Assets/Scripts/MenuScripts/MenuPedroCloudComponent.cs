@@ -67,7 +67,7 @@ namespace Match3
                 _pedroImage.sprite = _pedroEmotions.First();
             }
 
-            MenuEvents.Singleton.OnPedroAskedHelp();
+            MenuEvents.OnPedroAskedHelp();
         }
         private async void TextFiller(string entireText)
         {

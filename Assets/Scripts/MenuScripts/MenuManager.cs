@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Match3
 {
@@ -21,8 +22,13 @@ namespace Match3
 
         private void Start()
         {
-            MenuEvents.Singleton.BlackScreenBleached += OnBlackScreenBleached;
-            MenuEvents.Singleton.PedroAskedHelp += OnPedroAskedHelp;
+            MenuEvents.BlackScreenBleached += OnBlackScreenBleached;
+            MenuEvents.PedroAskedHelp += OnPedroAskedHelp;
+            MenuEvents.BlackScreenDarken +=  OnBlackScreenDarken;
+        }
+        private void OnBlackScreenDarken()
+        {
+            SceneManager.LoadScene(1);
         }
         public void LoadLevel(int i) => GameEvents.Singleton.OnLoadLevel(i);
         public void AnimateLevelCircle(Animator levelAnimator)
@@ -53,8 +59,9 @@ namespace Match3
         private void OnDestroy()
         {
             SaveData.SavePlayerData(_player);
-            MenuEvents.Singleton.BlackScreenBleached -= OnBlackScreenBleached;
-            MenuEvents.Singleton.PedroAskedHelp -= OnPedroAskedHelp;
+            MenuEvents.BlackScreenBleached -= OnBlackScreenBleached;
+            MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
+            MenuEvents.BlackScreenDarken -=  OnBlackScreenDarken;
         }
     }
 }

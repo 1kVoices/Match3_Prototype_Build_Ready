@@ -17,8 +17,8 @@ namespace Match3
                 DontDestroyOnLoad(gameObject);
             }
             else Destroy(gameObject);
-        }
 
+        }
         public void OnLoadLevel(int obj)
         {
             CurrentLevel = obj;
