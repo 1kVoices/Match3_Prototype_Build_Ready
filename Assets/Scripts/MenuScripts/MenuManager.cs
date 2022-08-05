@@ -7,20 +7,28 @@ namespace Match3
     {
         [SerializeField]
         private PlayerProgressComponent _player;
-
         [SerializeField]
         private Animator[] _pedroAnimators;
-
         [SerializeField]
         private Animator[] _levelAnimators;
+        [SerializeField]
+        private Animator _blackScreenAnimator;
 
         private static readonly int ShowUp = Animator.StringToHash("showUp");
         private static readonly int Coloring = Animator.StringToHash("coloring");
+        private static readonly int Highlight = Animator.StringToHash("highlight");
+        private static readonly int Darkening = Animator.StringToHash("darkening");
 
         private void Start()
         {
             MenuEvents.Singleton.BlackScreenBleached += OnBlackScreenBleached;
             MenuEvents.Singleton.PedroAskedHelp += OnPedroAskedHelp;
+        }
+        public void LoadLevel(int i) => GameEvents.Singleton.OnLoadLevel(i);
+        public void AnimateLevelCircle(Animator levelAnimator)
+        {
+            _blackScreenAnimator.SetTrigger(Darkening);
+            levelAnimator.SetTrigger(Highlight);
         }
         private void OnBlackScreenBleached()
         {
@@ -42,7 +50,6 @@ namespace Match3
                 _levelAnimators[i].SetTrigger(Coloring);
             }
         }
-
         private void OnDestroy()
         {
             SaveData.SavePlayerData(_player);
