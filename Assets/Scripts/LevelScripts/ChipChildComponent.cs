@@ -1,10 +1,20 @@
-﻿namespace Match3
+﻿using System;
+using UnityEngine;
+
+namespace Match3
 {
-    public class ChipChildComponent : ChipComponent
+    public class ChipChildComponent : MonoBehaviour
     {
-        public new void OnAnimationEnd()
+        private ChipComponent _parent;
+
+        private void Start()
         {
-            base.OnAnimationEnd();
+            _parent = GetComponentInParent<ChipComponent>();
+
+        }
+        public void OnAnimationEnd()
+        {
+            _parent.OnAnimationEnd();
         }
     }
 }

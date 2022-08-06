@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace Match3
 {
-    public class Extensions : MonoBehaviour
-    {
-    }
-
     public enum DirectionType : byte
     {
         Top,

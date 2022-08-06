@@ -8,11 +8,13 @@ namespace Match3
     {
         [SerializeField]
         private ChipType _type;
-        [SerializeField]
+        [SerializeField] //todo убрать
+        private Transform _child;
         private Animator _animator;
 
         private void Start()
         {
+            _child = transform.GetChild(0);
             _animator = GetComponentInChildren<Animator>();
         }
         public void Animate(string trigger)
@@ -20,12 +22,12 @@ namespace Match3
             _animator.SetTrigger(trigger);
         }
 
-        protected async void OnAnimationEnd()
+        public async void OnAnimationEnd()
         {
             _animator.enabled = false;
             await Task.Yield();
-            transform.parent.position = transform.position;
-            transform.localPosition = Vector3.zero;
+            transform.position = _child.transform.position;
+            _child.transform.localPosition = Vector3.zero;
             _animator.enabled = true;
         }
     }
