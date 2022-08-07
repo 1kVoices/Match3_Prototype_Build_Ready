@@ -1,15 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace Match3
+﻿namespace Match3
 {
     public enum DirectionType : byte
     {
         Top,
         Bot,
         Left,
-        Right
+        Right,
+        TopLeft,
+        TopRight,
+        BotLeft,
+        BotRight
     }
 
     public enum ChipType : byte
