@@ -1,17 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Match3
 {
     public class ChipComponent : MonoBehaviour
     {
-        public ChipType _type;
+        public ChipType Type;
         [SerializeField]
         private Animator _animator;
         public ChipChildComponent _child;
 
-        public void Animate(string trigger)
+        public void Move(string trigger)
         {
             _animator.SetTrigger(trigger);
         }
