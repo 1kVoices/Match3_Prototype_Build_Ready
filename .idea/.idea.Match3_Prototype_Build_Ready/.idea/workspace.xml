@@ -41,6 +41,12 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;
   }
 }</component>
+  <component name="RiderProblemsViewState">
+    <hideBySeverity>
+      <option value="20" />
+      <option value="300" />
+    </hideBySeverity>
+  </component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="UnitTests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2019.4.10f1\Editor\Unity.exe" />

@@ -884,7 +884,7 @@ MonoBehaviour:
   - {fileID: 1194869708}
   - {fileID: 273232538}
   - {fileID: 1379264628}
-  Count: 0
+  _dragSens: 2
 --- !u!4 &510051299
 Transform:
   m_ObjectHideFlags: 0
