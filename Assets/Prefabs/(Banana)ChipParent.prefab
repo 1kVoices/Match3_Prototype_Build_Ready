@@ -115,6 +115,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parent: {fileID: 5948936378935225605}
+  _renderer: {fileID: 5948936378627479155}
+  IsPrimaryChip: 0
 --- !u!1 &5948936378935225604
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,4 +163,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 3
   _animator: {fileID: 5948936378627479154}
-  _child: {fileID: 5948936378627479153}
+  Child: {fileID: 5948936378627479153}

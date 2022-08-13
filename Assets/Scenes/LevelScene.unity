@@ -272,6 +272,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &136138867
 BoxCollider2D:
@@ -350,6 +351,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &159333946
 BoxCollider2D:
@@ -467,6 +469,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &238735957
 BoxCollider2D:
@@ -545,6 +548,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &273232539
 BoxCollider2D:
@@ -662,6 +666,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &290838197
 BoxCollider2D:
@@ -740,6 +745,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &292189413
 BoxCollider2D:
@@ -818,6 +824,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &424897153
 BoxCollider2D:
@@ -884,7 +891,34 @@ MonoBehaviour:
   - {fileID: 1194869708}
   - {fileID: 273232538}
   - {fileID: 1379264628}
-  _dragSens: 2
+  - {fileID: 1024878676}
+  - {fileID: 730422192}
+  - {fileID: 1577726815}
+  - {fileID: 1733484097}
+  - {fileID: 424897152}
+  - {fileID: 1060955179}
+  - {fileID: 576385751}
+  - {fileID: 2032471609}
+  - {fileID: 2121915764}
+  - {fileID: 1354483711}
+  - {fileID: 1770278598}
+  - {fileID: 911240886}
+  - {fileID: 1941550207}
+  - {fileID: 824315402}
+  - {fileID: 238735956}
+  - {fileID: 652546627}
+  - {fileID: 290838196}
+  - {fileID: 292189412}
+  - {fileID: 1263800973}
+  - {fileID: 1027009985}
+  - {fileID: 136138866}
+  - {fileID: 1538580400}
+  - {fileID: 1358582996}
+  - {fileID: 1568966297}
+  - {fileID: 1426215146}
+  - {fileID: 1098642674}
+  - {fileID: 1006912771}
+  _dragSens: 13
 --- !u!4 &510051299
 Transform:
   m_ObjectHideFlags: 0
@@ -950,6 +984,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &576385752
 BoxCollider2D:
@@ -1028,6 +1063,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &652546628
 BoxCollider2D:
@@ -1106,6 +1142,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &730422193
 BoxCollider2D:
@@ -1184,6 +1221,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &739967629
 BoxCollider2D:
@@ -1262,6 +1300,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &824315403
 BoxCollider2D:
@@ -1340,6 +1379,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &911240887
 BoxCollider2D:
@@ -1531,6 +1571,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1006912772
 BoxCollider2D:
@@ -1609,6 +1650,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1024878677
 BoxCollider2D:
@@ -1687,6 +1729,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1027009986
 BoxCollider2D:
@@ -1765,6 +1808,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1060955180
 BoxCollider2D:
@@ -1843,6 +1887,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1098642675
 BoxCollider2D:
@@ -1921,6 +1966,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1194869709
 BoxCollider2D:
@@ -1999,6 +2045,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1223423474
 BoxCollider2D:
@@ -2077,6 +2124,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1224001604
 BoxCollider2D:
@@ -2155,6 +2203,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1263800974
 BoxCollider2D:
@@ -2272,6 +2321,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1354483712
 BoxCollider2D:
@@ -2350,6 +2400,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1358582997
 BoxCollider2D:
@@ -2428,6 +2479,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1379264629
 BoxCollider2D:
@@ -2506,6 +2558,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1422668138
 BoxCollider2D:
@@ -2584,6 +2637,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1426215147
 BoxCollider2D:
@@ -2786,6 +2840,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1538580401
 BoxCollider2D:
@@ -2864,6 +2919,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1568966298
 BoxCollider2D:
@@ -2942,6 +2998,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1577726816
 BoxCollider2D:
@@ -3020,6 +3077,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1733484098
 BoxCollider2D:
@@ -3098,6 +3156,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1770278599
 BoxCollider2D:
@@ -3202,6 +3261,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!1 &1941550205
 GameObject:
@@ -3254,6 +3314,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &1941550208
 BoxCollider2D:
@@ -3366,6 +3427,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &2032471610
 BoxCollider2D:
@@ -3525,6 +3587,7 @@ MonoBehaviour:
   - {fileID: 1935886358655023357, guid: f32a5497098e866418fe78ba7e996a9e, type: 3}
   - {fileID: 8441429850881941206, guid: 2398da442c8ac31438d6b3e48a4ccd62, type: 3}
   - {fileID: 866900771551757978, guid: d4ed43324529c6c4d83073e54013b09f, type: 3}
+  _manager: {fileID: 510051298}
   Chip: {fileID: 0}
 --- !u!61 &2121915765
 BoxCollider2D:

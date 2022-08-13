@@ -1,4 +1,6 @@
-﻿namespace Match3
+﻿using System.Linq;
+
+namespace Match3
 {
     public enum DirectionType : byte
     {
@@ -6,10 +8,6 @@
         Bot,
         Left,
         Right,
-        TopLeft,
-        TopRight,
-        BotLeft,
-        BotRight
     }
 
     public enum ChipType : byte
