@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Match3
@@ -25,6 +24,7 @@ namespace Match3
         private bool _isReading;
         private bool _isSwappedBack;
         private bool _isAnimating;
+        private bool _isMatch;
 
         private IEnumerator Start()
         {
@@ -45,22 +45,37 @@ namespace Match3
 
         private void OnChipChildAnimationEndEvent()
         {
-            _primaryCell.Chip = _secondaryChip;
-            _secondaryChip.transform.parent = _primaryCell.transform;
-            _secondaryCell.Chip = _primaryChip;
-            _primaryChip.transform.parent = _secondaryCell.transform;
-            if (_primaryCell.IsMatch() || _secondaryCell.IsMatch())
+            _isAnimating = false;
+            SwapChipsTransform(false);
+            _primaryCell.IsMatch();
+            _secondaryCell.IsMatch();
+            _isMatch = _primaryCell.IsMatched || _secondaryCell.IsMatched;
+            if (_isMatch)
             {
-                _isAnimating = false;//todo
+                //todo
             }
             else
             {
+                SwapChipsTransform(true);
                 if (_isSwappedBack) return;
+                _isAnimating = true;
                 StartCoroutine(SwapBackRoutine());
             }
         }
 
-        private void OnPoolingEvent(ChipComponent chip) =>_chipPool.AddLast(chip);
+        private void SwapChipsTransform(bool isInverseSwap)
+        {
+            _primaryCell.Chip = isInverseSwap ? _primaryChip : _secondaryChip;
+            _secondaryCell.Chip = isInverseSwap ? _secondaryChip : _primaryChip;
+            _primaryChip.transform.parent = isInverseSwap
+                ? _primaryCell.transform
+                : _secondaryCell.transform;
+            _secondaryChip.transform.parent = isInverseSwap
+                ? _secondaryCell.transform
+                : _primaryCell.transform;
+        }
+
+        private void OnPoolingEvent(ChipComponent chip) => _chipPool.AddLast(chip);
         private void OnCellPointerUpEvent(CellComponent cell)
         {
             if(_isAnimating) return;
@@ -117,14 +132,10 @@ namespace Match3
             yield return null;
             SwapChips(OppositeDirection(_playerDirection), true);
             _isSwappedBack = true;
-
-            yield return new WaitForSeconds(0.2f);
-            _isAnimating = false;
         }
 
         private void SwapChips(DirectionType direction, bool isSwapBack = false)
         {
-            _isAnimating = true;
             if (!isSwapBack)
             {
                 if (!_primaryCell.Neighbours.ContainsKey(direction)) return;
@@ -133,6 +144,8 @@ namespace Match3
                 _secondaryCell = _primaryCell.Neighbours[direction];
                 _secondaryChip = _secondaryCell.Chip;
             }
+            if(_primaryCell == null || _secondaryCell == null) return;
+            _isAnimating = true;
             _primaryChip.Move(direction, true);
             _secondaryChip.Move(OppositeDirection(direction), false);
         }
@@ -162,7 +175,8 @@ namespace Match3
                 cell.PoolingEvent -= OnPoolingEvent;
                 cell.PointerDownEvent -= OnCellPointerDownEvent;
                 cell.PointerUpEvent -= OnCellPointerUpEvent;
-                cell.Chip.Child.AnimationEndEvent -= OnChipChildAnimationEndEvent;
+                if(cell.Chip != null)
+                    cell.Chip.Child.AnimationEndEvent -= OnChipChildAnimationEndEvent;
             }
         }
     }
