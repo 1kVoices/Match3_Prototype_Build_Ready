@@ -433,18 +433,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 354203410}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.3}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90.01181}
+  m_LocalScale: {x: 1, y: 1, z: 0.009259259}
   m_Children: []
   m_Father: {fileID: 511004707}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -57.645355}
-  m_SizeDelta: {x: 392.20346, y: 108.76483}
-  m_Pivot: {x: 0.5, y: -0.41}
+  m_AnchoredPosition: {x: 0, y: -58}
+  m_SizeDelta: {x: 376, y: 108.76483}
+  m_Pivot: {x: 0.49, y: -0.86}
 --- !u!114 &354203412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -492,15 +492,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47
-  m_fontSizeBase: 47
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18.2
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 12.96
@@ -816,7 +816,7 @@ RectTransform:
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -731.7461, y: -403.8907}
   m_SizeDelta: {x: 557.4618, y: 429.76428}
-  m_Pivot: {x: -0.08529084, y: 0.0000000055879354}
+  m_Pivot: {x: -0.02, y: 0}
 --- !u!114 &511004708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -836,7 +836,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 20dcd0a8467f1aa4d8743804fb7bd735, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 397604139448a004dbf6d2d19ca1ed0e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -885,9 +885,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2343806027243c4bb686a72152ed546, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _textDelay: 50
+  _textDelay: 0.05
   _phrasesDelay: 5
-  _textCloud: {fileID: 354203412}
+  _cloudText: {fileID: 354203412}
   _player: {fileID: 743555166}
   _pedroEmotions:
   - {fileID: 21300000, guid: 129b8fbf6c146ff43a35c967d63f0fde, type: 3}

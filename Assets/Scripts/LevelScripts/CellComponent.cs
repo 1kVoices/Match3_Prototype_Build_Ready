@@ -19,7 +19,7 @@ namespace Match3
         public event Action<ChipComponent> PoolingEvent;
         public event Action<CellComponent,Vector2> PointerDownEvent;
         public event Action<CellComponent> PointerUpEvent;
-        public bool IsMatched { get; set; }
+        public bool IsMatched { get; private set; }
 
         private void Start()
         {
@@ -28,14 +28,22 @@ namespace Match3
             StartCoroutine(GenerateChipRoutine());
         }
 
-        private void Pooling(ChipComponent chip, CellComponent cell)
+        private void Pooling(params CellComponent[] cells)
         {
-            cell.Chip = null;
-            chip.gameObject.SetActive(false);
-            PoolingEvent?.Invoke(chip);
+            foreach (CellComponent cell in cells)
+            {
+                cell.Chip.gameObject.SetActive(false);
+                cell.Chip = null;
+                PoolingEvent?.Invoke(cell.Chip);
+            }
         }
 
-        public void IsMatch()
+        private bool CompareChips(CellComponent comparativeCell)
+        {
+            return Chip != null && comparativeCell != null && comparativeCell.Chip != null && comparativeCell.Chip.Type == Chip.Type;
+        }
+
+        public void CheckMatches()
         {
             CellComponent top = Neighbours.ContainsKey(DirectionType.Top)
                 ? Neighbours[DirectionType.Top]
@@ -61,134 +69,83 @@ namespace Match3
             CellComponent rightRight = right != null && right.Neighbours.ContainsKey(DirectionType.Right)
                 ? right.Neighbours[DirectionType.Right]
                 : null;
+
             #region Horizontal
-            if (left != null &&
-                left.Chip != null &&
-                left.Chip.Type == Chip.Type &&
-                right != null &&
-                right.Chip != null &&
-                right.Chip.Type == Chip.Type)
+            if (CompareChips(left) && CompareChips(right))
             {
                 //00_00
-                if (leftLeft != null &&
-                    leftLeft.Chip != null &&
-                    leftLeft.Chip.Type == Chip.Type &&
-                    rightRight != null &&
-                    rightRight.Chip!= null &&
-                    rightRight.Chip.Type == Chip.Type)
-                {
-                    Pooling(leftLeft.Chip, leftLeft);
-                    Pooling(rightRight.Chip, rightRight);
-                }
+                if (CompareChips(leftLeft) && CompareChips(rightRight)) Pooling(leftLeft, rightRight);
                 //00_0
-                else if (leftLeft != null &&
-                    leftLeft.Chip != null &&
-                    leftLeft.Chip.Type == Chip.Type) Pooling(leftLeft.Chip, leftLeft);
+                else if (CompareChips(leftLeft))
+                {
+                    Pooling(leftLeft);
+                }
                 //0_00
-                else if (rightRight != null &&
-                    rightRight.Chip != null &&
-                    rightRight.Chip.Type == Chip.Type) Pooling(rightRight.Chip, rightRight);
+                else if (CompareChips(rightRight))
+                {
+                    Pooling(rightRight);
+                }
+
                 //0_0
-                Pooling(Chip, this);
-                Pooling(left.Chip, left);
-                Pooling(right.Chip, right);
+                Pooling(this, left, right);
 
                 IsMatched = true;
             }
             //00_
-            else if (left != null &&
-                left.Chip != null &&
-                left.Chip.Type == Chip.Type &&
-                leftLeft != null &&
-                leftLeft.Chip != null &&
-                leftLeft.Chip.Type == Chip.Type)
+            else if (CompareChips(left) && CompareChips(leftLeft))
             {
-                Pooling(Chip, this);
-                Pooling(left.Chip, left);
-                Pooling(leftLeft.Chip, leftLeft);
+                Pooling(this, left, leftLeft);
                 IsMatched = true;
             }
             //_00
-            else if (right != null &&
-                right.Chip != null &&
-                right.Chip.Type == Chip.Type &&
-                rightRight != null &&
-                rightRight.Chip != null &&
-                rightRight.Chip.Type == Chip.Type)
+            else if (CompareChips(right) && CompareChips(rightRight))
             {
-                Pooling(Chip, this);
-                Pooling(right.Chip, right);
-                Pooling(rightRight.Chip, rightRight);
+                Pooling(this, right, rightRight);
                 IsMatched = true;
             }
             #endregion
             #region Vertical
-            else if (top != null &&
-                top.Chip != null &&
-                top.Chip.Type == Chip.Type &&
-                bot != null &&
-                bot.Chip != null &&
-                bot.Chip.Type == Chip.Type)
+            else if (CompareChips(top) && CompareChips(bot))
             {
                 //00_00
-                if (topTop != null &&
-                    topTop.Chip != null &&
-                    topTop.Chip.Type == Chip.Type &&
-                    botBot != null &&
-                    botBot.Chip != null &&
-                    botBot.Chip.Type == Chip.Type)
+                if (CompareChips(topTop) && CompareChips(botBot))
                 {
-                    Pooling(topTop.Chip, topTop);
-                    Pooling(botBot.Chip, botBot);
+                    Pooling(topTop,botBot);
                 }
                 //00_0
-                else if (topTop != null &&
-                    topTop.Chip != null &&
-                    topTop.Chip.Type == Chip.Type) Pooling(topTop.Chip, topTop);
+                else if (CompareChips(topTop))
+                {
+                    Pooling(topTop);
+                }
                 //0_00
-                else if (botBot != null &&
-                    botBot.Chip != null &&
-                    botBot.Chip.Type == Chip.Type) Pooling(botBot.Chip, botBot);
+                else if (CompareChips(botBot))
+                {
+                    Pooling(botBot);
+                }
                 //0_0
-                Pooling(Chip, this);
-                Pooling(top.Chip, top);
-                Pooling(bot.Chip, bot);
+                Pooling(this, top, bot);
 
                 IsMatched = true;
             }
             //00_
-            else if (top != null &&
-                top.Chip != null &&
-                top.Chip.Type == Chip.Type &&
-                topTop != null &&
-                topTop.Chip != null &&
-                topTop.Chip.Type == Chip.Type)
+            else if (CompareChips(top) && CompareChips(topTop))
             {
-                Pooling(Chip, this);
-                Pooling(top.Chip, top);
-                Pooling(topTop.Chip, topTop);
+                Pooling(this, top, topTop);
                 IsMatched = true;
             }
             //_00
-            else if (bot != null &&
-                bot.Chip != null &&
-                bot.Chip.Type == Chip.Type &&
-                botBot != null &&
-                botBot.Chip != null &&
-                botBot.Chip.Type == Chip.Type)
+            else if (CompareChips(bot) && CompareChips(botBot))
             {
-                Pooling(Chip, this);
-                Pooling(bot.Chip, bot);
-                Pooling(botBot.Chip, botBot);
+                Pooling(this, bot, botBot);
                 IsMatched = true;
             }
             #endregion
-            else IsMatched =Neighbours.Any(z => z.Value.IsMatched);
+            else IsMatched = Neighbours.Any(z => z.Value.IsMatched);
 
-            StartCoroutine(DiscardIsMatched());
+            StartCoroutine(DiscardIsMatchedRoutine());
         }
 
-        private IEnumerator DiscardIsMatched()
+        private IEnumerator DiscardIsMatchedRoutine()
         {
             yield return null;
             IsMatched = false;
@@ -223,7 +180,7 @@ namespace Match3
             while (vertical.All(z => z.Value.Chip.Type == Chip.Type) || horizontal.All(z => z.Value.Chip.Type == Chip.Type))
             {
                 Chip.transform.parent = _manager.transform;
-                Pooling(Chip, this);
+                Pooling(this);
 
                 var allowedChips = _chipPrefabs.Where(z => !horizontal
                                                                .Union(vertical)
@@ -237,11 +194,13 @@ namespace Match3
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (Chip.IsInteractable) PointerDownEvent?.Invoke(this, eventData.position);
+            // if (Chip.IsInteractable)
+                PointerDownEvent?.Invoke(this, eventData.position);
         }
         public void OnPointerUp(PointerEventData eventData)
         {
-            if (Chip.IsInteractable) PointerUpEvent?.Invoke(this);
+            // if (Chip.IsInteractable)
+                PointerUpEvent?.Invoke(this);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Match3
@@ -24,7 +25,6 @@ namespace Match3
         private bool _isReading;
         private bool _isSwappedBack;
         private bool _isAnimating;
-        private bool _isMatch;
 
         private IEnumerator Start()
         {
@@ -46,33 +46,34 @@ namespace Match3
         private void OnChipChildAnimationEndEvent()
         {
             _isAnimating = false;
-            SwapChipsTransform(false);
-            _primaryCell.IsMatch();
-            _secondaryCell.IsMatch();
-            _isMatch = _primaryCell.IsMatched || _secondaryCell.IsMatched;
-            if (_isMatch)
+            _primaryCell.CheckMatches();
+            _secondaryCell.CheckMatches();
+            if (_primaryCell.IsMatched || _secondaryCell.IsMatched)
             {
                 //todo
             }
             else
             {
-                SwapChipsTransform(true);
                 if (_isSwappedBack) return;
                 _isAnimating = true;
                 StartCoroutine(SwapBackRoutine());
             }
         }
 
-        private void SwapChipsTransform(bool isInverseSwap)
+        private void SwapChipsTransform(bool isDirectSwap)
         {
-            _primaryCell.Chip = isInverseSwap ? _primaryChip : _secondaryChip;
-            _secondaryCell.Chip = isInverseSwap ? _secondaryChip : _primaryChip;
-            _primaryChip.transform.parent = isInverseSwap
-                ? _primaryCell.transform
-                : _secondaryCell.transform;
-            _secondaryChip.transform.parent = isInverseSwap
+            _primaryCell.Chip = isDirectSwap
+                ? _secondaryChip
+                : _primaryChip;
+            _secondaryCell.Chip = isDirectSwap
+                ? _primaryChip
+                : _secondaryChip;
+            _primaryChip.transform.parent = isDirectSwap
                 ? _secondaryCell.transform
                 : _primaryCell.transform;
+            _secondaryChip.transform.parent = isDirectSwap
+                ? _primaryCell.transform
+                : _secondaryCell.transform;
         }
 
         private void OnPoolingEvent(ChipComponent chip) => _chipPool.AddLast(chip);
@@ -131,6 +132,7 @@ namespace Match3
         {
             yield return null;
             SwapChips(OppositeDirection(_playerDirection), true);
+            SwapChipsTransform(false);
             _isSwappedBack = true;
         }
 
@@ -139,7 +141,6 @@ namespace Match3
             if (!isSwapBack)
             {
                 if (!_primaryCell.Neighbours.ContainsKey(direction)) return;
-                if (!_primaryCell.Chip.IsInteractable) return;
 
                 _secondaryCell = _primaryCell.Neighbours[direction];
                 _secondaryChip = _secondaryCell.Chip;
@@ -148,6 +149,7 @@ namespace Match3
             _isAnimating = true;
             _primaryChip.Move(direction, true);
             _secondaryChip.Move(OppositeDirection(direction), false);
+            SwapChipsTransform(true);
         }
 
         private static DirectionType OppositeDirection(DirectionType direction)

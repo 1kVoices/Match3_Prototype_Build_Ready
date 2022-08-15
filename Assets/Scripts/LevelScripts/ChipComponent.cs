@@ -9,7 +9,6 @@ namespace Match3
         [SerializeField]
         private Animator _animator;
         public ChipChildComponent Child;
-        public bool IsInteractable { get; set; } = true;
 
         public void Move(DirectionType direction, bool isPrimaryChip)
         {
