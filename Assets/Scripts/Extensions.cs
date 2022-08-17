@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Match3
+﻿namespace Match3
 {
     public enum DirectionType : byte
     {

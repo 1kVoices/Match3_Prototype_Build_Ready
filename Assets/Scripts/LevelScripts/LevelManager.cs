@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Match3
@@ -8,12 +9,12 @@ namespace Match3
     public class LevelManager : MonoBehaviour
     {
         private int _currentLevel;
-
         [SerializeField]
         private CellComponent[] _cells;
         [SerializeField]
         private float _dragSens;
         private LinkedList<ChipComponent> _chipPool;
+        private LinkedList<CellComponent> _affectedCells;
         private Controls _controls;
         private Vector2 _startDragMousePos;
         private ChipComponent _primaryChip;
@@ -24,41 +25,54 @@ namespace Match3
         private bool _isReading;
         private bool _isSwappedBack;
         private bool _isAnimating;
-        private bool _isAlreadyChecked;
+        private bool _isChecked;
+        public int COUNT;
 
-        private IEnumerator Start()
+        private void Start()
         {
             _controls = new Controls();
             _controls.Enable();
             _chipPool = new LinkedList<ChipComponent>();
-            _isAlreadyChecked = false;
+            _affectedCells = new LinkedList<CellComponent>();
+            _isChecked = false;
             foreach (CellComponent cell in _cells)
             {
-                cell.PoolingEvent += OnPoolingEvent;
+                cell.PoolingCellEvent += OnPoolingCellEvent;
                 cell.PointerDownEvent += OnCellPointerDownEvent;
                 cell.PointerUpEvent += OnCellPointerUpEvent;
-
-                yield return null;
-                cell.Chip.Child.AnimationEndEvent += OnChipAnimationEndEvent;
+                cell.Chip.Child.AnimationEndEvent += OnChipAnimationEnd;
+                cell.Chip.Child.FadeEndEvent += OnPoolingChipEvent;
             }
+
+            StartCoroutine(ChipsShowUp());
         }
 
-        private void OnChipAnimationEndEvent()
+        private IEnumerator ChipsShowUp() //todo
         {
-            if (_isAlreadyChecked) return;
-            _isAlreadyChecked = true;
-            ChipAnimationEnd();
-        }
-
-        private void ChipAnimationEnd()
-        {
-            _isAnimating = false;
-            _primaryCell.CheckMatches();
-            _secondaryCell.CheckMatches();
-
-            if (_primaryCell.IsMatched || _secondaryCell.IsMatched)
+            _isAnimating = true;
+            yield return new WaitForSeconds(0.3f);
+            foreach (CellComponent cell in _cells)
             {
-                //todo
+                cell.Chip.ShowUp();
+                yield return new WaitForSeconds(0.01f);
+            }
+            _isAnimating = false;
+        }
+
+        private void OnChipAnimationEnd()
+        {
+            if (_isChecked) return;
+            _isChecked = true;
+            _isAnimating = false;
+            _primaryCell.CheckMatch();
+            _secondaryCell.CheckMatch();
+
+            if (_primaryCell.IsMatch || _secondaryCell.IsMatch)
+            {
+                foreach (CellComponent cellComponent in _affectedCells.OrderBy(z => z.transform.position.y))
+                {
+                    cellComponent.Kidnapping(_chipPool);
+                }
             }
             else
             {
@@ -84,19 +98,34 @@ namespace Match3
                 : _secondaryCell.transform;
         }
 
-        private void OnPoolingEvent(ChipComponent chip) => _chipPool.AddLast(chip);
+        private void OnPoolingCellEvent(CellComponent cell)
+        {
+            _affectedCells.AddLast(cell);
+        }
+
+        private void FixedUpdate()
+        {
+            print(_chipPool.Count);
+        }
+
+        private void OnPoolingChipEvent(ChipComponent chip)
+        {
+            _chipPool.AddLast(chip);
+        }
+
         private void OnCellPointerUpEvent(CellComponent cell)
         {
             if(_isAnimating) return;
             _isReading = false;
         }
+
         private void OnCellPointerDownEvent(CellComponent cell, Vector2 cellPos)
         {
             if(_isAnimating) return;
             _primaryCell = cell;
             _primaryChip = cell.Chip;
-            _isReading = true;
             _startDragMousePos = cellPos;
+            _isReading = true;
             _isSwappedBack = false;
         }
 
@@ -153,12 +182,13 @@ namespace Match3
                 _secondaryCell = _primaryCell.Neighbours[direction];
                 _secondaryChip = _secondaryCell.Chip;
             }
-            if(_primaryCell == null || _secondaryCell == null) return;
+            if(_primaryCell == null || _secondaryCell == null || _secondaryCell.Chip == null) return;
             _isAnimating = true;
             _primaryChip.Move(direction, true);
             _secondaryChip.Move(OppositeDirection(direction), false);
             SwapChipTransforms(true);
-            _isAlreadyChecked = false;
+            _isChecked = false;
+            _affectedCells.Clear();
         }
 
         private static DirectionType OppositeDirection(DirectionType direction)
@@ -183,11 +213,11 @@ namespace Match3
             _controls.Dispose();
             foreach (CellComponent cell in _cells)
             {
-                cell.PoolingEvent -= OnPoolingEvent;
+                cell.PoolingCellEvent -= OnPoolingCellEvent;
                 cell.PointerDownEvent -= OnCellPointerDownEvent;
                 cell.PointerUpEvent -= OnCellPointerUpEvent;
                 if(cell.Chip != null)
-                    cell.Chip.Child.AnimationEndEvent -= OnChipAnimationEndEvent;
+                    cell.Chip.Child.AnimationEndEvent -= OnChipAnimationEnd;
             }
         }
     }

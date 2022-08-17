@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -9,6 +10,9 @@ namespace Match3
         [SerializeField]
         private Animator _animator;
         public ChipChildComponent Child;
+        private static readonly int Show = Animator.StringToHash("showUp");
+        private static readonly int Fade = Animator.StringToHash("fadeOut");
+        private static readonly int FastShow = Animator.StringToHash("fastShowUp");
 
         public void Move(DirectionType direction, bool isPrimaryChip)
         {
@@ -33,6 +37,24 @@ namespace Match3
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
+        }
+
+        public void ShowUp()
+        {
+            _animator.SetTrigger(Show);
+            transform.localScale = Vector3.one;
+        }
+
+        public void FastShowUp()
+        {
+            _animator.enabled = true;
+            _animator.SetTrigger(FastShow);
+            transform.localScale = Vector3.one;
+        }
+
+        public void FadeOut()
+        {
+            _animator.SetTrigger(Fade);
         }
     }
 }

@@ -8,10 +8,15 @@ namespace Match3
     {
         [SerializeField]
         private SpriteRenderer _renderer;
-        public bool IsPrimaryChip;
+        [SerializeField]
+        private ChipComponent _parent;
+        [SerializeField]
+        private Animator _animator;
+        public bool IsPrimaryChip { get; set; }
         public event Action AnimationEndEvent;
+        public event Action<ChipComponent> FadeEndEvent;
 
-        public void OnAnimationStart()
+        private void OnAnimationStart()
         {
             if (IsPrimaryChip) _renderer.sortingOrder = 10;
         }
@@ -23,6 +28,12 @@ namespace Match3
             transform.localPosition = Vector3.zero;
             _renderer.sortingOrder = 0;
             AnimationEndEvent?.Invoke();
+        }
+
+        private void FadeAnimationEnd()
+        {
+            _animator.enabled = false;
+            FadeEndEvent?.Invoke(_parent);
         }
     }
 }
