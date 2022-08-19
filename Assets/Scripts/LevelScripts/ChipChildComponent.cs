@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -12,9 +11,8 @@ namespace Match3
         private ChipComponent _parent;
         [SerializeField]
         private Animator _animator;
+        private CellComponent _currentCell;
         public bool IsPrimaryChip { get; set; }
-        public event Action AnimationEndEvent;
-        public event Action<ChipComponent> FadeEndEvent;
 
         private void OnAnimationStart()
         {
@@ -27,13 +25,17 @@ namespace Match3
             transform.parent.position = transform.position;
             transform.localPosition = Vector3.zero;
             _renderer.sortingOrder = 0;
-            AnimationEndEvent?.Invoke();
+            _parent.AnimationEnded();
         }
+
+        public void SetCurrentCell(CellComponent cell) => _currentCell = cell;
 
         private void FadeAnimationEnd()
         {
             _animator.enabled = false;
-            FadeEndEvent?.Invoke(_parent);
+            _currentCell.Chip = null;
+            Pool.Singleton.Pull(_parent);
+            LevelManager.Singleton.SetAnimationState(false);
         }
     }
 }

@@ -10,51 +10,38 @@ namespace Match3
     public class CellComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         public ChipComponent[] _chipPrefabs;
-        public ChipComponent Chip;//todo
-        public Dictionary<DirectionType, CellComponent> Neighbours { get; private set; }
-        public bool IsMatch { get; private set; }
+        public ChipComponent Chip;
+        private ChipComponent _previousChip;
+        private Dictionary<DirectionType, CellComponent> Neighbours;
+        private LinkedList<CellComponent> _poolingList;
         private int _cellsLayer;
         private int _spawnsLayer;
-        private LinkedList<CellComponent> _poolingList;
         private SpawnPointComponent _spawnPoint;
-        private LinkedList<ChipComponent> _actualPool;
-        public event Action<CellComponent> PoolingCellEvent;
         public event Action<CellComponent,Vector2> PointerDownEvent;
         public event Action<CellComponent> PointerUpEvent;
+        public bool IsMatch { get; private set; }
 
         private void Start()
         {
+            _poolingList = new LinkedList<CellComponent>();
             _cellsLayer = LayerMask.GetMask("Level");
             _spawnsLayer = LayerMask.GetMask("Spawn");
-            _poolingList = new LinkedList<CellComponent>();
             Neighbours = FindNeighbours();
             StartCoroutine(GenerateChipRoutine());
         }
 
-        public void Kidnapping(LinkedList<ChipComponent> pool) // :)
+        private bool CompareChips(CellComponent comparativeCell)
         {
-            _actualPool = pool;
-            StartCoroutine(SpawnChipRoutine());
-        }
-
-        private IEnumerator SpawnChipRoutine()
-        {
-            _spawnPoint.GenerateChip(this, _actualPool);
-            yield return null;
-        }
-
-        private void Pooling()
-        {
-            foreach (CellComponent cellComponent in _poolingList)
-            {
-                PoolingCellEvent?.Invoke(cellComponent);
-                cellComponent.Chip.FadeOut();
-                cellComponent.Chip = null;
-            }
+            return comparativeCell != null &&
+                   comparativeCell.Chip != null &&
+                   comparativeCell.Chip != Chip &&
+                   comparativeCell.Chip.Type == Chip.Type;
         }
 
         private void Pulling(params CellComponent[] cells)
         {
+            if (!_poolingList.Contains(this)) _poolingList.AddLast(this);
+
             foreach (CellComponent cellComponent in cells)
             {
                 if (_poolingList.Contains(cellComponent)) continue;
@@ -62,37 +49,28 @@ namespace Match3
             }
         }
 
-        private bool CompareChips(CellComponent comparativeCell)
+        public void CheckMatches(ChipComponent newChip)
         {
-            return comparativeCell != null && comparativeCell.Chip != null && comparativeCell.Chip.Type == Chip.Type;
-        }
-
-        public void CheckMatch()
-        {
+            _previousChip = Chip;
+            Chip = newChip;
+            Chip.transform.parent = transform;
+            IsMatch = false;
             _poolingList.Clear();
-            CellComponent top = Neighbours.ContainsKey(DirectionType.Top)
-                ? Neighbours[DirectionType.Top]
+            CellComponent top = GetNeighbour(DirectionType.Top);
+            CellComponent topTop = top != null
+                ? top.GetNeighbour(DirectionType.Top)
                 : null;
-            CellComponent topTop = top != null && top.Neighbours.ContainsKey(DirectionType.Top)
-                ? top.Neighbours[DirectionType.Top]
+            CellComponent bot = GetNeighbour(DirectionType.Bot);
+            CellComponent botBot = bot != null
+                ? bot.GetNeighbour(DirectionType.Bot)
                 : null;
-            CellComponent bot = Neighbours.ContainsKey(DirectionType.Bot)
-                ? Neighbours[DirectionType.Bot]
+            CellComponent left = GetNeighbour(DirectionType.Left);
+            CellComponent leftLeft = left != null
+                ? left.GetNeighbour(DirectionType.Left)
                 : null;
-            CellComponent botBot = bot != null && bot.Neighbours.ContainsKey(DirectionType.Bot)
-                ? bot.Neighbours[DirectionType.Bot]
-                : null;
-            CellComponent left = Neighbours.ContainsKey(DirectionType.Left)
-                ? Neighbours[DirectionType.Left]
-                : null;
-            CellComponent leftLeft = left != null && left.Neighbours.ContainsKey(DirectionType.Left)
-                ? left.Neighbours[DirectionType.Left]
-                : null;
-            CellComponent right = Neighbours.ContainsKey(DirectionType.Right)
-                ? Neighbours[DirectionType.Right]
-                : null;
-            CellComponent rightRight = right != null && right.Neighbours.ContainsKey(DirectionType.Right)
-                ? right.Neighbours[DirectionType.Right]
+            CellComponent right = GetNeighbour(DirectionType.Right);
+            CellComponent rightRight = right != null
+                ? right.GetNeighbour(DirectionType.Right)
                 : null;
 
             #region Horizontal
@@ -105,35 +83,69 @@ namespace Match3
                 //0_00
                 if (CompareChips(rightRight)) Pulling(rightRight);
                 //0_0
-                Pulling(this, left, right);
+                Pulling(left, right);
             }
             //00_
-            if (CompareChips(left) && CompareChips(leftLeft)) Pulling(this, left, leftLeft);
+            if (CompareChips(left) && CompareChips(leftLeft)) Pulling(left, leftLeft);
             //_00
-            if (CompareChips(right) && CompareChips(rightRight)) Pulling(this, right, rightRight);
+            if (CompareChips(right) && CompareChips(rightRight)) Pulling(right, rightRight);
             #endregion
 
             #region Vertical
             if (CompareChips(top) && CompareChips(bot)) //top is left
             {
                 //00_00
-                if (CompareChips(topTop) && CompareChips(botBot)) Pulling(topTop,botBot);
+                if (CompareChips(topTop) && CompareChips(botBot)) Pulling(topTop, botBot);
                 //00_0
                 if (CompareChips(topTop)) Pulling(topTop);
                 //0_00
                 if (CompareChips(botBot)) Pulling(botBot);
                 //0_0
-                Pulling(this, top, bot);
+                Pulling(top, bot);
             }
             //00_
-            if (CompareChips(top) && CompareChips(topTop)) Pulling(this, top, topTop);
+            if (CompareChips(top) && CompareChips(topTop)) Pulling(top, topTop);
             //_00
-            if (CompareChips(bot) && CompareChips(botBot)) Pulling(this, bot, botBot);
+            if (CompareChips(bot) && CompareChips(botBot)) Pulling(bot, botBot);
             #endregion
 
-            Pooling();
-            IsMatch = _poolingList.Count != 0;
+            if (_poolingList.Count != 0)
+            {
+                IsMatch = true;
+                StartCoroutine(MatchRoutine());
+            }
+            else
+            {
+                IsMatch = false;
+                StartCoroutine(NoMatchRoutine());
+            }
         }
+
+        private IEnumerator MatchRoutine()
+        {
+            yield return new WaitWhile(() => _poolingList.Any(z => z.Chip.IsAnimating));
+            Chip.SetCurrentCell(this);
+            Pool.Singleton.Pooling(_poolingList);
+        }
+
+        private IEnumerator NoMatchRoutine()
+        {
+            yield return new WaitWhile(() => Chip.IsAnimating);
+            if (_previousChip.GetMatchState() || IsMatch) yield break;
+            Chip.MoveBack();
+            Chip = _previousChip;
+        }
+
+        // public void Kidnapping() // :)
+        // {
+        //     CellComponent top = GetNeighbour(DirectionType.Top);
+        //     if (top != null)
+        //     {
+        //         top.Chip.Transfer(this, true);
+        //         top.Kidnapping();
+        //     }
+        //     else _spawnPoint.GenerateChip(this);
+        // }
 
         private Dictionary<DirectionType, CellComponent> FindNeighbours()
         {
@@ -156,23 +168,36 @@ namespace Match3
 
         private IEnumerator GenerateChipRoutine()
         {
-            Chip = Instantiate(_chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)], transform);
-
+            ChipInstance(_chipPrefabs);
             yield return null;
 
             var vertical = Neighbours.Where(z => z.Key == DirectionType.Bot || z.Key == DirectionType.Top).ToArray();
             var horizontal = Neighbours.Where(z => z.Key == DirectionType.Left || z.Key == DirectionType.Right).ToArray();
 
-            if (!vertical.All(z => CompareChips(z.Value)) && !horizontal.All(z => CompareChips(z.Value))) yield break;
+            if (vertical.Any(z => !CompareChips(z.Value)) && horizontal.Any(z => !CompareChips(z.Value))) yield break;
 
-            Pulling(this);
-            Pooling();
+            Pool.Singleton.Pull(Chip);
+
             var allowedChips = _chipPrefabs.Where(z => !horizontal.Union(vertical)
                                                                   .Distinct()
                                                                   .Select(x => x.Value.Chip.Type)
                                                                   .Contains(z.Type)).ToArray();
 
-            Chip = Instantiate(allowedChips[UnityEngine.Random.Range(0, allowedChips.Length)], transform);
+            ChipInstance(allowedChips);
+
+        }
+
+        private void ChipInstance(IReadOnlyList<ChipComponent> array)
+        {
+            Chip = Instantiate(array[UnityEngine.Random.Range(0, array.Count)], transform);
+            Chip.SetCurrentCell(this);
+        }
+
+        public CellComponent GetNeighbour(DirectionType direction)
+        {
+            return Neighbours.ContainsKey(direction)
+                ? Neighbours[direction]
+                : null;
         }
 
         public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
