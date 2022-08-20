@@ -8,6 +8,7 @@ namespace Match3
     {
         public void GenerateChip(CellComponent callerCell)
         {
+            print($"Generator{callerCell}");
             LinkedList<ChipComponent> pool = Pool.Singleton.ChipPool;
 
             if (pool.Count == 0) return;

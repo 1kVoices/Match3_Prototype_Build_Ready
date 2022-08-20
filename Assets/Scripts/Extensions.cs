@@ -17,6 +17,9 @@
                 default: return DirectionType.None;
             }
         }
+
+        public static bool NotNull(this object obj) => obj != null;
+        public static bool IsNull(this object obj) => obj == null;
     }
 
     public enum DirectionType : byte

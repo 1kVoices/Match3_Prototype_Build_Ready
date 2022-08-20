@@ -101,11 +101,11 @@ namespace Match3
         private void SwapChips(DirectionType direction)
         {
             _secondaryCell = _primaryCell.GetNeighbour(direction);
-            if (_secondaryCell == null) return;
+            if (_secondaryCell.IsNull()) return;
 
             _secondaryChip = _secondaryCell.Chip;
 
-            if (_primaryCell == null || _secondaryCell == null || _secondaryCell.Chip == null) return;
+            if (_primaryCell.IsNull() || _secondaryCell.IsNull() || _secondaryCell.Chip.IsNull()) return;
 
             SetAnimationState(true);
             _primaryChip.Move(direction, true, _secondaryCell);

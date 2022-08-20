@@ -11,7 +11,6 @@ namespace Match3
         private ChipComponent _parent;
         [SerializeField]
         private Animator _animator;
-        private CellComponent _currentCell;
         public bool IsPrimaryChip { get; set; }
 
         private void OnAnimationStart()
@@ -28,12 +27,10 @@ namespace Match3
             _parent.AnimationEnded();
         }
 
-        public void SetCurrentCell(CellComponent cell) => _currentCell = cell;
-
         private void FadeAnimationEnd()
         {
+            _parent.IsAnimating = false;
             _animator.enabled = false;
-            _currentCell.Chip = null;
             Pool.Singleton.Pull(_parent);
             LevelManager.Singleton.SetAnimationState(false);
         }

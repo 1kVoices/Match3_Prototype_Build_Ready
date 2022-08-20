@@ -82,7 +82,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 1
+  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &866900771111846736
 Animator:
@@ -164,6 +164,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 5
   _animator: {fileID: 866900771111846736}
+  CurrentCell: {fileID: 0}
+  ReservedBy: {fileID: 0}
   Child: {fileID: 866900771111846739}
 --- !u!1 &2789762417134726289
 GameObject:

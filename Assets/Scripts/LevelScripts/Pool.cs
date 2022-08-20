@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Match3
@@ -21,10 +22,10 @@ namespace Match3
             if (isInitPool) foreach (CellComponent cell in cells) Pull(cell.Chip);
             else
             {
-                foreach (CellComponent cell in cells)
+                foreach (CellComponent cell in cells.OrderBy(z => z.transform.position.y))
                 {
                     cell.Chip.FadeOut();
-                    // cell.Kidnapping();
+                    cell.Kidnapping(cell.GetNeighbour(DirectionType.Top));
                 }
             }
         }
