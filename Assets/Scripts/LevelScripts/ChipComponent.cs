@@ -9,6 +9,8 @@ namespace Match3
         public ChipType Type;
         [SerializeField]
         private Animator _animator;
+        [SerializeField]
+        private ChipChildComponent _child;
         private static readonly int Show = Animator.StringToHash("showUp");
         private static readonly int Fade = Animator.StringToHash("fadeOut");
         private static readonly int FastShow = Animator.StringToHash("fastShowUp");
@@ -19,16 +21,17 @@ namespace Match3
         public CellComponent ReservedBy;
         private DirectionType _direction;
         private bool _sentBack;
-        private bool _sentBySpawner;
-        public bool IsAnimating { get; set; }
-        public ChipChildComponent Child;
+        public bool IsInteractable { get; private set; }
+        public bool IsTransferred { get; private set; }
+        public bool IsAnimating { get; private set; }
 
         public void Move(DirectionType direction, bool isPrimaryChip, CellComponent targetCell)
         {
-            IsAnimating = true;
+            SetAnimationState(true);
             _targetCell = targetCell;
+            transform.parent = _targetCell.transform;
             _direction = direction;
-            Child.IsPrimaryChip = isPrimaryChip;
+            _child.IsPrimaryChip = isPrimaryChip;
             string trigger = isPrimaryChip
                 ? "Primary"
                 : "Secondary";
@@ -53,10 +56,13 @@ namespace Match3
             if (!_sentBack) _targetCell.CheckMatches(this);
         }
 
-        public void MoveBack()
+        public void SetInteractionState(bool state) => IsInteractable = state;
+        public IEnumerator MoveBackRoutine()
         {
             _sentBack = true;
-            Move(_direction.OppositeDirection(), Child.IsPrimaryChip, CurrentCell);
+            Move(_direction.OppositeDirection(), _child.IsPrimaryChip, CurrentCell);
+            yield return new WaitWhile(() => IsAnimating);
+            SetInteractionState(true);
         }
 
         public void AnimationEnded()
@@ -64,23 +70,30 @@ namespace Match3
             if (_sentBack)
             {
                 _sentBack = false;
-                LevelManager.Singleton.SetAnimationState(false);
             }
-            else CurrentCell = _targetCell;
-            IsAnimating = false;
+            else if(_targetCell.NotNull()) CurrentCell = _targetCell;
         }
 
-        public void Transfer(CellComponent cell, bool isSentByCell)
+        public void Transfer(CellComponent cell)
         {
-            StartCoroutine(ChipTransferRoutine(cell, isSentByCell, 1f));
+            ReservedBy = cell;
+            if (CurrentCell.NotNull())
+            {
+                CurrentCell.SetCurrentChip(null);
+                CurrentCell.SetPreviousChip(this);
+            }
+
+            StartCoroutine(ChipTransferRoutine(cell, 0.2f));
         }
 
-        private IEnumerator ChipTransferRoutine(CellComponent targetCell, bool isSentByCell, float transferTime)
+        private IEnumerator ChipTransferRoutine(CellComponent targetCell, float transferTime)
         {
+            SetAnimationState(true);
+            _animator.SetTrigger(Fall);
             float time = 0f;
+            IsTransferred = true;
             Vector3 start = transform.position;
             Vector3 target = targetCell.transform.position;
-            if(!isSentByCell) SentBySpawner(targetCell);
             while (time < 1f)
             {
                 transform.position = Vector3.Lerp(start, target, time * time);
@@ -88,26 +101,23 @@ namespace Match3
                 yield return null;
             }
             transform.position = target;
+            yield return null;
             EndFalling(targetCell);
-            targetCell.CheckMatches(this);
-        }
-
-        private void SentBySpawner(CellComponent targetCell)
-        {
-            _animator.SetTrigger(Fall);
-            _sentBySpawner = true;
-            _targetCell = targetCell;
-            CurrentCell = null;
         }
 
         private void EndFalling(CellComponent cell)
         {
+            cell.CheckMatches(this);
             _animator.SetTrigger(EndFall);
-            CurrentCell = cell;
+            CurrentCell = ReservedBy;
+            ReservedBy = null;
             transform.parent = cell.transform;
         }
 
-        public bool GetMatchState() => CurrentCell.IsMatch;
+        public void SetAnimationState(bool state) => IsAnimating = state;
+        public bool GetMatchState() => CurrentCell.NotNull() && CurrentCell.IsMatch;
+        public void EndTransfer() => IsTransferred = false;
+
         public void ShowUp()
         {
             _animator.SetTrigger(Show);
@@ -123,7 +133,7 @@ namespace Match3
 
         public void FadeOut()
         {
-            IsAnimating = true;
+            SetAnimationState(true);
             _animator.SetTrigger(Fade);
         }
     }

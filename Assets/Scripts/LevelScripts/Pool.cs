@@ -8,6 +8,7 @@ namespace Match3
     {
         public static Pool Singleton;
         public LinkedList<ChipComponent> ChipPool;
+        public LinkedList<CellComponent> PoolingList;
 
         private void Start()
         {
@@ -15,25 +16,22 @@ namespace Match3
             else Destroy(gameObject);
 
             ChipPool = new LinkedList<ChipComponent>();
-        }
-
-        public void Pooling(IEnumerable<CellComponent> cells, bool isInitPool = false)
-        {
-            if (isInitPool) foreach (CellComponent cell in cells) Pull(cell.Chip);
-            else
-            {
-                foreach (CellComponent cell in cells.OrderBy(z => z.transform.position.y))
-                {
-                    cell.Chip.FadeOut();
-                    cell.Kidnapping(cell.GetNeighbour(DirectionType.Top));
-                }
-            }
+            PoolingList = new LinkedList<CellComponent>();
         }
 
         public void Pull(ChipComponent chip)
         {
             chip.transform.parent = transform;
             ChipPool.AddLast(chip);
+        }
+
+        public void Pooling()
+        {
+            if(PoolingList.Count == 0) return;
+            foreach (CellComponent cellComponent in PoolingList.Distinct().OrderBy(z => z.transform.position.y))
+                StartCoroutine(cellComponent.ChipFadingRoutine());
+
+            PoolingList.Clear();
         }
     }
 }

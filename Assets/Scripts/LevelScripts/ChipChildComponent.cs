@@ -16,10 +16,12 @@ namespace Match3
         private void OnAnimationStart()
         {
             if (IsPrimaryChip) _renderer.sortingOrder = 10;
+            _parent.SetInteractionState(false);
         }
 
         private IEnumerator AnimationEndRoutine()
         {
+            AnimationEnded();
             yield return null;
             transform.parent.position = transform.position;
             transform.localPosition = Vector3.zero;
@@ -29,10 +31,13 @@ namespace Match3
 
         private void FadeAnimationEnd()
         {
-            _parent.IsAnimating = false;
+            AnimationEnded();
+            _parent.CurrentCell.SetCurrentChip(null);
             _animator.enabled = false;
             Pool.Singleton.Pull(_parent);
-            LevelManager.Singleton.SetAnimationState(false);
         }
+
+        private void AnimationEnded() =>_parent.SetAnimationState(false);
+        private void InteractionReady() => _parent.SetInteractionState(true);
     }
 }
