@@ -1,15 +1,34 @@
 ﻿namespace Match3
 {
+    public static class Extensions
+    {
+        public static DirectionType OppositeDirection(this DirectionType direction)
+        {
+            switch (direction)
+            {
+                case DirectionType.Top:
+                    return DirectionType.Bot;
+                case DirectionType.Bot:
+                    return DirectionType.Top;
+                case DirectionType.Left:
+                    return DirectionType.Right;
+                case DirectionType.Right:
+                    return DirectionType.Left;
+                default: return DirectionType.None;
+            }
+        }
+
+        public static bool NotNull(this object obj) => obj != null;
+        public static bool IsNull(this object obj) => obj == null;
+    }
+
     public enum DirectionType : byte
     {
+        None,
         Top,
         Bot,
         Left,
         Right,
-        TopLeft,
-        TopRight,
-        BotLeft,
-        BotRight
     }
 
     public enum ChipType : byte

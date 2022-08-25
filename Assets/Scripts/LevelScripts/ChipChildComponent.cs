@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -7,16 +6,38 @@ namespace Match3
     public class ChipChildComponent : MonoBehaviour
     {
         [SerializeField]
+        private SpriteRenderer _renderer;
+        [SerializeField]
         private ChipComponent _parent;
+        [SerializeField]
+        private Animator _animator;
+        public bool IsPrimaryChip { get; set; }
 
-        public event Action<ChipComponent> OnAnimationEndEvent;
-
-        public async void OnAnimationEnd()
+        private void OnAnimationStart()
         {
-            await Task.Yield();
+            if (IsPrimaryChip) _renderer.sortingOrder = 10;
+            _parent.SetInteractionState(false);
+        }
+
+        private IEnumerator AnimationEndRoutine()
+        {
+            AnimationEnded();
+            yield return null;
             transform.parent.position = transform.position;
             transform.localPosition = Vector3.zero;
-            OnAnimationEndEvent?.Invoke(_parent);
+            _renderer.sortingOrder = 0;
+            _parent.AnimationEnded();
         }
+
+        private void FadeAnimationEnd()
+        {
+            AnimationEnded();
+            _parent.CurrentCell.SetCurrentChip(null);
+            _animator.enabled = false;
+            Pool.Singleton.Pull(_parent);
+        }
+
+        private void AnimationEnded() =>_parent.SetAnimationState(false);
+        private void InteractionReady() => _parent.SetInteractionState(true);
     }
 }
