@@ -1,75 +1,266 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 
 namespace Match3
 {
-    public class CellComponent : MonoBehaviour
+    public class CellComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField]
         private ChipComponent[] _chipPrefabs;
-        public ChipComponent Chip;
-        private Dictionary<DirectionType, CellComponent> _neighbours;
-
-        private int _layer;
-        public event Action<ChipComponent> PoolingEvent;
+        public ChipComponent CurrentChip { get; private set; }
+        private ChipComponent _previousChip { get; set; }
+        private int _cellsLayer;
+        private int _spawnsLayer;
+        private SpawnPointComponent _spawnPoint;
+        private CellComponent _top;
+        private CellComponent _topTop;
+        private CellComponent _bot;
+        private CellComponent _botBot;
+        private CellComponent _left;
+        private CellComponent _leftLeft;
+        private CellComponent _right;
+        private CellComponent _rightRight;
+        public event Action<CellComponent,Vector2> PointerDownEvent;
+        public event Action<CellComponent> PointerUpEvent;
+        public bool IsMatch { get; private set; }
 
         private void Start()
         {
-            _layer = LayerMask.GetMask($"Level");
-            _neighbours = new Dictionary<DirectionType, CellComponent>();
+            _cellsLayer = LayerMask.GetMask("Level");
+            _spawnsLayer = LayerMask.GetMask("Spawn");
             FindNeighbours();
-            GenerateChip();
-        }
-        private void FindNeighbours()
-        {
-            RaycastHit2D topRay = Physics2D.Raycast(transform.position, transform.up, 1f, _layer);
-            RaycastHit2D botRay = Physics2D.Raycast(transform.position, -transform.up, 1f, _layer);
-            RaycastHit2D leftRay = Physics2D.Raycast(transform.position, -transform.right, 1f, _layer);
-            RaycastHit2D rightRay = Physics2D.Raycast(transform.position, transform.right, 1f, _layer);
-
-            if (topRay.collider != null) _neighbours.Add(DirectionType.Top, topRay.collider.GetComponent<CellComponent>());
-            if (botRay.collider != null) _neighbours.Add(DirectionType.Bot, botRay.collider.GetComponent<CellComponent>());
-            if (leftRay.collider != null) _neighbours.Add(DirectionType.Left, leftRay.collider.GetComponent<CellComponent>());
-            if (rightRay.collider != null) _neighbours.Add(DirectionType.Right, rightRay.collider.GetComponent<CellComponent>());
+            StartCoroutine(GenerateChipRoutine());
         }
 
-        private async void GenerateChip()
+        public void CheckMatches(ChipComponent newChip)
         {
-            // var allowedChips = _chipPrefabs.Where(z => !_neighbours
-            //                                             .Where(x => x.Value.Chip != null)
-            //                                             .Select(c => c.Value.Chip.Type)
-            //                                             .Distinct()
-            //                                             .Contains(z.Type)).ToArray();
-            //
-            // ChipComponent randomChip = UnityEngine.Random.value >= 0.5f
-            //     ? _chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)]
-            //     : allowedChips[UnityEngine.Random.Range(0, allowedChips.Length)];
+            SetPreviousChip(CurrentChip);
+            SetCurrentChip(newChip);
+            IsMatch = false;
 
-            Chip = Instantiate(_chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)], transform);
-
-            await Task.Yield();
-
-            var vertical = _neighbours.Where(z => z.Key == DirectionType.Bot || z.Key == DirectionType.Top).ToArray();
-            var horizontal = _neighbours.Where(z => z.Key == DirectionType.Left || z.Key == DirectionType.Right).ToArray();
-
-            while (vertical.All(z => z.Value.Chip.Type == Chip.Type) || horizontal.All(z => z.Value.Chip.Type == Chip.Type))
+            #region Horizontal
+            if (CompareChips(_left) && CompareChips(_right))
             {
-                print($"{name } + ");
-                Chip.gameObject.SetActive(false);
-                PoolingEvent?.Invoke(Chip);
+                //00_00
+                if (CompareChips(_leftLeft) && CompareChips(_rightRight)) Pulling(_leftLeft, _rightRight);
+                //00_0
+                if (CompareChips(_leftLeft)) Pulling(_leftLeft);
+                //0_00
+                if (CompareChips(_rightRight)) Pulling(_rightRight);
+                //0_0
+                Pulling(_left, _right);
+            }
+            //00_
+            if (CompareChips(_left) && CompareChips(_leftLeft)) Pulling(_left, _leftLeft);
+            //_00
+            if (CompareChips(_right) && CompareChips(_rightRight)) Pulling(_right, _rightRight);
+            #endregion
 
-                var newAllowedChips = _chipPrefabs.Where(z => !horizontal
-                                                               .Union(vertical)
-                                                               .Distinct()
-                                                               .Select(x => x.Value.Chip.Type)
-                                                               .Contains(z.Type)).ToArray();
+            #region Vertical
+            if (CompareChips(_top) && CompareChips(_bot)) //top is left
+            {
+                //00_00
+                if (CompareChips(_topTop) && CompareChips(_botBot)) Pulling(_topTop, _botBot);
+                //00_0
+                if (CompareChips(_topTop)) Pulling(_topTop);
+                //0_00
+                if (CompareChips(_botBot)) Pulling(_botBot);
+                //0_0
+                Pulling(_top, _bot);
+            }
+            //00_
+            if (CompareChips(_top) && CompareChips(_topTop)) Pulling(_top, _topTop);
+            //_00
+            if (CompareChips(_bot) && CompareChips(_botBot)) Pulling(_bot, _botBot);
+            #endregion
 
-                Chip = Instantiate(newAllowedChips[UnityEngine.Random.Range(0, newAllowedChips.Length)], transform);
+            StartCoroutine(IsMatch
+                ? MatchRoutine()
+                : NoMatchRoutine());
+        }
+
+        private IEnumerator MatchRoutine()
+        {
+            CurrentChip.CurrentCell = this;
+            yield return new WaitWhile(() => Pool.Singleton.PoolingList
+                                                 .Where(z => z.CurrentChip.NotNull())
+                                                 .Any(x => x.CurrentChip.IsAnimating));
+            Pool.Singleton.Pooling();
+        }
+
+        private IEnumerator DisableUpperChips()
+        {
+            yield return null;
+            CellComponent currentCell = this;
+
+            while (currentCell._top.NotNull())
+            {
+                if (currentCell._top.CurrentChip.NotNull())
+                    currentCell._top.CurrentChip.SetInteractionState(false);
+                if (currentCell._top._previousChip.NotNull())
+                    currentCell._top._previousChip.SetInteractionState(false);
+
+                currentCell = currentCell._top;
             }
         }
+
+        public IEnumerator ChipFadingRoutine()
+        {
+            StartCoroutine(DisableUpperChips());
+            CurrentChip.FadeOut();
+            SetPreviousChip(CurrentChip);
+            yield return new WaitWhile(() => _previousChip.IsAnimating);
+            Kidnapping(_top);
+        }
+
+        private IEnumerator NoMatchRoutine()
+        {
+            IsMatch = false;
+            if (CurrentChip.IsTransferred)
+            {
+                CurrentChip.EndTransfer();
+                yield break;
+            }
+
+            yield return new WaitWhile(() => CurrentChip.IsAnimating);
+            CurrentChip.SetInteractionState(true);
+
+            if (_previousChip.NotNull() && _previousChip.GetMatchState() || IsMatch)
+                yield break;
+
+            StartCoroutine(CurrentChip.MoveBackRoutine());
+            SetCurrentChip(_previousChip);
+        }
+
+        private void Kidnapping(CellComponent topNeighbour) // :)
+        {
+            while (true)
+            {
+                if (topNeighbour.IsNull())
+                    _spawnPoint.GenerateChip(this);
+
+                else if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.IsNull())
+                {
+                    topNeighbour.CurrentChip.ReservedBy = this;
+                    topNeighbour.CurrentChip.Transfer(this);
+                }
+                else if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.NotNull() || topNeighbour.CurrentChip.IsNull())
+                {
+                    topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
+                    continue;
+                }
+                StartCoroutine(TopNeighbourKidnapping(topNeighbour));
+                break;
+            }
+        }
+
+        private IEnumerator TopNeighbourKidnapping(CellComponent cell)
+        {
+            yield return null;
+            if (cell.NotNull())
+                cell.Kidnapping(cell._top);
+        }
+
+        private bool CompareChips(CellComponent comparativeCell)
+        {
+            return comparativeCell.NotNull() &&
+                   comparativeCell.CurrentChip.NotNull() &&
+                   comparativeCell.CurrentChip != CurrentChip &&
+                   comparativeCell.CurrentChip.Type == CurrentChip.Type;
+        }
+
+        private void Pulling(params CellComponent[] cells)
+        {
+            IsMatch = true;
+            if (!Pool.Singleton.PoolingList.Contains(this)) Pool.Singleton.PoolingList.AddLast(this);
+
+            foreach (CellComponent cellComponent in cells)
+            {
+                if (Pool.Singleton.PoolingList.Contains(cellComponent)) continue;
+                Pool.Singleton.PoolingList.AddLast(cellComponent);
+            }
+        }
+
+        public void SetCurrentChip(ChipComponent newChip) => CurrentChip = newChip;
+        public void SetPreviousChip(ChipComponent newChip) => _previousChip = newChip;
+        private void FindNeighbours()
+        {
+            RaycastHit2D topRay = Physics2D.Raycast(transform.position, transform.up, 1f, _cellsLayer);
+            RaycastHit2D botRay = Physics2D.Raycast(transform.position, -transform.up, 1f, _cellsLayer);
+            RaycastHit2D leftRay = Physics2D.Raycast(transform.position, -transform.right, 1f, _cellsLayer);
+            RaycastHit2D rightRay = Physics2D.Raycast(transform.position, transform.right, 1f, _cellsLayer);
+            RaycastHit2D spawnRay = Physics2D.Raycast(transform.position, transform.up, 10f, _spawnsLayer);
+
+            if (topRay.collider.NotNull()) _top = topRay.collider.GetComponent<CellComponent>();
+            if (botRay.collider.NotNull()) _bot = botRay.collider.GetComponent<CellComponent>();
+            if (leftRay.collider.NotNull()) _left = leftRay.collider.GetComponent<CellComponent>();
+            if (rightRay.collider.NotNull()) _right = rightRay.collider.GetComponent<CellComponent>();
+
+            if (spawnRay.collider.NotNull()) _spawnPoint = spawnRay.collider.GetComponent<SpawnPointComponent>();
+
+            StartCoroutine(FindExtraNeighbours());
+        }
+
+        private IEnumerator FindExtraNeighbours()
+        {
+            yield return null;
+            _topTop = _top.NotNull()
+                ? _top.GetNeighbour(DirectionType.Top)
+                : null;
+            _botBot = _bot.NotNull()
+                ? _bot.GetNeighbour(DirectionType.Bot)
+                : null;
+            _leftLeft = _left.NotNull()
+                ? _left.GetNeighbour(DirectionType.Left)
+                : null;
+            _rightRight = _right.NotNull()
+                ? _right.GetNeighbour(DirectionType.Right)
+                : null;
+        }
+
+        private IEnumerator GenerateChipRoutine()
+        {
+            ChipInstance(_chipPrefabs);
+            yield return null;
+
+            if ((!CompareChips(_top) || !CompareChips(_bot)) && (!CompareChips(_left) || !CompareChips(_right))) yield break;
+            Pool.Singleton.Pull(CurrentChip);
+
+            CellComponent[] neighbours = { _top, _bot, _left, _right };
+            var allowedChips = _chipPrefabs.Where(z => !neighbours.Where(x => x.NotNull())
+                                                                  .Select(c => c.CurrentChip.Type)
+                                                                  .Contains(z.Type)).ToArray();
+
+            ChipInstance(allowedChips);
+        }
+
+        private void ChipInstance(IReadOnlyList<ChipComponent> array)
+        {
+            SetCurrentChip(Instantiate(array[UnityEngine.Random.Range(0, array.Count)], transform));
+            CurrentChip.CurrentCell = this;
+        }
+
+        public CellComponent GetNeighbour(DirectionType direction)
+        {
+            switch (direction)
+            {
+                case DirectionType.Top:
+                    return _top;
+                case DirectionType.Bot:
+                    return _bot;
+                case DirectionType.Left:
+                    return _left;
+                case DirectionType.Right:
+                    return _right;
+                default: return null;
+            }
+        }
+
+        public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
+        public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
     }
 }
