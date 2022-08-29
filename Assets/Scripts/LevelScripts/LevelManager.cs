@@ -41,6 +41,42 @@ namespace Match3
             }
         }
 
+        public static void GetNewChip(CellComponent callerCell)
+        {
+            if (callerCell.CurrentChip.NotNull()) return;
+            CellComponent topNeighbour = callerCell.GetNeighbour(DirectionType.Top);
+
+            if (topNeighbour.IsNull())
+            {
+                callerCell.SpawnPoint.GenerateChip(callerCell);
+                return;
+            }
+
+            while (callerCell.NotNull())
+            {
+                if (topNeighbour.IsNull())
+                {
+                    callerCell.SpawnPoint.GenerateChip(callerCell);
+                    callerCell = callerCell.GetNeighbour(DirectionType.Top);
+                    topNeighbour = callerCell.NotNull()
+                        ? callerCell.GetNeighbour(DirectionType.Top)
+                        : null;
+                }
+                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.IsNull())
+                {
+                    topNeighbour.CurrentChip.Transfer(callerCell);
+                    callerCell = callerCell.GetNeighbour(DirectionType.Top);
+                    topNeighbour = callerCell.NotNull()
+                        ? callerCell.GetNeighbour(DirectionType.Top)
+                        : null;
+                }
+                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.IsNull() || topNeighbour.CurrentChip.ReservedBy.NotNull())
+                {
+                    topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
+                }
+            }
+        }
+
         private void OnCellPointerUpEvent(CellComponent cell) => _isReading = false;
         private void OnCellPointerDownEvent(CellComponent cell, Vector2 cellPos)
         {
@@ -89,7 +125,7 @@ namespace Match3
 
             _secondaryChip = _secondaryCell.CurrentChip;
 
-            if (_primaryCell.IsNull() || _secondaryCell.IsNull() || _secondaryCell.CurrentChip.IsNull()) return;
+            if (_primaryCell.IsNull() || _secondaryCell.IsNull() || _secondaryCell.CurrentChip.IsNull() || _primaryCell.CurrentChip.IsNull()) return;
 
             if (!_primaryChip.IsInteractable || !_secondaryChip.IsInteractable) return;
             _primaryChip.Move(direction, true, _secondaryCell);

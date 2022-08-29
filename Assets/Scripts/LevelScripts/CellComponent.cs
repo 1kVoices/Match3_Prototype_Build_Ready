@@ -12,10 +12,11 @@ namespace Match3
         [SerializeField]
         private ChipComponent[] _chipPrefabs;
         public ChipComponent CurrentChip { get; private set; }
-        private ChipComponent _previousChip { get; set; }
+        private ChipComponent _previousChip;
+        [SerializeField] //todo
+        private ChipComponent _specialChip;
         private int _cellsLayer;
         private int _spawnsLayer;
-        private SpawnPointComponent _spawnPoint;
         private CellComponent _top;
         private CellComponent _topTop;
         private CellComponent _bot;
@@ -24,6 +25,8 @@ namespace Match3
         private CellComponent _leftLeft;
         private CellComponent _right;
         private CellComponent _rightRight;
+        public SpawnPointComponent SpawnPoint { get; private set; }
+        private MatchType _matchType;
         public event Action<CellComponent,Vector2> PointerDownEvent;
         public event Action<CellComponent> PointerUpEvent;
         public bool IsMatch { get; private set; }
@@ -40,6 +43,12 @@ namespace Match3
         {
             SetPreviousChip(CurrentChip);
             SetCurrentChip(newChip);
+            if (newChip.IsSpecial)
+            {
+                IsMatch = true;
+                StartCoroutine(MatchRoutine());
+                return;
+            }
             IsMatch = false;
 
             #region Horizontal
@@ -89,32 +98,7 @@ namespace Match3
             yield return new WaitWhile(() => Pool.Singleton.PoolingList
                                                  .Where(z => z.CurrentChip.NotNull())
                                                  .Any(x => x.CurrentChip.IsAnimating));
-            Pool.Singleton.Pooling();
-        }
-
-        private IEnumerator DisableUpperChips()
-        {
-            yield return null;
-            CellComponent currentCell = this;
-
-            while (currentCell._top.NotNull())
-            {
-                if (currentCell._top.CurrentChip.NotNull())
-                    currentCell._top.CurrentChip.SetInteractionState(false);
-                if (currentCell._top._previousChip.NotNull())
-                    currentCell._top._previousChip.SetInteractionState(false);
-
-                currentCell = currentCell._top;
-            }
-        }
-
-        public IEnumerator ChipFadingRoutine()
-        {
-            StartCoroutine(DisableUpperChips());
-            CurrentChip.FadeOut();
-            SetPreviousChip(CurrentChip);
-            yield return new WaitWhile(() => _previousChip.IsAnimating);
-            Kidnapping(_top);
+            StartCoroutine(Pool.Singleton.Pooling());
         }
 
         private IEnumerator NoMatchRoutine()
@@ -136,42 +120,33 @@ namespace Match3
             SetCurrentChip(_previousChip);
         }
 
-        private void Kidnapping(CellComponent topNeighbour) // :)
-        {
-            while (true)
-            {
-                if (topNeighbour.IsNull())
-                    _spawnPoint.GenerateChip(this);
+        // private IEnumerator KidnappingRoutine(CellComponent topNeighbour)
+        // {
+        //     while (true)
+        //     {
+        //         if (topNeighbour.IsNull())
+        //             _spawnPoint.GenerateChip(this);
+        //
+        //         else if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.NotNull() || topNeighbour.CurrentChip.IsNull())
+        //         {
+        //             topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
+        //             continue;
+        //         }
+        //         break;
+        //     }
+        //
+        //     if (topNeighbour.IsNull()) yield break;
+        //     topNeighbour.CurrentChip.ReservedBy = this;
+        //     topNeighbour.CurrentChip.Transfer(this);
+        //     yield return null;
+        //     StartCoroutine(TopNeighbourKidnappingRoutine(topNeighbour));
+        // }
 
-                else if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.IsNull())
-                {
-                    topNeighbour.CurrentChip.ReservedBy = this;
-                    topNeighbour.CurrentChip.Transfer(this);
-                }
-                else if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.NotNull() || topNeighbour.CurrentChip.IsNull())
-                {
-                    topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
-                    continue;
-                }
-                StartCoroutine(TopNeighbourKidnapping(topNeighbour));
-                break;
-            }
-        }
-
-        private IEnumerator TopNeighbourKidnapping(CellComponent cell)
-        {
-            yield return null;
-            if (cell.NotNull())
-                cell.Kidnapping(cell._top);
-        }
-
-        private bool CompareChips(CellComponent comparativeCell)
-        {
-            return comparativeCell.NotNull() &&
-                   comparativeCell.CurrentChip.NotNull() &&
-                   comparativeCell.CurrentChip != CurrentChip &&
-                   comparativeCell.CurrentChip.Type == CurrentChip.Type;
-        }
+        // private IEnumerator TopNeighbourKidnappingRoutine(CellComponent cell)
+        // {
+        //     if (cell.NotNull())
+        //         yield return StartCoroutine(cell.KidnappingRoutine(cell._top));
+        // }
 
         private void Pulling(params CellComponent[] cells)
         {
@@ -182,11 +157,57 @@ namespace Match3
             {
                 if (Pool.Singleton.PoolingList.Contains(cellComponent)) continue;
                 Pool.Singleton.PoolingList.AddLast(cellComponent);
+                cellComponent.CurrentChip.SetInteractionState(false);
             }
+        }
+
+        public IEnumerator ChipFadingRoutine()
+        {
+            StartCoroutine(DisableUpperChips());
+            CurrentChip.FadeOut();
+            SetPreviousChip(CurrentChip);
+            yield return new WaitWhile(() => _previousChip.IsAnimating);
+
+            if (_specialChip.NotNull())
+            {
+                _specialChip.ShowUp();
+                SetCurrentChip(_specialChip);
+                yield break;
+            }
+
+            if (CurrentChip.NotNull()) yield break;
+            LevelManager.GetNewChip(this);
+            // StartCoroutine(KidnappingRoutine(_top));
+        }
+
+        private IEnumerator DisableUpperChips()
+        {
+            yield return null;
+            CellComponent currentCell = this;
+
+            while (currentCell._top.NotNull())
+            {
+                if (currentCell._top.CurrentChip.NotNull())
+                    currentCell._top.CurrentChip.SetInteractionState(false);
+                if (currentCell._top._previousChip.NotNull())
+                    currentCell._top._previousChip.SetInteractionState(false);
+
+                currentCell = currentCell._top;
+            }
+        }
+
+        private bool CompareChips(CellComponent comparativeCell)
+        {
+            return comparativeCell.NotNull() &&
+                   comparativeCell.CurrentChip.NotNull() &&
+                   comparativeCell.CurrentChip != CurrentChip &&
+                   comparativeCell.CurrentChip.Type == CurrentChip.Type;
         }
 
         public void SetCurrentChip(ChipComponent newChip) => CurrentChip = newChip;
         public void SetPreviousChip(ChipComponent newChip) => _previousChip = newChip;
+        public void SetSpecialChip(ChipComponent newChip) => _specialChip = newChip;
+
         private void FindNeighbours()
         {
             RaycastHit2D topRay = Physics2D.Raycast(transform.position, transform.up, 1f, _cellsLayer);
@@ -199,8 +220,7 @@ namespace Match3
             if (botRay.collider.NotNull()) _bot = botRay.collider.GetComponent<CellComponent>();
             if (leftRay.collider.NotNull()) _left = leftRay.collider.GetComponent<CellComponent>();
             if (rightRay.collider.NotNull()) _right = rightRay.collider.GetComponent<CellComponent>();
-
-            if (spawnRay.collider.NotNull()) _spawnPoint = spawnRay.collider.GetComponent<SpawnPointComponent>();
+            if (spawnRay.collider.NotNull()) SpawnPoint = spawnRay.collider.GetComponent<SpawnPointComponent>();
 
             StartCoroutine(FindExtraNeighbours());
         }
@@ -224,6 +244,12 @@ namespace Match3
 
         private IEnumerator GenerateChipRoutine()
         {
+            if (_specialChip.NotNull())//todo
+            {
+                SetCurrentChip(Instantiate(_specialChip, transform));
+                CurrentChip.CurrentCell = this;
+                yield break;
+            }
             ChipInstance(_chipPrefabs);
             yield return null;
 

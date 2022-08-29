@@ -8,6 +8,9 @@ namespace Match3
     {
         public ChipType Type;
         [SerializeField]
+        private bool _isSpecial;
+        public bool IsSpecial => _isSpecial;
+        [SerializeField]
         private Animator _animator;
         [SerializeField]
         private ChipChildComponent _child;
@@ -77,6 +80,7 @@ namespace Match3
         public void Transfer(CellComponent cell)
         {
             ReservedBy = cell;
+            cell.SetCurrentChip(this);
             if (CurrentCell.NotNull())
             {
                 CurrentCell.SetCurrentChip(null);
@@ -133,6 +137,7 @@ namespace Match3
 
         public void FadeOut()
         {
+            ReservedBy = CurrentCell;
             SetAnimationState(true);
             _animator.SetTrigger(Fade);
         }

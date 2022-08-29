@@ -63,7 +63,11 @@
      <Compile Include="Assets\Scripts\LevelScripts\CellComponent.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ChipChildComponent.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ChipComponent.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\Controls\Controls.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\LevelManager.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\Pool.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\SpawnPointComponent.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\SpecialChipComponent.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\BlackScreenComponent.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuEvents.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuManager.cs" />

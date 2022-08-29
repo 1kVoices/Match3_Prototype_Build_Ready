@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -11,11 +10,10 @@ namespace Match3
 
         public void GenerateChip(CellComponent callerCell)
         {
-            ChipComponent chip = Instantiate(_chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)], transform);
-            chip.FastShowUp();
-            chip.ReservedBy = callerCell;
-            chip.Transfer(callerCell);
-
+            ChipComponent CurrentChip = Instantiate(_chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)], transform);
+            CurrentChip.FastShowUp();
+            CurrentChip.ReservedBy = callerCell;
+            CurrentChip.Transfer(callerCell);
 
             // LinkedList<ChipComponent> pool = Pool.Singleton.ChipPool;
             //
