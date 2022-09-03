@@ -1,10 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Match3
 {
     public class LevelManager : MonoBehaviour
     {
+        [SerializeField]
+        private ChipComponent[] _chipPrefabs;
+        [SerializeField]
+        private ChipComponent _specialM18;
+        [SerializeField]
+        private ChipComponent _specialBlasterH;
+        [SerializeField]
+        private ChipComponent _specialBlasterV;
+        [SerializeField]
+        private ChipComponent _specialSun;
+        public ChipComponent[] ChipPrefabs => _chipPrefabs;
+        public static LevelManager Singleton;
         private int _currentLevel;
         [SerializeField]
         private CellComponent[] _cells;
@@ -20,6 +34,7 @@ namespace Match3
 
         private void Start()
         {
+            Singleton = this;
             _controls = new Controls();
             _controls.Enable();
             foreach (CellComponent cell in _cells)
@@ -43,12 +58,13 @@ namespace Match3
 
         public static void GetNewChip(CellComponent callerCell)
         {
-            if (callerCell.CurrentChip.NotNull()) return;
+            if (callerCell.IsWaitingCell) return;
             CellComponent topNeighbour = callerCell.GetNeighbour(DirectionType.Top);
 
             if (topNeighbour.IsNull())
             {
                 callerCell.SpawnPoint.GenerateChip(callerCell);
+                callerCell.SetWaitingState(true);
                 return;
             }
 
@@ -57,23 +73,48 @@ namespace Match3
                 if (topNeighbour.IsNull())
                 {
                     callerCell.SpawnPoint.GenerateChip(callerCell);
+                    callerCell.SetWaitingState(true);
                     callerCell = callerCell.GetNeighbour(DirectionType.Top);
+
                     topNeighbour = callerCell.NotNull()
                         ? callerCell.GetNeighbour(DirectionType.Top)
                         : null;
                 }
-                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.IsNull())
+                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.NotNull() && !topNeighbour.IsWaitingCell)
                 {
+                    callerCell.SetWaitingState(true);
                     topNeighbour.CurrentChip.Transfer(callerCell);
                     callerCell = callerCell.GetNeighbour(DirectionType.Top);
+
                     topNeighbour = callerCell.NotNull()
                         ? callerCell.GetNeighbour(DirectionType.Top)
                         : null;
                 }
-                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.IsNull() || topNeighbour.CurrentChip.ReservedBy.NotNull())
-                {
+                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.IsNull() || topNeighbour.IsWaitingCell)
                     topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
-                }
+
+            }
+        }
+
+        public void SetSpecialChip(CellComponent cell, MatchType type)
+        {
+            return;
+            switch (type)
+            {
+                case MatchType.Horizontal4:
+                    cell.SetSpecialChip(Instantiate(_specialBlasterH, cell.transform));
+                    break;
+                case MatchType.Vertical4:
+                    cell.SetSpecialChip(Instantiate(_specialBlasterV, cell.transform));
+                    break;
+                case MatchType.T_type:
+                    cell.SetSpecialChip(Instantiate(_specialM18, cell.transform));
+                    break;
+                case MatchType.Match5:
+                    cell.SetSpecialChip(Instantiate(_specialSun, cell.transform));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 

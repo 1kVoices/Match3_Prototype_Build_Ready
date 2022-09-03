@@ -12,15 +12,23 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://C:/Program Files/Unity/Hub/Editor/2019.4.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.2d.sprite/Editor/Interface/IUndoSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Unity/Hub/Editor/2019.4.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Tests/Runtime/EventSystem/SelectableTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Hub/Editor/2019.4.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Tests/Runtime/Util/UIBehaviourExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/14e3453b740b4bd690e8d4e5a013a715296e00/41/9e581f8e/LinkedList`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2896882efb374073a1c20414e92548393f000/d3/c4df9d13/IPointerDownHandler.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/351e49e2a5bf4fd6beabb458ce2255f3ff600/0e/138b5acc/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/351e49e2a5bf4fd6beabb458ce2255f3ff600/8b/3d9cb4d8/EmptyPartition`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/351e49e2a5bf4fd6beabb458ce2255f3ff600/8e/683ad96d/LargeArrayBuilder`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/356f1ddb1d524ad59c7a2c95775bb38eb3000/48/9754f99c/IMGUIContainer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/356f1ddb1d524ad59c7a2c95775bb38eb3000/5c/533f9fb8/EventDispatcher.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/356f1ddb1d524ad59c7a2c95775bb38eb3000/70/1526fb69/UIElementsUtility.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/65cab14ac59e4552b77f98a4aed18f9e1ae00/fc/529bbe35/RaycastHit2D.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/ad/6a792211/Toolbar.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/b5/cb772bee/Tooltip.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/d0/debd4c59/EditorGUI.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/d6/edf50fc0/EditorApplicationLayout.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/819de1aa368e45faa4f78e26c97c62b027000/16/448c56ad/GUIUtility.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/819de1aa368e45faa4f78e26c97c62b027000/92/0726673b/Event.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee47be73f7ef409ca5e5ce4b121745b7116000/1b/147ef1ae/UnitySynchronizationContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee47be73f7ef409ca5e5ce4b121745b7116000/29/0bf2b059/Transform.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ee47be73f7ef409ca5e5ce4b121745b7116000/50/b000adc0/CustomYieldInstruction.cs" root0="SKIP_HIGHLIGHTING" />
@@ -48,6 +56,7 @@
     <setting file="file://$PROJECT_DIR$/../../Unity/Tank 1990/Assets/Scripts/BotComponent.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unity/Tank 1990/Assets/Scripts/GameEvents.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../Unity/ZIggurat Domashka/Assets/Scripts/Bot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../Unity/ZIggurat Domashka/Assets/Scripts/TopMenuManager.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -96,10 +105,10 @@
       </option>
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="31084">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="32704">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="31084" />
+      <option name="pid" value="32704" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -112,24 +121,5 @@
   <component name="UnityUnitTestConfiguration" currentTestLauncher="EditMode" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/LevelManager.cs</url>
-          <line>44</line>
-          <properties documentPath="X:\GitHub\Match3_Prototype_Build_Ready\Assets\Scripts\LevelScripts\LevelManager.cs" initialLine="44" containingFunctionPresentation="method 'GetNewChip'">
-            <startOffsets>
-              <option value="1311" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1312" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

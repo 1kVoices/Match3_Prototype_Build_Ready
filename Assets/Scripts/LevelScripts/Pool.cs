@@ -11,7 +11,7 @@ namespace Match3
     {
         public static Pool Singleton;
         public LinkedList<ChipComponent> ChipPool;
-        public LinkedList<CellComponent> PoolingList;
+        // public LinkedList<CellComponent> PoolingList;
 
         private void Start()
         {
@@ -19,7 +19,7 @@ namespace Match3
             else Destroy(gameObject);
 
             ChipPool = new LinkedList<ChipComponent>();
-            PoolingList = new LinkedList<CellComponent>();
+            // PoolingList = new LinkedList<CellComponent>();
         }
 
         public void Pull(ChipComponent chip)
@@ -28,54 +28,51 @@ namespace Match3
             ChipPool.AddLast(chip);
         }
 
-        public IEnumerator Pooling()
+        public void Pooling(LinkedList<CellComponent> poolingList)
         {
-            if (PoolingList.Count == 0) yield break;
+            if (poolingList.Count == 0) return;
 
-            foreach (var list in PoolingList.Split())
+            foreach (CellComponent cellComponent in poolingList)
             {
-                if (list.Count == 4)
-                {
-                    if (list.Any(z => Math.Abs(z.transform.position.y - list.First().transform.position.y) > 0)) //vertical check
-                    {
-                        print($"{list.First(z => z.IsMatch)} vertical4");
-                    }
-                    else
-                    {
-                        print($"{list.First(z => z.IsMatch)} horizontal4");
-                    }
-                }
-                else if (list.Count >= 5)
-                {
-                    var listYPoses = list.Select(z => z.transform.position.y).Distinct().Count();
+                if (poolingList.Count >= 4)
+                    print(poolingList.First(z => z.IsMatch) + " " + poolingList.Count);
 
-                    if (list.PosXIdentical() || list.PosYIdentical())
-                    {
-                        print($"{list.First(z => z.IsMatch)} match5");
-                    }
-                    else if(listYPoses == 3)
-                    {
-                        if (list.Count() == 7) print($"{list.First(z => z.IsMatch)} match5(2)");
-                        else print($"{list.First(z => z.IsMatch)} T type");
-                    }
-                    else if (listYPoses == 4)
-                    {
-                        print($"{list.First(z => z.IsMatch)} T type");
-                    }
-                    else if (listYPoses == 5)
-                    {
-                        print($"{list.First(z => z.IsMatch)} match5(2)");
-                    }
-                }
-
-                foreach (CellComponent cellComponent in list.OrderBy(z => z.transform.position.x).ThenBy(z => z.transform.position.y))
-                {
-                    yield return new WaitForSeconds(0.05f);
-                    StartCoroutine(cellComponent.ChipFadingRoutine());
-                }
+                StartCoroutine(cellComponent.ChipFadingRoutine());
             }
+            // var splittedList = poolingList.Split();
 
-            PoolingList.Clear();
+            // foreach (var list in splittedList)
+            // {
+            //     if (list.Count == 4)
+            //     {
+            //         if (list.Any(z => Math.Abs(z.transform.position.y - list.First().transform.position.y) > 0)) //vertical check
+            //         {
+            //             LevelManager.Singleton.SetSpecialChip(list.First(z => z.IsMatch), MatchType.Vertical4);
+            //         }
+            //         else
+            //         {
+            //             LevelManager.Singleton.SetSpecialChip(list.First(z => z.IsMatch), MatchType.Horizontal4);
+            //         }
+            //     }
+            //     else if (list.Count >= 5)
+            //     {
+            //         if (list.PosXIdentical() || list.PosYIdentical())
+            //         {
+            //             LevelManager.Singleton.SetSpecialChip(list.First(z => z.IsMatch), MatchType.Match5);
+            //         }
+            //         else if (!list.PosXIdentical())
+            //         {
+            //             LevelManager.Singleton.SetSpecialChip(list.First(z => z.IsMatch), MatchType.T_type);
+            //         }
+            //     }
+            //
+            //     foreach (CellComponent cellComponent in list.OrderBy(z => z.transform.position.y))
+            //     {
+            //         StartCoroutine(cellComponent.ChipFadingRoutine());
+            //     }
+            // }
+
+            poolingList.Clear();
         }
     }
 }

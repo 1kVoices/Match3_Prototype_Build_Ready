@@ -21,7 +21,6 @@ namespace Match3
         private static readonly int EndFall = Animator.StringToHash("endFall");
         private CellComponent _targetCell;
         public CellComponent CurrentCell;
-        public CellComponent ReservedBy;
         private DirectionType _direction;
         private bool _sentBack;
         public bool IsInteractable { get; private set; }
@@ -59,7 +58,6 @@ namespace Match3
             if (!_sentBack) _targetCell.CheckMatches(this);
         }
 
-        public void SetInteractionState(bool state) => IsInteractable = state;
         public IEnumerator MoveBackRoutine()
         {
             _sentBack = true;
@@ -71,31 +69,25 @@ namespace Match3
         public void AnimationEnded()
         {
             if (_sentBack)
-            {
                 _sentBack = false;
-            }
+
             else if(_targetCell.NotNull()) CurrentCell = _targetCell;
         }
 
         public void Transfer(CellComponent cell)
         {
-            ReservedBy = cell;
-            cell.SetCurrentChip(this);
             if (CurrentCell.NotNull())
-            {
                 CurrentCell.SetCurrentChip(null);
-                CurrentCell.SetPreviousChip(this);
-            }
-
-            StartCoroutine(ChipTransferRoutine(cell, 0.2f));
+            CurrentCell = cell;
+            StartCoroutine(ChipTransferRoutine(cell, 0.5f));
         }
 
         private IEnumerator ChipTransferRoutine(CellComponent targetCell, float transferTime)
         {
+            IsTransferred = true;
             SetAnimationState(true);
             _animator.SetTrigger(Fall);
             float time = 0f;
-            IsTransferred = true;
             Vector3 start = transform.position;
             Vector3 target = targetCell.transform.position;
             while (time < 1f)
@@ -105,21 +97,14 @@ namespace Match3
                 yield return null;
             }
             transform.position = target;
-            yield return null;
-            EndFalling(targetCell);
-        }
-
-        private void EndFalling(CellComponent cell)
-        {
-            cell.CheckMatches(this);
+            targetCell.CheckMatches(this);
             _animator.SetTrigger(EndFall);
-            CurrentCell = ReservedBy;
-            ReservedBy = null;
-            transform.parent = cell.transform;
+            transform.parent = targetCell.transform;
         }
 
+        public void SetInteractionState(bool state) => IsInteractable = state;
         public void SetAnimationState(bool state) => IsAnimating = state;
-        public bool GetMatchState() => CurrentCell.NotNull() && CurrentCell.IsMatch;
+        public bool GetMatchState() => CurrentCell.IsMatch;
         public void EndTransfer() => IsTransferred = false;
 
         public void ShowUp()
@@ -137,7 +122,7 @@ namespace Match3
 
         public void FadeOut()
         {
-            ReservedBy = CurrentCell;
+            transform.parent = null;
             SetAnimationState(true);
             _animator.SetTrigger(Fade);
         }

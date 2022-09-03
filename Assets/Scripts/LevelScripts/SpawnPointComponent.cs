@@ -1,19 +1,15 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Match3
 {
     public class SpawnPointComponent : MonoBehaviour
     {
-        [SerializeField]
-        private ChipComponent[] _chipPrefabs;
-
         public void GenerateChip(CellComponent callerCell)
         {
-            ChipComponent CurrentChip = Instantiate(_chipPrefabs[UnityEngine.Random.Range(0, _chipPrefabs.Length)], transform);
-            CurrentChip.FastShowUp();
-            CurrentChip.ReservedBy = callerCell;
-            CurrentChip.Transfer(callerCell);
+            ChipComponent[] prefabs = LevelManager.Singleton.ChipPrefabs;
+            ChipComponent newChip = Instantiate(prefabs[UnityEngine.Random.Range(0, prefabs.Length-4)], transform);
+            newChip.FastShowUp();
+            newChip.Transfer(callerCell);
 
             // LinkedList<ChipComponent> pool = Pool.Singleton.ChipPool;
             //
@@ -26,5 +22,6 @@ namespace Match3
             // chip.ReservedBy = callerCell;
             // chip.Transfer(callerCell);
         }
+
     }
 }
