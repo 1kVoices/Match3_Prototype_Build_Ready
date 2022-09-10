@@ -31,6 +31,7 @@ namespace Match3
         private CellComponent _primaryCell;
         private CellComponent _secondaryCell;
         private bool _isReading;
+        public int REMOVE;
 
         private void Start()
         {
@@ -56,43 +57,24 @@ namespace Match3
             }
         }
 
-        public static void GetNewChip(CellComponent callerCell)
+        public void GetNewChip(CellComponent callerCell)
         {
-            if (callerCell.IsWaitingCell) return;
             CellComponent topNeighbour = callerCell.GetNeighbour(DirectionType.Top);
-
             if (topNeighbour.IsNull())
-            {
                 callerCell.SpawnPoint.GenerateChip(callerCell);
-                callerCell.SetWaitingState(true);
-                return;
-            }
 
-            while (callerCell.NotNull())
+            while (topNeighbour.NotNull())
             {
-                if (topNeighbour.IsNull())
+                if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.IsNull())
                 {
-                    callerCell.SpawnPoint.GenerateChip(callerCell);
-                    callerCell.SetWaitingState(true);
-                    callerCell = callerCell.GetNeighbour(DirectionType.Top);
-
-                    topNeighbour = callerCell.NotNull()
-                        ? callerCell.GetNeighbour(DirectionType.Top)
-                        : null;
+                    StartCoroutine(topNeighbour.TransferChip(callerCell));
+                    break;
                 }
-                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.NotNull() && !topNeighbour.IsWaitingCell)
-                {
-                    callerCell.SetWaitingState(true);
-                    topNeighbour.CurrentChip.Transfer(callerCell);
-                    callerCell = callerCell.GetNeighbour(DirectionType.Top);
-
-                    topNeighbour = callerCell.NotNull()
-                        ? callerCell.GetNeighbour(DirectionType.Top)
-                        : null;
-                }
-                else if (topNeighbour.NotNull() && topNeighbour.CurrentChip.IsNull() || topNeighbour.IsWaitingCell)
+                if (topNeighbour.CurrentChip.NotNull() && topNeighbour.CurrentChip.ReservedBy.NotNull() || topNeighbour.CurrentChip.IsNull())
                     topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
 
+                if (topNeighbour.IsNull())
+                    callerCell.SpawnPoint.GenerateChip(callerCell);
             }
         }
 

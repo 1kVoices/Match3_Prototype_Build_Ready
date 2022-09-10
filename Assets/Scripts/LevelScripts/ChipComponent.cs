@@ -21,6 +21,7 @@ namespace Match3
         private static readonly int EndFall = Animator.StringToHash("endFall");
         private CellComponent _targetCell;
         public CellComponent CurrentCell;
+        public CellComponent ReservedBy;
         private DirectionType _direction;
         private bool _sentBack;
         public bool IsInteractable { get; private set; }
@@ -76,10 +77,11 @@ namespace Match3
 
         public void Transfer(CellComponent cell)
         {
+            ReservedBy = cell;
             if (CurrentCell.NotNull())
                 CurrentCell.SetCurrentChip(null);
             CurrentCell = cell;
-            StartCoroutine(ChipTransferRoutine(cell, 0.5f));
+            StartCoroutine(ChipTransferRoutine(cell, 0.2f));
         }
 
         private IEnumerator ChipTransferRoutine(CellComponent targetCell, float transferTime)
@@ -100,6 +102,7 @@ namespace Match3
             targetCell.CheckMatches(this);
             _animator.SetTrigger(EndFall);
             transform.parent = targetCell.transform;
+            ReservedBy = null;
         }
 
         public void SetInteractionState(bool state) => IsInteractable = state;

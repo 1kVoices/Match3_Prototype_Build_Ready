@@ -7,7 +7,7 @@ namespace Match3
         public void GenerateChip(CellComponent callerCell)
         {
             ChipComponent[] prefabs = LevelManager.Singleton.ChipPrefabs;
-            ChipComponent newChip = Instantiate(prefabs[UnityEngine.Random.Range(0, prefabs.Length-4)], transform);
+            ChipComponent newChip = Instantiate(prefabs[UnityEngine.Random.Range(0, prefabs.Length-LevelManager.Singleton.REMOVE)], transform);
             newChip.FastShowUp();
             newChip.Transfer(callerCell);
 

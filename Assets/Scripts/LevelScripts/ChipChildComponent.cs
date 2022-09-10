@@ -32,7 +32,7 @@ namespace Match3
         private void FadeAnimationEnd()
         {
             AnimationEnded();
-            _parent.CurrentCell.PulledBy = null;
+            _parent.CurrentCell.SetPulledByCell(null);
             _animator.enabled = false;
             Pool.Singleton.Pull(_parent);
         }
