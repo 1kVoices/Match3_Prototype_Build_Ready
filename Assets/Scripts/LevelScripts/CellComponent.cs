@@ -9,6 +9,7 @@ namespace Match3
 {
     public class CellComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
+        public bool IsMatch { get; private set; }
         public ChipComponent CurrentChip { get; private set; }
         private ChipComponent _previousChip;
         private ChipComponent _specialChip;
@@ -22,12 +23,11 @@ namespace Match3
         private CellComponent _leftLeft;
         private CellComponent _right;
         private CellComponent _rightRight;
-        public CellComponent PulledBy { get; private set; }
+        private CellComponent PulledBy { get; set; }
         private List<CellComponent> _poolingList;
         public SpawnPointComponent SpawnPoint { get; private set; }
         public event Action<CellComponent,Vector2> PointerDownEvent;
         public event Action<CellComponent> PointerUpEvent;
-        public bool IsMatch { get; private set; }
 
         private void Start()
         {
@@ -154,10 +154,7 @@ namespace Match3
                 return;
             }
 
-            foreach (CellComponent cell in _poolingList.Distinct().OrderBy(z => z.transform.position.y))
-                StartCoroutine(cell.ChipFadingRoutine());
-
-            // if (_poolingList.Count >= 4) print($"{name} {_poolingList.Distinct().ToList().Count}");
+            LevelManager.Singleton.DestroyChips(_poolingList.Distinct().ToList(), this);
 
             _poolingList.Clear();
         }
@@ -169,29 +166,26 @@ namespace Match3
             LevelManager.Singleton.GetNewChip(this);
         }
 
-        private void Update()
-        {
-            if (transform.childCount > 1)
-            {
-                print(name);
-            }
-        }
-
         public IEnumerator ChipFadingRoutine()
         {
             if (CurrentChip.IsNull()) yield break;
             CurrentChip.FadeOut();
             SetPreviousChip(CurrentChip);
             SetCurrentChip(null);
+            if (_specialChip.NotNull())
+            {
+                SetCurrentChip(_specialChip);
+                _specialChip.ShowUp();
+            }
+
             yield return new WaitWhile(() => _previousChip.IsAnimating);
             SetPreviousChip(null);
             if (_specialChip.NotNull())
             {
-                _specialChip.ShowUp();
-                SetCurrentChip(_specialChip);
                 _specialChip = null;
                 yield break;
             }
+
             LevelManager.Singleton.GetNewChip(this);
         }
 
@@ -203,15 +197,10 @@ namespace Match3
                    comparativeCell.CurrentChip.Type == CurrentChip.Type;
         }
 
-        public void SetPulledByCell(CellComponent cell) => PulledBy = cell;
-        public void SetCurrentChip(ChipComponent newChip) => CurrentChip = newChip;
         private void SetPreviousChip(ChipComponent newChip) => _previousChip = newChip;
-        public void SetSpecialChip(ChipComponent newChip)
-        {
-            _specialChip = newChip;
-            SetPreviousChip(CurrentChip);
-            SetCurrentChip(_specialChip);
-        }
+        public void SetCurrentChip(ChipComponent newChip) => CurrentChip = newChip;
+        public void SetSpecialChip(ChipComponent newChip) => _specialChip = newChip;
+        public void SetPulledByCell(CellComponent cell) => PulledBy = cell;
 
         private void FindNeighbours()
         {

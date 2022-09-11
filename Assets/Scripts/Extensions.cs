@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Match3
 {
@@ -22,23 +21,11 @@ namespace Match3
             }
         }
 
-        public static bool PosYIdentical(this List<CellComponent> list)
-        {
-            return list.TrueForAll(z => z.transform.position.y.Equals(list.First().transform.position.y));
-        }
+        public static bool PosYIdentical(this List<CellComponent> list) =>
+            list.TrueForAll(z => z.transform.position.y.Equals(list.First().transform.position.y));
 
-        public static bool PosXIdentical(this List<CellComponent> list)
-        {
-            return list.TrueForAll(z => z.transform.position.x.Equals(list.First().transform.position.x));
-        }
-
-        public static IEnumerable<List<CellComponent>> Split(this IEnumerable<CellComponent> list)
-        {
-            return list.Distinct()
-                       .Where(z => z.CurrentChip.NotNull())
-                       .GroupBy(x => x.CurrentChip.Type)
-                       .Select(c => c.ToList());
-        }
+        public static bool PosXIdentical(this List<CellComponent> list) =>
+            list.TrueForAll(z => z.transform.position.x.Equals(list.First().transform.position.x));
 
         public static bool NotNull(this object obj) => obj != null;
         public static bool IsNull(this object obj) => obj == null;

@@ -6,7 +6,9 @@ namespace Match3
 {
     public class ChipComponent : MonoBehaviour
     {
-        public ChipType Type;
+        [SerializeField]
+        private ChipType _type;
+        public ChipType Type => _type;
         [SerializeField]
         private bool _isSpecial;
         public bool IsSpecial => _isSpecial;
@@ -28,9 +30,11 @@ namespace Match3
         public bool IsTransferred { get; private set; }
         public bool IsAnimating { get; private set; }
 
+
         public void Move(DirectionType direction, bool isPrimaryChip, CellComponent targetCell)
         {
             SetAnimationState(true);
+            LevelManager.Singleton.SetInputState(false);
             _targetCell = targetCell;
             transform.parent = _targetCell.transform;
             _direction = direction;
@@ -65,6 +69,7 @@ namespace Match3
             Move(_direction.OppositeDirection(), _child.IsPrimaryChip, CurrentCell);
             yield return new WaitWhile(() => IsAnimating);
             SetInteractionState(true);
+            LevelManager.Singleton.SetInputState(true);
         }
 
         public void AnimationEnded()

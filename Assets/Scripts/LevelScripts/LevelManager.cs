@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Match3
@@ -31,6 +32,7 @@ namespace Match3
         private CellComponent _primaryCell;
         private CellComponent _secondaryCell;
         private bool _isReading;
+        private bool _allowInput;
         public int REMOVE;
 
         private void Start()
@@ -78,9 +80,30 @@ namespace Match3
             }
         }
 
-        public void SetSpecialChip(CellComponent cell, MatchType type)
+        public void DestroyChips(List<CellComponent> list, CellComponent sender)
         {
-            return;
+            if (list.Count == 4)
+            {
+                SetSpecialChip(sender,
+                    list.PosYIdentical()
+                        ? MatchType.Vertical4
+                        : MatchType.Horizontal4);
+
+            }
+            else if (list.Count >= 5)
+            {
+                if (list.PosXIdentical() || list.PosYIdentical())
+                    SetSpecialChip(sender, MatchType.Match5);
+
+                else SetSpecialChip(sender, MatchType.T_type);
+            }
+
+            foreach (CellComponent cell in list.OrderBy(z => z.transform.position.y))
+                StartCoroutine(cell.ChipFadingRoutine());
+        }
+
+        private void SetSpecialChip(CellComponent cell, MatchType type)
+        {
             switch (type)
             {
                 case MatchType.Horizontal4:
@@ -100,55 +123,49 @@ namespace Match3
             }
         }
 
+        public void SetInputState(bool state) => _allowInput = state;
         private void OnCellPointerUpEvent(CellComponent cell) => _isReading = false;
         private void OnCellPointerDownEvent(CellComponent cell, Vector2 cellPos)
         {
+            if (!_allowInput) return;
             _primaryCell = cell;
             _primaryChip = cell.CurrentChip;
             _startDragMousePos = cellPos;
             _isReading = true;
         }
 
-        private void Update()
-        {
-            ReadPlayerInput();
-        }
-
+        private void Update() => ReadPlayerInput();
         private void ReadPlayerInput()
         {
             if (!_isReading) return;
             Vector2 newMousePos = _controls.MainMap.Mouse.ReadValue<Vector2>();
 
             if (newMousePos.y - _startDragMousePos.y > _dragSens)
-            {
-                _isReading = false;
                 SwapChips(DirectionType.Top);
-            }
+
             else if (newMousePos.y - _startDragMousePos.y < -_dragSens)
-            {
-                _isReading = false;
                 SwapChips(DirectionType.Bot);
-            }
+
             else if (newMousePos.x - _startDragMousePos.x < -_dragSens)
-            {
-                _isReading = false;
                 SwapChips(DirectionType.Left);
-            }
+
             else if (newMousePos.x - _startDragMousePos.x > _dragSens)
-            {
-                _isReading = false;
                 SwapChips(DirectionType.Right);
-            }
+
         }
 
         private void SwapChips(DirectionType direction)
         {
+            _isReading = false;
             _secondaryCell = _primaryCell.GetNeighbour(direction);
             if (_secondaryCell.IsNull()) return;
 
             _secondaryChip = _secondaryCell.CurrentChip;
 
-            if (_primaryCell.IsNull() || _secondaryCell.IsNull() || _secondaryCell.CurrentChip.IsNull() || _primaryCell.CurrentChip.IsNull()) return;
+            if (_primaryCell.IsNull() || _secondaryCell.IsNull() ||
+                _primaryCell.CurrentChip.IsNull() ||
+                _secondaryCell.CurrentChip.IsNull())
+                return;
 
             if (!_primaryChip.IsInteractable || !_secondaryChip.IsInteractable) return;
             _primaryChip.Move(direction, true, _secondaryCell);

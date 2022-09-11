@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -17,6 +18,7 @@ namespace Match3
         {
             if (IsPrimaryChip) _renderer.sortingOrder = 10;
             _parent.SetInteractionState(false);
+            LevelManager.Singleton.SetInputState(false);
         }
 
         private IEnumerator AnimationEndRoutine()
@@ -37,7 +39,11 @@ namespace Match3
             Pool.Singleton.Pull(_parent);
         }
 
-        private void AnimationEnded() =>_parent.SetAnimationState(false);
-        private void InteractionReady() => _parent.SetInteractionState(true);
+        private void AnimationEnded() => _parent.SetAnimationState(false);
+        private void InteractionReady()
+        {
+            _parent.SetInteractionState(true);
+            LevelManager.Singleton.SetInputState(true);
+        }
     }
 }

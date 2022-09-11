@@ -13,9 +13,19 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 9d1818149b7298c43a882ff8b949d694,
         type: 3}
+    - target: {fileID: 8064554305523504943, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8064554306603917524, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
         type: 3}
       propertyPath: Type
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064554306603917524, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
+        type: 3}
+      propertyPath: _type
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8064554306603917526, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
