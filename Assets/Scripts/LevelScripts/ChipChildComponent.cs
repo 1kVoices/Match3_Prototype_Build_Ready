@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace Match3
@@ -13,6 +12,12 @@ namespace Match3
         [SerializeField]
         private Animator _animator;
         public bool IsPrimaryChip { get; set; }
+
+        private void SpecialAction()
+        {
+            if (_parent.GetType().IsSubclassOf(typeof(SpecialChipComponent)) == false) return;
+            _parent.GetComponent<SpecialChipComponent>().Action();
+        }
 
         private void OnAnimationStart()
         {

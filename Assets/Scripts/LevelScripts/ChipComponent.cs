@@ -10,10 +10,7 @@ namespace Match3
         private ChipType _type;
         public ChipType Type => _type;
         [SerializeField]
-        private bool _isSpecial;
-        public bool IsSpecial => _isSpecial;
-        [SerializeField]
-        private Animator _animator;
+        protected Animator _animator;
         [SerializeField]
         private ChipChildComponent _child;
         private static readonly int Show = Animator.StringToHash("showUp");

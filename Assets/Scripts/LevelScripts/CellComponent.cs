@@ -12,6 +12,7 @@ namespace Match3
         public bool IsMatch { get; private set; }
         public ChipComponent CurrentChip { get; private set; }
         private ChipComponent _previousChip;
+        [SerializeField] //todo убрать
         private ChipComponent _specialChip;
         private int _cellsLayer;
         private int _spawnsLayer;
@@ -24,14 +25,14 @@ namespace Match3
         private CellComponent _right;
         private CellComponent _rightRight;
         private CellComponent PulledBy { get; set; }
-        private List<CellComponent> _poolingList;
+        private List<CellComponent> _poolingNeighbours;
         public SpawnPointComponent SpawnPoint { get; private set; }
         public event Action<CellComponent,Vector2> PointerDownEvent;
         public event Action<CellComponent> PointerUpEvent;
 
         private void Start()
         {
-            _poolingList = new List<CellComponent>();
+            _poolingNeighbours = new List<CellComponent>();
             _cellsLayer = LayerMask.GetMask("Level");
             _spawnsLayer = LayerMask.GetMask("Spawn");
             FindNeighbours();
@@ -42,10 +43,10 @@ namespace Match3
         {
             SetPreviousChip(CurrentChip);
             SetCurrentChip(newChip);
-            if (newChip.IsSpecial)
+            if (newChip.Type == ChipType.None)
             {
-                IsMatch = true;
                 StartCoroutine(MatchRoutine());
+                IsMatch = true;
                 return;
             }
             IsMatch = false;
@@ -85,15 +86,22 @@ namespace Match3
             //_00
             if (CompareChips(_bot) && CompareChips(_botBot)) Pulling(_bot, _botBot);
             #endregion
-            StartCoroutine(IsMatch
+            StartCoroutine(_poolingNeighbours.Count > 0
                 ? MatchRoutine()
                 : NoMatchRoutine());
         }
 
         private IEnumerator MatchRoutine()
         {
+            IsMatch = true;
             CurrentChip.CurrentCell = this;
-            yield return new WaitWhile(() => _poolingList
+            if (CurrentChip.Type == ChipType.None)
+            {
+                yield return new WaitWhile(() => CurrentChip.IsAnimating);
+                CurrentChip.GetComponent<SpecialChipComponent>().Action();
+            }
+
+            yield return new WaitWhile(() => _poolingNeighbours
                                              .Where(z => z.CurrentChip.NotNull())
                                              .Any(x => x.CurrentChip.IsAnimating));
             Pooling();
@@ -118,16 +126,15 @@ namespace Match3
             SetCurrentChip(_previousChip);
         }
 
-        private void Pulling(params CellComponent[] cells)
+        public void Pulling(params CellComponent[] cells)
         {
-            IsMatch = true;
-            if (!_poolingList.Contains(this))
-                _poolingList.Add(this);
+            if (!_poolingNeighbours.Contains(this))
+                _poolingNeighbours.Add(this);
 
             foreach (CellComponent cell in cells)
             {
-                if (_poolingList.Contains(cell)) continue;
-                _poolingList.Add(cell);
+                if (_poolingNeighbours.Contains(cell)) continue;
+                _poolingNeighbours.Add(cell);
 
                 cell.CurrentChip.SetInteractionState(false);
 
@@ -136,11 +143,10 @@ namespace Match3
 
                 else if (cell.PulledBy.NotNull())
                 {
-                    cell.PulledBy._poolingList.AddRange(_poolingList);
+                    cell.PulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
 
-                    foreach (CellComponent pulledCell in cell.PulledBy._poolingList)
+                    foreach (CellComponent pulledCell in cell.PulledBy._poolingNeighbours)
                         pulledCell.SetPulledByCell(this);
-
                 }
             }
         }
@@ -149,14 +155,14 @@ namespace Match3
         {
             if (PulledBy.NotNull() && PulledBy != this)
             {
-                PulledBy._poolingList.AddRange(_poolingList);
-                _poolingList.Clear();
+                PulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
+                _poolingNeighbours.Clear();
                 return;
             }
 
-            LevelManager.Singleton.DestroyChips(_poolingList.Distinct().ToList(), this);
+            LevelManager.Singleton.DestroyChips(_poolingNeighbours.Distinct().ToList(), this);
 
-            _poolingList.Clear();
+            _poolingNeighbours.Clear();
         }
 
         public IEnumerator TransferChip(CellComponent callerCell)

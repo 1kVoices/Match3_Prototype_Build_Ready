@@ -82,20 +82,23 @@ namespace Match3
 
         public void DestroyChips(List<CellComponent> list, CellComponent sender)
         {
-            if (list.Count == 4)
+            if (sender.CurrentChip.Type != ChipType.None)
             {
-                SetSpecialChip(sender,
-                    list.PosYIdentical()
-                        ? MatchType.Vertical4
-                        : MatchType.Horizontal4);
+                if (list.Count == 4)
+                {
+                    SetSpecialChip(sender,
+                        list.PosYIdentical()
+                            ? MatchType.Vertical4
+                            : MatchType.Horizontal4);
 
-            }
-            else if (list.Count >= 5)
-            {
-                if (list.PosXIdentical() || list.PosYIdentical())
-                    SetSpecialChip(sender, MatchType.Match5);
+                }
+                else if (list.Count >= 5)
+                {
+                    if (list.PosXIdentical() || list.PosYIdentical())
+                        SetSpecialChip(sender, MatchType.Match5);
 
-                else SetSpecialChip(sender, MatchType.T_type);
+                    else SetSpecialChip(sender, MatchType.T_type);
+                }
             }
 
             foreach (CellComponent cell in list.OrderBy(z => z.transform.position.y))

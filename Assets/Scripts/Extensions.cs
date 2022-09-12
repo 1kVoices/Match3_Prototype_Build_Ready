@@ -51,12 +51,18 @@ namespace Match3
 
     public enum ChipType : byte
     {
+        None,
         Apple,
         Avocado,
         Kiwi,
         Banana,
         Orange,
-        Peach,
+        Peach
+    }
+
+    public enum SpecialChipType : byte
+    {
+        None,
         SpecialSun,
         SpecialM18,
         SpecialBlasterH,
