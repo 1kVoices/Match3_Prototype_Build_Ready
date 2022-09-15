@@ -1,10 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Match3
 {
     public static class Extensions
     {
+        public static readonly int Show = Animator.StringToHash("showUp");
+        public static readonly int Fade = Animator.StringToHash("fadeOut");
+        public static readonly int FastFade = Animator.StringToHash("fastFade");
+        public static readonly int SunFade = Animator.StringToHash("sunFade");
+        public static readonly int FastShow = Animator.StringToHash("fastShowUp");
+        public static readonly int Fall = Animator.StringToHash("fall");
+        public static readonly int EndFall = Animator.StringToHash("endFall");
+        public static readonly int ActionTrigger = Animator.StringToHash("action");
+
         public static DirectionType OppositeDirection(this DirectionType direction)
         {
             switch (direction)
@@ -21,10 +31,27 @@ namespace Match3
             }
         }
 
-        public static bool PosYIdentical(this List<CellComponent> list) =>
+        public static bool HasChip(this Cell cell)
+        {
+            return cell.CurrentChip.NotNull();
+        }
+
+        public static void Enqueue(this List<Cell> list, Cell cell)
+        {
+            if (!list.Contains(cell)) list.Add(cell);
+        }
+
+        public static Cell RemoveFirst(this List<Cell> list)
+        {
+            Cell cell = list.First();
+            list.RemoveAt(0);
+            return cell;
+        }
+
+        public static bool PosYIdentical(this List<Cell> list) =>
             list.TrueForAll(z => z.transform.position.y.Equals(list.First().transform.position.y));
 
-        public static bool PosXIdentical(this List<CellComponent> list) =>
+        public static bool PosXIdentical(this List<Cell> list) =>
             list.TrueForAll(z => z.transform.position.x.Equals(list.First().transform.position.x));
 
         public static bool NotNull(this object obj) => obj != null;

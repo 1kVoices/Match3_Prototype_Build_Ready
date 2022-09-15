@@ -6,7 +6,7 @@ namespace Match3
     public class Pool : MonoBehaviour
     {
         public static Pool Singleton;
-        public LinkedList<ChipComponent> ChipPool;
+        public LinkedList<StandardChip> ChipPool;
         // public LinkedList<CellComponent> PoolingList;
 
         private void Start()
@@ -14,14 +14,14 @@ namespace Match3
             if (!Singleton) Singleton = this;
             else Destroy(gameObject);
 
-            ChipPool = new LinkedList<ChipComponent>();
+            ChipPool = new LinkedList<StandardChip>();
             // PoolingList = new LinkedList<CellComponent>();
         }
 
-        public void Pull(ChipComponent chip)
+        public void Pull(StandardChip standardChip)
         {
-            chip.transform.parent = transform;
-            ChipPool.AddLast(chip);
+            standardChip.transform.parent = transform;
+            ChipPool.AddLast(standardChip);
         }
     }
 }

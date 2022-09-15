@@ -7,6 +7,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6186962150301615567, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
+        type: 3}
+      propertyPath: _type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8064554305523504942, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -25,7 +30,7 @@ PrefabInstance:
     - target: {fileID: 8064554306603917526, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
         type: 3}
       propertyPath: m_Name
-      value: AppleChip
+      value: Apple
       objectReference: {fileID: 0}
     - target: {fileID: 8064554306603917527, guid: 4aa8b88a3a02d6d49b4930bfc447a697,
         type: 3}

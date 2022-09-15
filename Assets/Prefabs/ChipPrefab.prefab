@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 8064554305523504942}
   - component: {fileID: 8064554305523504943}
   - component: {fileID: 8064554305523504940}
-  - component: {fileID: 8064554305523504941}
+  - component: {fileID: 3409662816430706623}
   m_Layer: 0
   m_Name: ChipChild
   m_TagString: Untagged
@@ -184,7 +184,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8064554305523504941
+--- !u!114 &3409662816430706623
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,12 +193,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8064554305523504929}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9405e2d4269efe549974c5c6469d84b6, type: 3}
+  m_Script: {fileID: 11500000, guid: 91dfc0c3ee4d400ca46959e341f9511b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _renderer: {fileID: 8064554305523504943}
-  _parent: {fileID: 8064554306603917524}
-  _animator: {fileID: 8064554305523504940}
+  _chip: {fileID: 6186962150301615567}
 --- !u!1 &8064554306603917526
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +206,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8064554306603917527}
-  - component: {fileID: 8064554306603917524}
+  - component: {fileID: 6186962150301615567}
   m_Layer: 0
   m_Name: ChipPrefab
   m_TagString: Untagged
@@ -231,7 +229,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8064554306603917524
+--- !u!114 &6186962150301615567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,6 +243,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _type: 0
   _animator: {fileID: 8064554305523504940}
-  _child: {fileID: 8064554305523504941}
-  CurrentCell: {fileID: 0}
-  ReservedBy: {fileID: 0}
+  _renderer: {fileID: 8064554305523504943}
