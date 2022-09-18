@@ -18,8 +18,6 @@ namespace Match3
 
         private void FallAnimationEnded() => _chip.FallingEnded();
         private void FadeAnimationEnded() => _chip.FadeAnimationEnded();
-        private void ExecutionStarted() => _chip.GetComponent<SpecialChip>().ExecutionStart();
-        private void ExecutionEnded() => _chip.GetComponent<SpecialChip>().Executed();
         private void InteractionReady() => _chip.ChipReady();
     }
 }

@@ -8,6 +8,8 @@ namespace Match3
 {
     public class LevelManager : MonoBehaviour
     {
+        [SerializeField]
+        private Level _level;
         [SerializeField, Range(0.1f, 0.7f)]
         private float _chipsFallTime;
         [SerializeField]
@@ -22,8 +24,6 @@ namespace Match3
         private SpecialChip _specialSun;
         private int _currentLevel;
         [SerializeField]
-        private Cell[] _cells;
-        [SerializeField]
         private float _dragSens;
         private Controls _controls;
         private Vector2 _startDragMousePos;
@@ -33,144 +33,152 @@ namespace Match3
         private Cell _secondaryCell;
         private bool _isReading;
         private bool _allowInput;
-        private List<Cell> _waitingCells;
-        private List<Cell> _extraWaitingCells;
+        private bool _toolActive;
+        private bool _isLoop;
+        private Coroutine _destroyingRoutine;
+        private LinkedList<Cell> _fadingCells;
+        private Dictionary<Cell, SpecialChip> _cellsToSpawnSpecial;
         public static LevelManager Singleton;
-        public IEnumerable<Cell> AllCells => _cells;
+        private LinkedList<Cell> _allCells;
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public float ChipsFallTime => _chipsFallTime;
         public int REMOVE;
+        public event Action<Cell> OnPlayerClick;
 
         private void Start()
         {
             Singleton = this;
-            _waitingCells = new List<Cell>();
-            _extraWaitingCells = new List<Cell>();
+            _fadingCells = new LinkedList<Cell>();
+            _allCells = new LinkedList<Cell>();
+            _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
             _controls = new Controls();
             _controls.Enable();
-            foreach (Cell cell in _cells)
+            foreach (Line line in _level.LevelLayout)
             {
-                cell.PointerDownEvent += OnCellPointerDownEvent;
-                cell.PointerUpEvent += OnCellPointerUpEvent;
+                foreach (Cell cell in line.LineCells)
+                {
+                    cell.PointerDownEvent += OnCellPointerDownEvent;
+                    cell.PointerUpEvent += OnCellPointerUpEvent;
+                }
             }
-
             StartCoroutine(ChipsShowUp());
         }
 
         private IEnumerator ChipsShowUp() //todo
         {
             yield return new WaitForSeconds(0.3f);
-            foreach (Cell cell in _cells)
+            foreach (Line line in _level.LevelLayout)
             {
-                cell.CurrentChip.ShowUp();
-                yield return new WaitForSeconds(0.01f);
+                foreach (Cell cell in line.LineCells)
+                {
+                    cell.CurrentChip.ShowUp();
+                    yield return null;
+                }
             }
+            yield return new WaitUntil(() => _level.LevelLayout.All(z => z.LineCells.All(x => x.CurrentChip.IsInteractable)));
+            SetInputState(true);
         }
 
-        public void GetNewChip()
+        private void GetNewChip()
         {
-            var ordered = _waitingCells.OrderBy(z => z.transform.position.y).Distinct().ToList();
-            _waitingCells = ordered;
-            while (_waitingCells.Count > 0)
+            foreach (Line line in _level.LevelLayout)
             {
-                Cell callerCell = _waitingCells.RemoveFirst();
-                if (callerCell.HasChip()) continue;
-
-                Cell topNeighbour = callerCell.GetNeighbour(DirectionType.Top);
-                if (topNeighbour.IsNull())
-                    callerCell.SpawnPoint.GenerateChip(callerCell);
-
-                while (topNeighbour.NotNull())
+                foreach (Cell cell in line.LineCells)
                 {
-                    if (topNeighbour.HasChip())
-                    {
-                        if (topNeighbour.CurrentChip.IsAnimating || !topNeighbour.CurrentChip.IsInteractable)
-                        {
-                            _extraWaitingCells.Enqueue(callerCell);
-                            break;
-                        }
-                        if (topNeighbour.CurrentChip.ReservedBy.IsNull())
-                        {
-                            topNeighbour.TransferChip(callerCell);
-                            _waitingCells.Enqueue(topNeighbour);
-                            break;
-                        }
-                    }
-                    if (topNeighbour.HasChip() && topNeighbour.CurrentChip.ReservedBy.NotNull() || !topNeighbour.HasChip())
-                        topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
-
+                    if (cell.HasChip()) continue;
+                    Cell topNeighbour = cell.GetNeighbour(DirectionType.Top);
                     if (topNeighbour.IsNull())
-                        callerCell.SpawnPoint.GenerateChip(callerCell);
+                        cell.SpawnPoint.GenerateChip(cell);
+
+                    while (topNeighbour.NotNull())
+                    {
+                        if (topNeighbour.HasChip())
+                        {
+                            topNeighbour.TransferChip(cell);
+                            break;
+                        }
+                        if (!topNeighbour.HasChip())
+                            topNeighbour = topNeighbour.GetNeighbour(DirectionType.Top);
+
+                        if (topNeighbour.IsNull())
+                            cell.SpawnPoint.GenerateChip(cell);
+                    }
                 }
             }
-            _waitingCells.AddRange(_extraWaitingCells);
-            _extraWaitingCells.Clear();
         }
 
-        public void DestroyChips(List<Cell> list, Cell sender)
+        public void DestroyChips(Cell sender, params Cell[] cells)
         {
-            SpecialChip specialChip = sender.CurrentChip.GetComponent<SpecialChip>();
-            if (specialChip.IsNull())
+            SetInputState(false);
+            SpecialChip specialChip = null;
+            if (sender.NotNull())
+                specialChip = sender.CurrentChip.GetComponent<SpecialChip>();
+            if (specialChip.IsNull() && sender.NotNull())
             {
-                if (list.Count == 4)
+                if (cells.Length == 4)
                 {
-                    SetSpecialChip(sender,
-                        list.PosYIdentical()
-                            ? MatchType.Vertical4
-                            : MatchType.Horizontal4);
+                    _cellsToSpawnSpecial.Add(sender, cells.PosYIdentical()
+                        ? _specialBlasterV
+                        : _specialBlasterH);
                 }
-                else if (list.Count >= 5)
+                else if (cells.Length >= 5)
                 {
-                    if (list.PosXIdentical() || list.PosYIdentical())
-                        SetSpecialChip(sender, MatchType.Match5);
+                    if (cells.PosXIdentical() || cells.PosYIdentical())
+                        _cellsToSpawnSpecial.Add(sender, _specialSun);
                     else
-                        SetSpecialChip(sender, MatchType.T_type);
+                        _cellsToSpawnSpecial.Add(sender, _specialM18);
                 }
             }
 
-            foreach (Cell cell in list.OrderBy(z => z.transform.position.y))
+            foreach (Cell cell in cells.Where(z => z.NotNull()))
             {
-                if (!cell.HasChip()) continue;
+                cell.SetPulledByCell(sender);
+                _fadingCells.AddLast(cell);
+                if (cell.CurrentChip.Type != ChipType.None) continue;
 
-                if (cell.CurrentChip.Type == ChipType.None && cell.CurrentChip != sender.CurrentChip)
-                {
-                    SpecialChip special = cell.CurrentChip as SpecialChip;
-                    special.Action();
-                    continue;
-                }
-
-                cell.ChipFade(specialChip);
-                _waitingCells.Add(cell);
+                SpecialChip special = cell.CurrentChip as SpecialChip;
+                special.Action();
             }
+
+            if (_destroyingRoutine.IsNull())
+                _destroyingRoutine = StartCoroutine(WaitForDestroy());
         }
 
-        private void SetSpecialChip(Cell cell, MatchType type)
+        private IEnumerator WaitForDestroy()
         {
-            switch (type)
-            {
-                case MatchType.Horizontal4:
-                    StartCoroutine(cell.SetSpecialChip(_specialBlasterH));
-                    break;
-                case MatchType.Vertical4:
-                    StartCoroutine(cell.SetSpecialChip(_specialBlasterV));
-                    break;
-                case MatchType.T_type:
-                    StartCoroutine(cell.SetSpecialChip(_specialM18));
-                    break;
-                case MatchType.Match5:
-                    StartCoroutine(cell.SetSpecialChip(_specialSun));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+            yield return new WaitForSeconds(0.05f);
+
+            foreach (Cell cell in _fadingCells.Where(z => z.CurrentChip.NotNull()))
+                cell.ChipFade();
+
+            foreach (var pair in _cellsToSpawnSpecial)
+                StartCoroutine(pair.Key.SetSpecialChip(pair.Value));
+
+            yield return new WaitWhile(() => _fadingCells
+                .Where(z => z.PreviousChip.NotNull())
+                .Any(x => x.PreviousChip.IsAnimating));
+
+            _cellsToSpawnSpecial.Clear();
+            _fadingCells.Clear();
+
+            GetNewChip();
+            yield return new WaitUntil(() => AllCells().All(z => z.CurrentChip.NotNull()));
+            SetInputState(true);
+            _destroyingRoutine = null;
         }
 
+        /// <summary>
+        /// В прототипе есть редкие и крайне редкие события, инпут пользователя в которых
+        /// мог привести к ошибкам, и в связи с этим он блокируется.
+        /// </summary>
         public void SetInputState(bool state) => _allowInput = state;
+        public void SetToolState(bool state) => _toolActive = state;
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
         private void OnCellPointerDownEvent(Cell cell, Vector2 cellPos)
         {
-            // if (!_allowInput) return;
+            if (!_allowInput) return;
             _primaryCell = cell;
+            OnPlayerClick?.Invoke(_primaryCell);
             _primaryChip = cell.CurrentChip;
             _startDragMousePos = cellPos;
             _isReading = true;
@@ -179,7 +187,7 @@ namespace Match3
         private void Update() => ReadPlayerInput();
         private void ReadPlayerInput()
         {
-            if (!_isReading) return;
+            if (!_isReading || _toolActive) return;
             Vector2 newMousePos = _controls.MainMap.Mouse.ReadValue<Vector2>();
 
             if (newMousePos.y - _startDragMousePos.y > _dragSens)
@@ -212,13 +220,29 @@ namespace Match3
             _secondaryChip.Move(direction.OppositeDirection(), false, _primaryCell);
         }
 
+        public IEnumerable<Cell> AllCells()
+        {
+            if (_allCells.Count > 0) return _allCells;
+            foreach (Line line in _level.LevelLayout)
+            {
+                foreach (Cell cell in line.LineCells)
+                {
+                    _allCells.AddLast(cell);
+                }
+            }
+            return _allCells;
+        }
+
         private void OnDestroy()
         {
             _controls.Dispose();
-            foreach (Cell cell in _cells)
+            foreach (Line line in _level.LevelLayout)
             {
-                cell.PointerDownEvent -= OnCellPointerDownEvent;
-                cell.PointerUpEvent -= OnCellPointerUpEvent;
+                foreach (Cell cell in line.LineCells)
+                {
+                    cell.PointerDownEvent -= OnCellPointerDownEvent;
+                    cell.PointerUpEvent -= OnCellPointerUpEvent;
+                }
             }
         }
     }

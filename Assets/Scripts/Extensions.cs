@@ -48,11 +48,11 @@ namespace Match3
             return cell;
         }
 
-        public static bool PosYIdentical(this List<Cell> list) =>
-            list.TrueForAll(z => z.transform.position.y.Equals(list.First().transform.position.y));
+        public static bool PosYIdentical(this Cell[] array) =>
+            array.ToList().TrueForAll(z => z.transform.position.y.Equals(array.First().transform.position.y));
 
-        public static bool PosXIdentical(this List<Cell> list) =>
-            list.TrueForAll(z => z.transform.position.x.Equals(list.First().transform.position.x));
+        public static bool PosXIdentical(this Cell[] array) =>
+            array.ToList().TrueForAll(z => z.transform.position.x.Equals(array.First().transform.position.x));
 
         public static bool NotNull(this object obj) => obj != null;
         public static bool IsNull(this object obj) => obj == null;
@@ -90,9 +90,9 @@ namespace Match3
     public enum SpecialChipType : byte
     {
         None,
-        SpecialSun,
-        SpecialM18,
-        SpecialBlasterH,
-        SpecialBlasterV
+        Sun,
+        M18,
+        BlasterH,
+        BlasterV
     }
 }

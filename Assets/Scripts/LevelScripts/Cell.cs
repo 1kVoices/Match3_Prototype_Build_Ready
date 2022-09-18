@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,9 +25,9 @@ namespace Match3
         private Cell _leftLeft;
         private Cell _right;
         private Cell _rightRight;
-        private Cell PulledBy { get; set; }
         private List<Cell> _poolingNeighbours;
         private bool IsMatch { get; set; }
+        private Cell _pulledBy;
         public SpawnPoint SpawnPoint { get; private set; }
         public event Action<Cell,Vector2> PointerDownEvent;
         public event Action<Cell> PointerUpEvent;
@@ -43,6 +44,7 @@ namespace Match3
         public void CheckMatches(StandardChip newChip, bool isChipTransferred)
         {
             IsMatch = false;
+            _poolingNeighbours.Clear();
             SetPreviousChip(CurrentChip);
             SetCurrentChip(newChip);
             if (newChip.Type == ChipType.None && !isChipTransferred)
@@ -94,10 +96,19 @@ namespace Match3
         public void ChipMoved()
         {
             if (CurrentChip.IsNull()) return;
+            SpecialChip special = null;
+            if (PreviousChip.NotNull())
+                special = PreviousChip.GetComponent<SpecialChip>();
             switch (IsMatch)
             {
+                case true when _currentSpecial.NotNull() && PreviousChip.NotNull()
+                                                        && special.NotNull() && special.SpecialType == SpecialChipType.Sun:
+                    _currentSpecial = null;
+                    break;
                 case true when _currentSpecial.NotNull():
                     _currentSpecial.Action();
+                    SetPreviousChip(CurrentChip);
+                    SetCurrentChip(null);
                     _currentSpecial = null;
                     break;
                 case true:
@@ -116,7 +127,7 @@ namespace Match3
             }
         }
 
-        public void Pulling(params Cell[] cells)
+        private void Pulling(params Cell[] cells)
         {
             if (!_poolingNeighbours.Contains(this))
                 _poolingNeighbours.Add(this);
@@ -129,33 +140,35 @@ namespace Match3
 
                 cell.CurrentChip.SetInteractionState(false);
 
-                if (cell.PulledBy.IsNull())
+                if (cell._pulledBy.IsNull())
                     cell.SetPulledByCell(this);
 
-                else if (cell.PulledBy.NotNull())
+                else if (cell._pulledBy.NotNull())
                 {
-                    cell.PulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
+                    _poolingNeighbours.AddRange(cell._pulledBy._poolingNeighbours);
 
-                    foreach (Cell pulledCell in cell.PulledBy._poolingNeighbours)
+                    foreach (Cell pulledCell in _poolingNeighbours)
                         pulledCell.SetPulledByCell(this);
                 }
             }
         }
 
-        public void Pooling()
+        private void Pooling()
         {
+            if (CurrentChip.IsNull()) return;
             if (CurrentChip.Type != ChipType.None)
             {
-                if (PulledBy.NotNull() && PulledBy != this)
+                if (_pulledBy.NotNull() && _pulledBy != this)
                 {
-                    PulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
+                    _pulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
                     _poolingNeighbours.Clear();
                     return;
                 }
             }
 
-            LevelManager.Singleton.DestroyChips(_poolingNeighbours.Distinct().ToList(), this);
-            _poolingNeighbours.Clear();
+            var cleared = _poolingNeighbours.Distinct();
+            _poolingNeighbours = cleared.ToList();
+            LevelManager.Singleton.DestroyChips(this, _poolingNeighbours.ToArray());
         }
 
         public void TransferChip(Cell callerCell)
@@ -164,17 +177,23 @@ namespace Match3
             SetCurrentChip(null);
         }
 
-        public void ChipFade(SpecialChip specialChip)
+        public void ChipFade()
         {
-            CurrentChip.FadeOut(specialChip);
+            CurrentChip.FadeOut(_pulledBy.CurrentChip.NotNull()
+                ? _pulledBy.CurrentChip.GetComponent<SpecialChip>()
+                : _pulledBy.PreviousChip.NotNull()
+                    ? _pulledBy.PreviousChip.GetComponent<SpecialChip>()
+                    : null);
+
             SetPreviousChip(CurrentChip);
             SetCurrentChip(null);
         }
 
-        public IEnumerator SetSpecialChip(StandardChip specialStandardChip)
+        public IEnumerator SetSpecialChip(SpecialChip specialChip)
         {
             yield return null;
-            SetCurrentChip(Instantiate(specialStandardChip, transform));
+            SetCurrentChip(Instantiate(specialChip, transform));
+            CurrentChip.SetCurrentCell(this);
             CurrentChip.ShowUp();
         }
 
@@ -258,7 +277,7 @@ namespace Match3
         public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
         private void SetCurrentChip(StandardChip newChip) => CurrentChip = newChip;
         private void SetPreviousChip(StandardChip newChip) => PreviousChip = newChip;
-        public void SetPulledByCell(Cell cell) => PulledBy = cell;
+        public void SetPulledByCell(Cell cell) => _pulledBy = cell;
 
         private void ChipInstance(IReadOnlyList<StandardChip> array)
         {
@@ -271,6 +290,7 @@ namespace Match3
             return comparativeCell.NotNull() &&
                    comparativeCell.CurrentChip.NotNull() &&
                    comparativeCell.CurrentChip != CurrentChip &&
+                   comparativeCell.CurrentChip.Type != ChipType.None &&
                    comparativeCell.CurrentChip.Type == CurrentChip.Type;
         }
     }

@@ -19,7 +19,6 @@ namespace Match3
         private bool _isSentBack;
         private bool IsPrimaryChip { get; set; }
         public ChipType Type => _type;
-        public Cell ReservedBy { get; private set; }
         public bool IsInteractable { get; private set; }
         public bool IsAnimating { get; private set; }
 
@@ -80,6 +79,7 @@ namespace Match3
 
             if (_isSentBack)
             {
+                LevelManager.Singleton.SetInputState(true);
                 _isSentBack = false;
                 ChipReady();
                 return;
@@ -90,22 +90,15 @@ namespace Match3
         public void ChipReady()
         {
             SetInteractionState(true);
-            LevelManager.Singleton.SetInputState(true);
-        }
-
-        public void FadeAnimationEnded()
-        {
-            CurrentCell.SetPulledByCell(null);
-            _animator.enabled = false;
-            Pool.Singleton.Pull(this);
-            LevelManager.Singleton.GetNewChip();
         }
 
         public IEnumerator Transfer(Cell targetCell, float transferTime)
         {
-            ReservedBy = targetCell;
-            CurrentCell = targetCell;
             SetAnimationState(true);
+            SetInteractionState(false);
+            LevelManager.Singleton.SetInputState(false);
+
+            CurrentCell = targetCell;
             _animator.SetTrigger(Extensions.Fall);
 
             float time = 0f;
@@ -118,10 +111,9 @@ namespace Match3
                 yield return null;
             }
             transform.position = target;
-            CurrentCell.CheckMatches(this, true);
             _animator.SetTrigger(Extensions.EndFall);
             transform.parent = targetCell.transform;
-            ReservedBy = null;
+            CurrentCell.CheckMatches(this, true);
         }
 
         public void SetCurrentCell(Cell cell) => CurrentCell = cell;
@@ -142,10 +134,19 @@ namespace Match3
             transform.localScale = Vector3.one;
         }
 
+        public void FadeAnimationEnded()
+        {
+            CurrentCell.SetPulledByCell(null);
+            SetAnimationState(false);
+            _animator.enabled = false;
+            Pool.Singleton.Pull(this);
+        }
+
         public virtual void FadeOut(SpecialChip specialChip)
         {
-            transform.parent = null;
             SetAnimationState(true);
+            SetInteractionState(false);
+            transform.parent = null;
 
             if (specialChip.IsNull())
             {
@@ -155,16 +156,16 @@ namespace Match3
 
             switch (specialChip.SpecialType)
             {
-                case SpecialChipType.SpecialSun:
+                case SpecialChipType.Sun:
                     _animator.SetTrigger(Extensions.SunFade);
                     break;
-                case SpecialChipType.SpecialM18:
+                case SpecialChipType.M18:
                     _animator.SetTrigger(Extensions.FastFade);
                     break;
-                case SpecialChipType.SpecialBlasterH:
+                case SpecialChipType.BlasterH:
                     _animator.SetTrigger(Extensions.FastFade);
                     break;
-                case SpecialChipType.SpecialBlasterV:
+                case SpecialChipType.BlasterV:
                     _animator.SetTrigger(Extensions.FastFade);
                     break;
                 default:
