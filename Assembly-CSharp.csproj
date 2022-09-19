@@ -62,11 +62,13 @@
      <Compile Include="Assets\Scripts\GameEvents.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\AnimatorEventReceiver.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Cell.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\CellHighlighter.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Controls\Controls.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Hammer.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Level.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\LevelManager.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Line.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\MatchHelper.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Pool.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\SledgeHammer.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\SpawnPoint.cs" />

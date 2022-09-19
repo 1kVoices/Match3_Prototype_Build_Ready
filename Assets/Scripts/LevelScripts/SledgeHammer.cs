@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Match3
+﻿namespace Match3
 {
     public class SledgeHammer : Tool
     {
@@ -9,10 +7,7 @@ namespace Match3
             if (!IsInput) return;
             base.PlayerClicked(cell);
             LevelManager.Singleton.DestroyChips(null,
-                cell, cell.GetNeighbour(DirectionType.Top),
-                cell.GetNeighbour(DirectionType.Bot),
-                cell.GetNeighbour(DirectionType.Left),
-                cell.GetNeighbour(DirectionType.Right));
+                cell, cell.Top, cell.Bot, cell.Left, cell.Right);
             UpdateState();
         }
     }

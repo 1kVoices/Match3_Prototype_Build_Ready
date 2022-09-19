@@ -20,7 +20,7 @@ namespace Match3
             MarkNeighbours();
         }
 
-        private void MarkNeighbours() //намеренно вызывается несколько раз для отслеживания фишек на поле
+        private void MarkNeighbours()
         {
             switch (_specialType)
             {
@@ -28,10 +28,14 @@ namespace Match3
                     break;
                 case SpecialChipType.Sun:
                     StandardChip targetChip = CurrentCell.PreviousChip;
-                    StandardChip randomChip = LevelManager.Singleton
-                        .ChipPrefabs[
-                            UnityEngine.Random.Range(0,
-                                LevelManager.Singleton.ChipPrefabs.Length - LevelManager.Singleton.REMOVE)];
+
+                    var activeChips = LevelManager.Singleton.AllCells()
+                        .Where(z => z.CurrentChip.NotNull())
+                        .Where(x => x.CurrentChip.Type != ChipType.None)
+                        .Select(c => c.CurrentChip)
+                        .ToArray();
+
+                    StandardChip randomChip = activeChips[UnityEngine.Random.Range(0, activeChips.Length)];
 
                     if (targetChip.IsNull()) targetChip = randomChip;
 
@@ -45,42 +49,41 @@ namespace Match3
                     LevelManager.Singleton.DestroyChips(CurrentCell, affectedCells);
                     break;
                 case SpecialChipType.M18:
-                    LevelManager.Singleton.DestroyChips(CurrentCell,
-                        CurrentCell, CurrentCell.GetNeighbour(DirectionType.Top),
-                        CurrentCell.GetNeighbour(DirectionType.Bot),
-                        CurrentCell.GetNeighbour(DirectionType.Left),
-                        CurrentCell.GetNeighbour(DirectionType.Right),
-                        CurrentCell.GetNeighbour(DirectionType.Top)?.GetNeighbour(DirectionType.Left),
-                        CurrentCell.GetNeighbour(DirectionType.Top)?.GetNeighbour(DirectionType.Right),
-                        CurrentCell.GetNeighbour(DirectionType.Bot)?.GetNeighbour(DirectionType.Left),
-                        CurrentCell.GetNeighbour(DirectionType.Bot)?.GetNeighbour(DirectionType.Right));
+                    LevelManager.Singleton.DestroyChips(
+                        CurrentCell,
+                        CurrentCell.Top, CurrentCell.Bot,
+                        CurrentCell.Left, CurrentCell.Right,
+                        CurrentCell.Top? CurrentCell.Top.Left? CurrentCell.Top.Left : null : null,
+                        CurrentCell.Top? CurrentCell.Top.Right? CurrentCell.Top.Right : null : null,
+                        CurrentCell.Bot? CurrentCell.Bot.Left? CurrentCell.Bot.Left : null : null,
+                        CurrentCell.Bot? CurrentCell.Bot.Right? CurrentCell.Bot.Right : null : null);
                     break;
                 case SpecialChipType.BlasterH:
-                    Cell left = CurrentCell.GetNeighbour(DirectionType.Left);
-                    Cell right = CurrentCell.GetNeighbour(DirectionType.Right);
+                    Cell left = CurrentCell.Left;
+                    Cell right = CurrentCell.Right;
                     while (left.NotNull())
                     {
                         LevelManager.Singleton.DestroyChips(CurrentCell, left);
-                        left = left.GetNeighbour(DirectionType.Left);
+                        left = left.Left;
                     }
                     while (right.NotNull())
                     {
                         LevelManager.Singleton.DestroyChips(CurrentCell, right);
-                        right = right.GetNeighbour(DirectionType.Right);
+                        right = right.Right;
                     }
                     break;
                 case SpecialChipType.BlasterV:
-                    Cell top = CurrentCell.GetNeighbour(DirectionType.Top);
-                    Cell bot = CurrentCell.GetNeighbour(DirectionType.Bot);
+                    Cell top = CurrentCell.Top;
+                    Cell bot = CurrentCell.Bot;
                     while (top.NotNull())
                     {
                         LevelManager.Singleton.DestroyChips(CurrentCell, top);
-                        top = top.GetNeighbour(DirectionType.Top);
+                        top = top.Top;
                     }
                     while (bot.NotNull())
                     {
                         LevelManager.Singleton.DestroyChips(CurrentCell, bot);
-                        bot = bot.GetNeighbour(DirectionType.Bot);
+                        bot = bot.Bot;
                     }
                     break;
                 default:

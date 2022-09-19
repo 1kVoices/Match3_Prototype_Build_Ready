@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Match3
+﻿namespace Match3
 {
     public class Hammer : Tool
     {
@@ -9,7 +7,6 @@ namespace Match3
             if (!IsInput) return;
             base.PlayerClicked(cell);
             LevelManager.Singleton.DestroyChips(null, cell);
-            UpdateState();
             UpdateState();
         }
     }

@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,23 +9,25 @@ namespace Match3
 {
     public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        [SerializeField]
+        [SerializeField] //todo
         public StandardChip CurrentChip; //{ get; private set; }
         public StandardChip PreviousChip { get; private set; }
+        public StandardChip TemporaryChip { get; private set; }
         private SpecialChip _currentSpecial;
         private int _cellsLayer;
         private int _spawnsLayer;
-        private Cell _top;
-        private Cell _topTop;
-        private Cell _bot;
-        private Cell _botBot;
-        private Cell _left;
-        private Cell _leftLeft;
-        private Cell _right;
-        private Cell _rightRight;
+        public Cell Top { get; private set; }
+        public Cell TopTop { get; private set; }
+        public Cell Bot { get; private set; }
+        public Cell BotBot { get; private set; }
+        public Cell Left { get; private set; }
+        public Cell LeftLeft { get; private set; }
+        public Cell Right { get; private set; }
+        public Cell RightRight { get; private set; }
         private List<Cell> _poolingNeighbours;
         private bool IsMatch { get; set; }
         private Cell _pulledBy;
+        private CellHighlighter _highlighter;
         public SpawnPoint SpawnPoint { get; private set; }
         public event Action<Cell,Vector2> PointerDownEvent;
         public event Action<Cell> PointerUpEvent;
@@ -35,10 +35,16 @@ namespace Match3
         private void Start()
         {
             _poolingNeighbours = new List<Cell>();
+            _highlighter = GetComponentInChildren<CellHighlighter>();
             _cellsLayer = LayerMask.GetMask("Level");
             _spawnsLayer = LayerMask.GetMask("Spawn");
             FindNeighbours();
             StartCoroutine(GenerateChipRoutine());
+        }
+
+        public void HighlightCell()
+        {
+            _highlighter.Activate();
         }
 
         public void CheckMatches(StandardChip newChip, bool isChipTransferred)
@@ -53,58 +59,52 @@ namespace Match3
                 IsMatch = true;
                 return;
             }
+            // #region Horizontal
+            // if (this.CompareChips(Left) && this.CompareChips(Right))
+            // {
+            //     //00_00
+            //     if (this.CompareChips(LeftLeft) && this.CompareChips(RightRight)) Pulling(LeftLeft, RightRight);
+            //     //00_0
+            //     if (this.CompareChips(LeftLeft)) Pulling(LeftLeft);
+            //     //0_00
+            //     if (this.CompareChips(RightRight)) Pulling(RightRight);
+            //     //0_0
+            //     Pulling(Left, Right);
+            // }
+            // //00_
+            // if (this.CompareChips(Left) && this.CompareChips(LeftLeft)) Pulling(Left, LeftLeft);
+            // //_00
+            // if (this.CompareChips(Right) && this.CompareChips(RightRight)) Pulling(Right, RightRight);
+            // #endregion
+            //
+            // #region Vertical
+            // if (this.CompareChips(Top) && this.CompareChips(Bot)) //top is left
+            // {
+            //     //00_00
+            //     if (this.CompareChips(TopTop) && this.CompareChips(BotBot)) Pulling(TopTop, BotBot);
+            //     //00_0
+            //     if (this.CompareChips(TopTop)) Pulling(TopTop);
+            //     //0_00
+            //     if (this.CompareChips(BotBot)) Pulling(BotBot);
+            //     //0_0
+            //     Pulling(Top, Bot);
+            // }
+            // //00_
+            // if (this.CompareChips(Top) && this.CompareChips(TopTop)) Pulling(Top, TopTop);
+            // //_00
+            // if (this.CompareChips(Bot) && this.CompareChips(BotBot)) Pulling(Bot, BotBot);
+            // #endregion
+            Extensions.FindMatches(_poolingNeighbours, this);
 
-            #region Horizontal
-            if (CompareChips(_left) && CompareChips(_right))
-            {
-                //00_00
-                if (CompareChips(_leftLeft) && CompareChips(_rightRight)) Pulling(_leftLeft, _rightRight);
-                //00_0
-                if (CompareChips(_leftLeft)) Pulling(_leftLeft);
-                //0_00
-                if (CompareChips(_rightRight)) Pulling(_rightRight);
-                //0_0
-                Pulling(_left, _right);
-            }
-            //00_
-            if (CompareChips(_left) && CompareChips(_leftLeft)) Pulling(_left, _leftLeft);
-            //_00
-            if (CompareChips(_right) && CompareChips(_rightRight)) Pulling(_right, _rightRight);
-            #endregion
-
-            #region Vertical
-            if (CompareChips(_top) && CompareChips(_bot)) //top is left
-            {
-                //00_00
-                if (CompareChips(_topTop) && CompareChips(_botBot)) Pulling(_topTop, _botBot);
-                //00_0
-                if (CompareChips(_topTop)) Pulling(_topTop);
-                //0_00
-                if (CompareChips(_botBot)) Pulling(_botBot);
-                //0_0
-                Pulling(_top, _bot);
-            }
-            //00_
-            if (CompareChips(_top) && CompareChips(_topTop)) Pulling(_top, _topTop);
-            //_00
-            if (CompareChips(_bot) && CompareChips(_botBot)) Pulling(_bot, _botBot);
-            #endregion
-
-            IsMatch = _poolingNeighbours.Count > 0;
+            Pulling(_poolingNeighbours.ToArray());
+            IsMatch = _poolingNeighbours.Count > 1;
         }
 
         public void ChipMoved()
         {
             if (CurrentChip.IsNull()) return;
-            SpecialChip special = null;
-            if (PreviousChip.NotNull())
-                special = PreviousChip.GetComponent<SpecialChip>();
             switch (IsMatch)
             {
-                case true when _currentSpecial.NotNull() && PreviousChip.NotNull()
-                                                        && special.NotNull() && special.SpecialType == SpecialChipType.Sun:
-                    _currentSpecial = null;
-                    break;
                 case true when _currentSpecial.NotNull():
                     _currentSpecial.Action();
                     SetPreviousChip(CurrentChip);
@@ -127,7 +127,7 @@ namespace Match3
             }
         }
 
-        private void Pulling(params Cell[] cells)
+        private void Pulling(Cell[] cells)
         {
             if (!_poolingNeighbours.Contains(this))
                 _poolingNeighbours.Add(this);
@@ -135,8 +135,6 @@ namespace Match3
             foreach (Cell cell in cells)
             {
                 if (cell.IsNull() || cell.CurrentChip.IsNull()) continue;
-                if (_poolingNeighbours.Contains(cell)) continue;
-                _poolingNeighbours.Add(cell);
 
                 cell.CurrentChip.SetInteractionState(false);
 
@@ -179,11 +177,15 @@ namespace Match3
 
         public void ChipFade()
         {
-            CurrentChip.FadeOut(_pulledBy.CurrentChip.NotNull()
-                ? _pulledBy.CurrentChip.GetComponent<SpecialChip>()
-                : _pulledBy.PreviousChip.NotNull()
-                    ? _pulledBy.PreviousChip.GetComponent<SpecialChip>()
-                    : null);
+            if (CurrentChip.IsNull()) return;
+
+            CurrentChip.FadeOut(_pulledBy.NotNull()
+                ? _pulledBy.CurrentChip.NotNull()
+                    ? _pulledBy.CurrentChip.GetComponent<SpecialChip>()
+                    : _pulledBy.PreviousChip.NotNull()
+                        ? _pulledBy.PreviousChip.GetComponent<SpecialChip>()
+                        : null
+                : null);
 
             SetPreviousChip(CurrentChip);
             SetCurrentChip(null);
@@ -205,10 +207,10 @@ namespace Match3
             RaycastHit2D rightRay = Physics2D.Raycast(transform.position, transform.right, 1f, _cellsLayer);
             RaycastHit2D spawnRay = Physics2D.Raycast(transform.position, transform.up, 10f, _spawnsLayer);
 
-            if (topRay.collider.NotNull()) _top = topRay.collider.GetComponent<Cell>();
-            if (botRay.collider.NotNull()) _bot = botRay.collider.GetComponent<Cell>();
-            if (leftRay.collider.NotNull()) _left = leftRay.collider.GetComponent<Cell>();
-            if (rightRay.collider.NotNull()) _right = rightRay.collider.GetComponent<Cell>();
+            if (topRay.collider.NotNull()) Top = topRay.collider.GetComponent<Cell>();
+            if (botRay.collider.NotNull()) Bot = botRay.collider.GetComponent<Cell>();
+            if (leftRay.collider.NotNull()) Left = leftRay.collider.GetComponent<Cell>();
+            if (rightRay.collider.NotNull()) Right = rightRay.collider.GetComponent<Cell>();
             if (spawnRay.collider.NotNull()) SpawnPoint = spawnRay.collider.GetComponent<SpawnPoint>();
 
             StartCoroutine(FindExtraNeighbours());
@@ -217,17 +219,17 @@ namespace Match3
         private IEnumerator FindExtraNeighbours()
         {
             yield return null;
-            _topTop = _top.NotNull()
-                ? _top.GetNeighbour(DirectionType.Top)
+            TopTop = Top.NotNull()
+                ? Top.Top
                 : null;
-            _botBot = _bot.NotNull()
-                ? _bot.GetNeighbour(DirectionType.Bot)
+            BotBot = Bot.NotNull()
+                ? Bot.Bot
                 : null;
-            _leftLeft = _left.NotNull()
-                ? _left.GetNeighbour(DirectionType.Left)
+            LeftLeft = Left.NotNull()
+                ? Left.Left
                 : null;
-            _rightRight = _right.NotNull()
-                ? _right.GetNeighbour(DirectionType.Right)
+            RightRight = Right.NotNull()
+                ? Right.Right
                 : null;
         }
 
@@ -243,10 +245,13 @@ namespace Match3
             ChipInstance(LevelManager.Singleton.ChipPrefabs);
             yield return null;
 
-            if ((!CompareChips(_top) || !CompareChips(_bot)) && (!CompareChips(_left) || !CompareChips(_right))) yield break;
+            if ((!Extensions.CompareChips(this, Top) || !Extensions.CompareChips(this, Bot)) &&
+                (!Extensions.CompareChips(this, Left) || !Extensions.CompareChips(this, Right)))
+                yield break;
+
             Pool.Singleton.Pull(CurrentChip);
 
-            Cell[] neighbours = { _top, _bot, _left, _right };
+            Cell[] neighbours = { Top, Bot, Left, Right };
 
             var allowedChips = LevelManager.Singleton.ChipPrefabs
                 .Where(z => !neighbours.Where(x => x.NotNull())
@@ -256,42 +261,17 @@ namespace Match3
             ChipInstance(allowedChips);
         }
 
-        [CanBeNull]
-        public Cell GetNeighbour(DirectionType direction)
-        {
-            switch (direction)
-            {
-                case DirectionType.Top:
-                    return _top;
-                case DirectionType.Bot:
-                    return _bot;
-                case DirectionType.Left:
-                    return _left;
-                case DirectionType.Right:
-                    return _right;
-                default: return null;
-            }
-        }
-
         public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
         public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
-        private void SetCurrentChip(StandardChip newChip) => CurrentChip = newChip;
+        public void SetCurrentChip(StandardChip newChip) => CurrentChip = newChip;
         private void SetPreviousChip(StandardChip newChip) => PreviousChip = newChip;
+        public void SetTemporaryChip(StandardChip newChip) => TemporaryChip = newChip;
         public void SetPulledByCell(Cell cell) => _pulledBy = cell;
 
         private void ChipInstance(IReadOnlyList<StandardChip> array)
         {
             SetCurrentChip(Instantiate(array[UnityEngine.Random.Range(0, array.Count-LevelManager.Singleton.REMOVE)], transform));
             CurrentChip.SetCurrentCell(this);
-        }
-
-        private bool CompareChips(Cell comparativeCell)
-        {
-            return comparativeCell.NotNull() &&
-                   comparativeCell.CurrentChip.NotNull() &&
-                   comparativeCell.CurrentChip != CurrentChip &&
-                   comparativeCell.CurrentChip.Type != ChipType.None &&
-                   comparativeCell.CurrentChip.Type == CurrentChip.Type;
         }
     }
 }

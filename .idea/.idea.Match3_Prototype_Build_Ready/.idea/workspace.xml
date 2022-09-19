@@ -42,6 +42,7 @@
     <setting file="file://$PROJECT_DIR$/../ArcadeRace_Prototype_Build_Ready/Assets/Scripts/TutorialScene/Scenario.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Extensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/LevelManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/MatchHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/Pool.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/SpecialChip.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/Tool.cs" root0="FORCE_HIGHLIGHTING" />
@@ -100,10 +101,10 @@
       </option>
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="17352">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="39120">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="17352" />
+      <option name="pid" value="39120" />
       <option name="projectPathOnTarget" />
       <option name="selectedOptions">
         <list />
@@ -136,6 +137,8 @@
       <workItem from="1663392451214" duration="279000" />
       <workItem from="1663392777356" duration="21440000" />
       <workItem from="1663477840375" duration="27383000" />
+      <workItem from="1663516571650" duration="11000" />
+      <workItem from="1663561840866" duration="25131000" />
     </task>
     <servers />
   </component>

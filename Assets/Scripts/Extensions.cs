@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -14,6 +15,112 @@ namespace Match3
         public static readonly int Fall = Animator.StringToHash("fall");
         public static readonly int EndFall = Animator.StringToHash("endFall");
         public static readonly int ActionTrigger = Animator.StringToHash("action");
+
+        /// <summary>
+        /// Для избежания повторий кода этот метод был сделан расширением
+        /// т.к его используют два класса Cell и MatchHelper
+        /// </summary>
+        public static bool CompareChips(Cell cell, Cell comparativeCell)
+        {
+            return cell.NotNull() &&
+                   comparativeCell.NotNull() &&
+                   comparativeCell.CurrentChip.NotNull() &&
+                   comparativeCell.CurrentChip != cell.CurrentChip &&
+                   comparativeCell.CurrentChip.Type != ChipType.None &&
+                   comparativeCell.CurrentChip.Type == cell.CurrentChip.Type;
+        }
+
+        public static void FindMatches(List<Cell> fillingList, Cell cell, Cell caller = null)
+        {
+            if (cell.IsNull()) return;
+            if (caller.NotNull())
+            {
+                cell.SetTemporaryChip(cell.CurrentChip);
+                cell.SetCurrentChip(caller.CurrentChip);
+            }
+
+            Cell top = cell.Top;
+            Cell bot = cell.Bot;
+            Cell left = cell.Left;
+            Cell right = cell.Right;
+            Cell topTop = cell.TopTop;
+            Cell botBot = cell.BotBot;
+            Cell leftLeft = cell.LeftLeft;
+            Cell rightRight = cell.RightRight;
+            // Cell top = caller.Top ? caller.Top : null;
+            // Cell bot = caller.Bot ? caller.Bot : null;
+            // Cell left = caller.Left ? caller.Left : null;
+            // Cell right = caller.Right ? caller.Right : null;
+            // Cell topTop = caller.TopTop ? caller.TopTop : null;
+            // Cell botBot = caller.BotBot ? caller.BotBot : null;
+            // Cell leftLeft = caller.LeftLeft ? caller.LeftLeft : null;
+            // Cell rightRight = caller.RightRight ? caller.RightRight : null;
+            #region Horizontal
+            if (CompareChips(cell, left) && CompareChips(cell, right))
+            {
+                //00_00
+                if (CompareChips(cell, leftLeft) && CompareChips(cell, rightRight))
+                {
+                    fillingList.Add(leftLeft);
+                    fillingList.Add(rightRight);
+                }
+                //00_0
+                if (CompareChips(cell, leftLeft)) fillingList.Add(leftLeft);
+                //0_00
+                if (CompareChips(cell, rightRight)) fillingList.Add(rightRight);
+                //0_0
+                fillingList.Add(left);
+                fillingList.Add(right);
+            }
+            //00_
+            if (CompareChips(cell, left) && CompareChips(cell, leftLeft))
+            {
+                fillingList.Add(left);
+                fillingList.Add(leftLeft);
+            }
+            //_00
+            if (CompareChips(cell, right) && CompareChips(cell, rightRight))
+            {
+                fillingList.Add(right);
+                fillingList.Add(rightRight);
+            }
+            #endregion
+
+            #region Vertical
+            if (CompareChips(cell, top) && CompareChips(cell, bot)) //top is left
+            {
+                //00_00
+                if (CompareChips(cell, topTop) && CompareChips(cell, botBot))
+                {
+                    fillingList.Add(topTop);
+                    fillingList.Add(botBot);
+                }
+                //00_0
+                if (CompareChips(cell, topTop)) fillingList.Add(topTop);
+                //0_00
+                if (CompareChips(cell, botBot)) fillingList.Add(botBot);
+                //0_0
+                fillingList.Add(top);
+                fillingList.Add(bot);
+            }
+            //00_
+            if (CompareChips(cell, top) && CompareChips(cell, topTop))
+            {
+                fillingList.Add(top);
+                fillingList.Add(topTop);
+            }
+            //_00
+            if (CompareChips(cell, bot) && CompareChips(cell, botBot))
+            {
+                fillingList.Add(bot);
+                fillingList.Add(botBot);
+            }
+            #endregion
+
+            if (cell.TemporaryChip.IsNull()) return;
+            cell.SetCurrentChip(cell.TemporaryChip);
+            cell.SetTemporaryChip(null);
+        }
 
         public static DirectionType OppositeDirection(this DirectionType direction)
         {
@@ -31,22 +138,7 @@ namespace Match3
             }
         }
 
-        public static bool HasChip(this Cell cell)
-        {
-            return cell.CurrentChip.NotNull();
-        }
-
-        public static void Enqueue(this List<Cell> list, Cell cell)
-        {
-            if (!list.Contains(cell)) list.Add(cell);
-        }
-
-        public static Cell RemoveFirst(this List<Cell> list)
-        {
-            Cell cell = list.First();
-            list.RemoveAt(0);
-            return cell;
-        }
+        public static bool HasChip(this Cell cell) => cell.CurrentChip.NotNull();
 
         public static bool PosYIdentical(this Cell[] array) =>
             array.ToList().TrueForAll(z => z.transform.position.y.Equals(array.First().transform.position.y));
@@ -56,15 +148,6 @@ namespace Match3
 
         public static bool NotNull(this object obj) => obj != null;
         public static bool IsNull(this object obj) => obj == null;
-    }
-
-    public enum MatchType : byte
-    {
-        Default,
-        Horizontal4,
-        Vertical4,
-        T_type,
-        Match5
     }
 
     public enum DirectionType : byte
