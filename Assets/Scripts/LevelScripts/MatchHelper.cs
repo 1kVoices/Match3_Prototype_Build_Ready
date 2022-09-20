@@ -5,25 +5,18 @@ namespace Match3
 {
     public class MatchHelper
     {
-        private readonly Cell[] _allCells;
-        private readonly List<Cell> _possibleMatch;
-        public MatchHelper(Cell[] cells)
+        public List<Cell> PossibleMatches { get; }
+
+        public MatchHelper()
         {
-            _allCells = cells;
-            _possibleMatch = new List<Cell>();
+            PossibleMatches = new List<Cell>();
         }
 
-        public void Execute()
+        public bool IsMatchPossible()
         {
-            _possibleMatch.Clear();
+            PossibleMatches.Clear();
 
-            if (_allCells.Any(z => z.CurrentChip.Type == ChipType.None))
-            {
-                _allCells.FirstOrDefault(z => z.CurrentChip.Type == ChipType.None)?.HighlightCell();
-                return;
-            }
-
-            foreach (Cell cell in _allCells)
+            foreach (Cell cell in LevelManager.Singleton.AllCells)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -43,16 +36,21 @@ namespace Match3
                             neighbour = cell.Right;
                             break;
                     }
-                    Extensions.FindMatches(_possibleMatch, neighbour, cell);
+                    Extensions.FindMatches(PossibleMatches, neighbour, cell);
 
-                    if (_possibleMatch.Count <= 0) continue;
-                    foreach (Cell possibleCell in _possibleMatch)
-                        possibleCell.HighlightCell();
-
-                    cell.HighlightCell();
-                    return;
+                    if (PossibleMatches.Count <= 0) continue;
+                    PossibleMatches.Add(cell);
+                    return true;
                 }
             }
+
+            if (LevelManager.Singleton.AllCells.Any(z => z.CurrentChip.Type == ChipType.None))
+            {
+                PossibleMatches.Add(LevelManager.Singleton.AllCells.FirstOrDefault(z => z.CurrentChip.Type == ChipType.None));
+                return true;
+            }
+
+            return false;
         }
     }
 }

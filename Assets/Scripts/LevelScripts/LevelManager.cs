@@ -22,9 +22,12 @@ namespace Match3
         private SpecialChip _specialBlasterV;
         [SerializeField]
         private SpecialChip _specialSun;
-        private int _currentLevel;
         [SerializeField]
         private float _dragSens;
+        [SerializeField]
+        private float _hintDelay;
+        private GameTime _gameTime;
+        private PlayerObjective _playerObjective;
         private MatchHelper _matchHelper;
         private Controls _controls;
         private Vector2 _startDragMousePos;
@@ -35,41 +38,59 @@ namespace Match3
         private bool _isReading;
         private bool _allowInput;
         private bool _toolActive;
+        private bool _hintActive;
+        private float _hintTime;
         private Coroutine _destroyingRoutine;
         private LinkedList<Cell> _fadingCells;
         private Dictionary<Cell, SpecialChip> _cellsToSpawnSpecial;
-        private LinkedList<Cell> _allCells;
         private WaitForSeconds _destroyDelay;
         public static LevelManager Singleton;
+        public LinkedList<Cell> AllCells { get; private set; }
+        public int ChipsCount { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public float ChipsFallTime => _chipsFallTime;
         public event Action<Cell> OnPlayerClick;
-        public int REMOVE;
+        public event Action<SpecialChipType> OnSpecialActivate;
 
-        private void Start()
+        private IEnumerator Start()
         {
             Singleton = this;
+
+            AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
-            _allCells = new LinkedList<Cell>();
             _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
+            _playerObjective = FindObjectOfType<PlayerObjective>();
+            _gameTime = FindObjectOfType<GameTime>();
+            _gameTime.OutOfTimeEvent += GameTimeIsUp;
+            _hintTime = _hintDelay;
+            ChipsCount = _level.ChipsCount;
             _destroyDelay = new WaitForSeconds(0.05f);
-            _matchHelper = new MatchHelper(AllCells().ToArray());
+            _hintActive = true;
+            _matchHelper = new MatchHelper();
             _controls = new Controls();
             _controls.Enable();
+
             foreach (Line line in _level.LevelLayout)
             {
                 foreach (Cell cell in line.LineCells)
                 {
                     cell.PointerDownEvent += OnCellPointerDownEvent;
                     cell.PointerUpEvent += OnCellPointerUpEvent;
+                    cell.PointerClickEvent += OnCellPointerClickEvent;
+                    AllCells.AddLast(cell);
                 }
             }
             StartCoroutine(ChipsShowUp());
+            yield return null;
+            _gameTime.SetTimer(_level.LevelTime * 60);
         }
 
         private IEnumerator ChipsShowUp() //todo
         {
             yield return new WaitForSeconds(0.3f);
+
+            _playerObjective.SetCurrentObjective(_level.TargetType, _level.ChipsToDestroy);
+
             foreach (Line line in _level.LevelLayout)
             {
                 foreach (Cell cell in line.LineCells)
@@ -79,11 +100,18 @@ namespace Match3
                 }
             }
             yield return new WaitUntil(() => _level.LevelLayout.All(z => z.LineCells.All(x => x.CurrentChip.IsInteractable)));
+            CheckPossibleMatches();
             SetInputState(true);
 
-            _matchHelper.Execute();
+            _hintActive = false;
+            _gameTime.StartTimer();
         }
 
+        /// <summary>
+        /// Метод получения новой фишки.
+        /// Идет по списку всех клеток на поле и если у клетки нет фишки,
+        /// то метод отправляет фишку соседа сверху этой клетке
+        /// </summary>
         private void GetNewChip()
         {
             foreach (Line line in _level.LevelLayout)
@@ -109,9 +137,14 @@ namespace Match3
                 }
             }
         }
-
+        /// <summary>
+        /// Метод уничтожения фишек
+        /// Если sender не имеет супер фишки, то он добавляется в словарь и позже получит суперфишку.
+        /// Если в cells есть супер фишки - они активируются
+        /// </summary>
         public void DestroyChips(Cell sender, params Cell[] cells)
         {
+            CheckHint();
             SetInputState(false);
             SpecialChip specialChip = null;
             if (sender.NotNull())
@@ -160,11 +193,16 @@ namespace Match3
         private IEnumerator WaitForDestroy()
         {
             yield return _destroyDelay;
-
             while (_fadingCells.Count > 0)
             {
+                _hintTime = _hintDelay;
                 foreach (Cell cell in _fadingCells)
+                {
+                    if (cell.CurrentChip.NotNull() && cell.CurrentChip.Type == _level.TargetType)
+                        _playerObjective.UpdateCount();
+
                     cell.ChipFade();
+                }
 
                 foreach (var pair in _cellsToSpawnSpecial)
                     StartCoroutine(pair.Key.SetSpecialChip(pair.Value));
@@ -178,30 +216,94 @@ namespace Match3
 
                 GetNewChip();
 
-                yield return new WaitUntil(() => AllCells().All(z => z.CurrentChip.NotNull() && !z.CurrentChip.IsAnimating));
+                yield return new WaitUntil(() => AllCells.All(z => z.CurrentChip.NotNull() && !z.CurrentChip.IsAnimating));
+            }
+
+            if (_playerObjective.CurrentCount <= 0)
+            {
+                print("You win");
+                UnityEditor.EditorApplication.isPaused = true;
             }
             _destroyingRoutine = null;
+            CheckPossibleMatches();
             SetInputState(true);
+        }
+
+        private void CheckPossibleMatches()
+        {
+            if (_matchHelper.IsMatchPossible()) return;
+
+            DestroyChips(null, AllCells.ToArray());
+            print("No match possible");
+            UnityEditor.EditorApplication.isPaused = true;
+        }
+
+        private void SuggestMatch(List<Cell> cells)
+        {
+            if (_hintActive) return;
+            _hintActive = true;
+
+            foreach (Cell cell in cells)
+                cell.Highlight(true);
+        }
+
+        /// <summary>
+        /// Если подсказка активна - метод ее выключает
+        /// </summary>
+        private void CheckHint()
+        {
+            if (!_hintActive) return;
+            var highlightingCells = AllCells.Where(z => z.IsHighlighting);
+
+            foreach (Cell cell in highlightingCells)
+                cell.Highlight(false);
+
+            _hintActive = false;
+            _hintTime = _hintDelay;
+        }
+
+        private void HintDelay()
+        {
+            if (_hintActive) return;
+            _hintTime -= Time.deltaTime;
+
+            if (_hintTime <= 0)
+                SuggestMatch(_matchHelper.PossibleMatches);
+        }
+
+        private void GameTimeIsUp()
+        {
+            CheckHint();
+            _hintActive = true;
+            SetInputState(false);
         }
 
         /// <summary>
         /// В прототипе есть редкие и крайне редкие события, инпут пользователя в которых
-        /// мог привести к ошибкам, и в связи с этим он блокируется
+        /// может привести к ошибкам, и в связи с этим он блокируется
         /// </summary>
+        public bool GetInputState() => _allowInput;
         public void SetInputState(bool state) => _allowInput = state;
         public void SetToolState(bool state) => _toolActive = state;
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
+        private void OnCellPointerClickEvent(Cell cell) => OnPlayerClick?.Invoke(cell);
+
         private void OnCellPointerDownEvent(Cell cell, Vector2 cellPos)
         {
             if (!_allowInput) return;
+
             _primaryCell = cell;
-            OnPlayerClick?.Invoke(_primaryCell);
             _primaryChip = cell.CurrentChip;
             _startDragMousePos = cellPos;
             _isReading = true;
         }
 
-        private void Update() => ReadPlayerInput();
+        private void Update()
+        {
+            ReadPlayerInput();
+            HintDelay();
+        }
+
         private void ReadPlayerInput()
         {
             if (!_isReading || _toolActive) return;
@@ -236,20 +338,10 @@ namespace Match3
 
             _primaryChip.Move(direction, true, _secondaryCell);
             _secondaryChip.Move(direction.OppositeDirection(), false, _primaryCell);
+            CheckHint();
         }
 
-        public IEnumerable<Cell> AllCells()
-        {
-            if (_allCells.Count > 0) return _allCells;
-            foreach (Line line in _level.LevelLayout)
-            {
-                foreach (Cell cell in line.LineCells)
-                    _allCells.AddLast(cell);
-            }
-            return _allCells;
-        }
-
-        private Cell GetNeighbour(Cell cell, DirectionType direction)
+        private static Cell GetNeighbour(Cell cell, DirectionType direction)
         {
             switch (direction)
             {
@@ -274,6 +366,7 @@ namespace Match3
                 {
                     cell.PointerDownEvent -= OnCellPointerDownEvent;
                     cell.PointerUpEvent -= OnCellPointerUpEvent;
+                    cell.PointerClickEvent -= OnCellPointerClickEvent;
                 }
             }
         }

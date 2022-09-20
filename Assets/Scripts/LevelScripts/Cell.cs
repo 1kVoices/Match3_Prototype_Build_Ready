@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Match3
 {
-    public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         [SerializeField] //todo
         public StandardChip CurrentChip; //{ get; private set; }
@@ -28,9 +28,11 @@ namespace Match3
         private bool IsMatch { get; set; }
         private Cell _pulledBy;
         private CellHighlighter _highlighter;
+        public bool IsHighlighting { get; private set; }
         public SpawnPoint SpawnPoint { get; private set; }
         public event Action<Cell,Vector2> PointerDownEvent;
         public event Action<Cell> PointerUpEvent;
+        public event Action<Cell> PointerClickEvent;
 
         private void Start()
         {
@@ -40,11 +42,6 @@ namespace Match3
             _spawnsLayer = LayerMask.GetMask("Spawn");
             FindNeighbours();
             StartCoroutine(GenerateChipRoutine());
-        }
-
-        public void HighlightCell()
-        {
-            _highlighter.Activate();
         }
 
         public void CheckMatches(StandardChip newChip, bool isChipTransferred)
@@ -59,41 +56,7 @@ namespace Match3
                 IsMatch = true;
                 return;
             }
-            // #region Horizontal
-            // if (this.CompareChips(Left) && this.CompareChips(Right))
-            // {
-            //     //00_00
-            //     if (this.CompareChips(LeftLeft) && this.CompareChips(RightRight)) Pulling(LeftLeft, RightRight);
-            //     //00_0
-            //     if (this.CompareChips(LeftLeft)) Pulling(LeftLeft);
-            //     //0_00
-            //     if (this.CompareChips(RightRight)) Pulling(RightRight);
-            //     //0_0
-            //     Pulling(Left, Right);
-            // }
-            // //00_
-            // if (this.CompareChips(Left) && this.CompareChips(LeftLeft)) Pulling(Left, LeftLeft);
-            // //_00
-            // if (this.CompareChips(Right) && this.CompareChips(RightRight)) Pulling(Right, RightRight);
-            // #endregion
-            //
-            // #region Vertical
-            // if (this.CompareChips(Top) && this.CompareChips(Bot)) //top is left
-            // {
-            //     //00_00
-            //     if (this.CompareChips(TopTop) && this.CompareChips(BotBot)) Pulling(TopTop, BotBot);
-            //     //00_0
-            //     if (this.CompareChips(TopTop)) Pulling(TopTop);
-            //     //0_00
-            //     if (this.CompareChips(BotBot)) Pulling(BotBot);
-            //     //0_0
-            //     Pulling(Top, Bot);
-            // }
-            // //00_
-            // if (this.CompareChips(Top) && this.CompareChips(TopTop)) Pulling(Top, TopTop);
-            // //_00
-            // if (this.CompareChips(Bot) && this.CompareChips(BotBot)) Pulling(Bot, BotBot);
-            // #endregion
+
             Extensions.FindMatches(_poolingNeighbours, this);
 
             Pulling(_poolingNeighbours.ToArray());
@@ -261,17 +224,36 @@ namespace Match3
             ChipInstance(allowedChips);
         }
 
-        public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
-        public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
+        public void Highlight(bool isActivate)
+        {
+            if (isActivate)
+                _highlighter.Activate();
+            else
+                _highlighter.Deactivate();
+        }
+
         public void SetCurrentChip(StandardChip newChip) => CurrentChip = newChip;
         private void SetPreviousChip(StandardChip newChip) => PreviousChip = newChip;
         public void SetTemporaryChip(StandardChip newChip) => TemporaryChip = newChip;
         public void SetPulledByCell(Cell cell) => _pulledBy = cell;
+        public void SetHighlightState(bool state) => IsHighlighting = state;
 
         private void ChipInstance(IReadOnlyList<StandardChip> array)
         {
-            SetCurrentChip(Instantiate(array[UnityEngine.Random.Range(0, array.Count-LevelManager.Singleton.REMOVE)], transform));
+            SetCurrentChip(Instantiate(array[UnityEngine.Random.Range(0, array.Count - LevelManager.Singleton.ChipsCount)], transform));
             CurrentChip.SetCurrentCell(this);
+        }
+
+        public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
+        public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            PointerClickEvent?.Invoke(this);
+            if (LevelManager.Singleton.GetInputState() == false) return;
+            if (CurrentChip.IsNull() || !CurrentChip.IsInteractable || CurrentChip.Type != ChipType.None) return;
+
+            LevelManager.Singleton.DestroyChips(this, this);
         }
     }
 }

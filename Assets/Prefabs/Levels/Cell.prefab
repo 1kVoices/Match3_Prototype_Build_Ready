@@ -82,6 +82,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4954036299070379918}
   - component: {fileID: 8004062910551647713}
+  - component: {fileID: 1910064289057418398}
   - component: {fileID: 1569936416307797949}
   m_Layer: 8
   m_Name: Highlighter
@@ -154,6 +155,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &1910064289057418398
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6933734154621553754}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f524549ca5da3ae46a2cbb5dfea12d52, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1569936416307797949
 MonoBehaviour:
   m_ObjectHideFlags: 0

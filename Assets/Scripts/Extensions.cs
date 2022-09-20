@@ -29,7 +29,10 @@ namespace Match3
                    comparativeCell.CurrentChip.Type != ChipType.None &&
                    comparativeCell.CurrentChip.Type == cell.CurrentChip.Type;
         }
-
+        /// <summary>
+        /// Здесь используется List вместо LinkedList только из-за того,
+        /// что Cell необходимо иметь именно List из-за метода AddRange
+        /// </summary>
         public static void FindMatches(List<Cell> fillingList, Cell cell, Cell caller = null)
         {
             if (cell.IsNull()) return;
@@ -47,14 +50,7 @@ namespace Match3
             Cell botBot = cell.BotBot;
             Cell leftLeft = cell.LeftLeft;
             Cell rightRight = cell.RightRight;
-            // Cell top = caller.Top ? caller.Top : null;
-            // Cell bot = caller.Bot ? caller.Bot : null;
-            // Cell left = caller.Left ? caller.Left : null;
-            // Cell right = caller.Right ? caller.Right : null;
-            // Cell topTop = caller.TopTop ? caller.TopTop : null;
-            // Cell botBot = caller.BotBot ? caller.BotBot : null;
-            // Cell leftLeft = caller.LeftLeft ? caller.LeftLeft : null;
-            // Cell rightRight = caller.RightRight ? caller.RightRight : null;
+
             #region Horizontal
             if (CompareChips(cell, left) && CompareChips(cell, right))
             {
