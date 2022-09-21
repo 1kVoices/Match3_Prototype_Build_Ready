@@ -15,6 +15,7 @@ namespace Match3
         {
             if (_isExecuted) return;
             _isExecuted = true;
+            LevelManager.Singleton.OnSpecialActivate(_specialType);
             SetAnimationState(true);
             ChipAnimator.SetTrigger(Extensions.ActionTrigger);
             MarkNeighbours();

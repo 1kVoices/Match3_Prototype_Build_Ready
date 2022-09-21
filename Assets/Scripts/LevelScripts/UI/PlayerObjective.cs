@@ -7,6 +7,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class PlayerObjective : MonoBehaviour
 {
+    private bool _isCompleted;
     private Image _objectiveChip;
     private TextMeshProUGUI _count;
     public int CurrentCount { get; private set; }
@@ -31,10 +32,11 @@ public class PlayerObjective : MonoBehaviour
 
     public void UpdateCount()
     {
+        if (_isCompleted) return;
         CurrentCount = int.Parse(_count.text);
         CurrentCount--;
-
         _count.text = CurrentCount.ToString();
+        if (CurrentCount <= 0) _isCompleted = true;
     }
 
     public void SetCurrentObjective(ChipType type, int count)

@@ -13,9 +13,19 @@ namespace Match3
         private void Start()
         {
             _text = GetComponentInChildren<TextMeshProUGUI>();
-            _current = _objectives[UnityEngine.Random.Range(0, _objectives.Length)];
-            Instantiate(_current, transform);
+            _current = Instantiate(_objectives[UnityEngine.Random.Range(0, _objectives.Length)], transform);
             _text.text = $"{_current.TargetCount}X";
+        }
+
+        public void UpdateCount()
+        {
+            var count = _current.TargetCount - _current.CurrentCount;
+            if (count <= 0)
+            {
+                _text.enabled = false;
+                return;
+            }
+            _text.text = $"{count}X";
         }
     }
 }

@@ -4,9 +4,9 @@
     {
         private SpecialChipType _targetSpecial;
 
-        public void Init()
+        protected override void Init()
         {
-            LevelManager.Singleton.OnSpecialActivate += SpecialActivate;
+            LevelManager.Singleton.OnSpecialActivateEvent += SpecialActivateEvent;
             switch (RandomInt)
             {
                 case 0:
@@ -24,9 +24,14 @@
             }
         }
 
-        private void SpecialActivate(SpecialChipType special)
+        private void SpecialActivateEvent(SpecialChipType special)
         {
-            if (special == _targetSpecial) ConditionMatch();
+            if (special == _targetSpecial) ConditionMet();
+        }
+
+        protected override void Completed()
+        {
+            LevelManager.Singleton.OnSpecialActivateEvent -= SpecialActivateEvent;
         }
     }
 }

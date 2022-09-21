@@ -49,13 +49,14 @@ namespace Match3
         public int ChipsCount { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public float ChipsFallTime => _chipsFallTime;
+        public bool IsPlayerInput { get; private set; }
         public event Action<Cell> OnPlayerClick;
-        public event Action<SpecialChipType> OnSpecialActivate;
+        public event Action<SpecialChipType> OnSpecialActivateEvent;
+        public event Action OnSpawnSpecial;
 
         private IEnumerator Start()
         {
             Singleton = this;
-
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
             _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
@@ -63,7 +64,7 @@ namespace Match3
             _gameTime = FindObjectOfType<GameTime>();
             _gameTime.OutOfTimeEvent += GameTimeIsUp;
             _hintTime = _hintDelay;
-            ChipsCount = _level.ChipsCount;
+            ChipsCount = _level.RemoveChips;
             _destroyDelay = new WaitForSeconds(0.05f);
             _hintActive = true;
             _matchHelper = new MatchHelper();
@@ -164,6 +165,12 @@ namespace Match3
                     else
                         _cellsToSpawnSpecial.Add(sender, _specialM18);
                 }
+
+                if (cells.Length >= 4 && IsPlayerInput)
+                {
+                    IsPlayerInput = false;
+                    OnSpawnSpecial?.Invoke();
+                }
             }
 
             var cleared = cells.Where(z => z.NotNull()).ToArray();
@@ -192,6 +199,7 @@ namespace Match3
         /// </summary>
         private IEnumerator WaitForDestroy()
         {
+            IsPlayerInput = false;
             yield return _destroyDelay;
             while (_fadingCells.Count > 0)
             {
@@ -285,6 +293,7 @@ namespace Match3
         public bool GetInputState() => _allowInput;
         public void SetInputState(bool state) => _allowInput = state;
         public void SetToolState(bool state) => _toolActive = state;
+        public void OnSpecialActivate(SpecialChipType obj) => OnSpecialActivateEvent?.Invoke(obj);
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
         private void OnCellPointerClickEvent(Cell cell) => OnPlayerClick?.Invoke(cell);
 
@@ -325,6 +334,7 @@ namespace Match3
         private void SwapChips(DirectionType direction)
         {
             _isReading = false;
+            IsPlayerInput = true;
             _secondaryCell = GetNeighbour(_primaryCell, direction);
             if (_secondaryCell.IsNull()) return;
 

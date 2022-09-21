@@ -73,6 +73,9 @@
      <Compile Include="Assets\Scripts\LevelScripts\SpecialChip.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\StandardChip.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\ExtraObjective.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\NChips10Seconds.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\NTimesChipSequence.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\NTimesPlayerCombo.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\NTimesSuperChip.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\UI\ExtraObjectives\QuestManager.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\UI\GameTime.cs" />

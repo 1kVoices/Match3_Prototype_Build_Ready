@@ -857,7 +857,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectives:
-  - {fileID: 5587365354182591950, guid: 46ee2fae2d7cbe24fab85905005a9e30, type: 3}
+  - {fileID: 8531255353769335972, guid: 22c45fe7d200c7a48b4bcc25da9fed4f, type: 3}
 --- !u!222 &848437601
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1471,7 +1471,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3X
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2f1e5ff3fff84144bbe26fa319d0a136, type: 2}
   m_sharedMaterial: {fileID: 9018025627256583395, guid: 2f1e5ff3fff84144bbe26fa319d0a136,
@@ -2043,6 +2043,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2726659343799398010, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: CurrentChip
+      value: 
+      objectReference: {fileID: 4913037546357221978, guid: 2656f057e07a1e448963cb873a014b68,
+        type: 3}
+    - target: {fileID: 4617397047922853952, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: CurrentChip
+      value: 
+      objectReference: {fileID: 4913037546357221978, guid: fe10ff9b84fdd3a46b8830915980824f,
+        type: 3}
     - target: {fileID: 6816897839586155922, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2111,7 +2123,7 @@ PrefabInstance:
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: _chipsToDestroy
-      value: 20
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
@@ -2128,6 +2140,23 @@ PrefabInstance:
       propertyPath: _levelTime
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: _removeChips
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7084135668035989609, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: CurrentChip
+      value: 
+      objectReference: {fileID: 4913037546357221978, guid: 4992d808cfcb69344950d80687a20fe6,
+        type: 3}
+    - target: {fileID: 8538121823651248236, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: CurrentChip
+      value: 
+      objectReference: {fileID: 3303558698461464478, guid: e8fbea05fcf3d624e8812a00268b19f6,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64ad3f61758ea2549829385f59bf2427, type: 3}
 --- !u!114 &1758328225 stripped

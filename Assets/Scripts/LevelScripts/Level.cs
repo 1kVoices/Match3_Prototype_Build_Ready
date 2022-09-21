@@ -10,14 +10,14 @@ namespace Match3
         [SerializeField, Range(10,100)]
         private int _chipsToDestroy;
         [SerializeField,Range(0,4)]
-        private int _chipsCount;
+        private int _removeChips;
         [SerializeField, Range(5, 15), Tooltip("Minutes")]
         private float _levelTime;
         [SerializeField]
         private Line[] _levelLayout;
 
         public int ChipsToDestroy => _chipsToDestroy;
-        public int ChipsCount => _chipsCount;
+        public int RemoveChips => _removeChips;
         public ChipType TargetType => _targetType;
         public float LevelTime => _levelTime;
 

@@ -1,45 +1,54 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Match3
 {
-    [RequireComponent(typeof(Animator))]
-    public class ExtraObjective : MonoBehaviour
+    public abstract class ExtraObjective : MonoBehaviour
     {
         [SerializeField]
         private int _targetCount;
         [SerializeField]
-        private Image _completedImage;
-        [SerializeField]
-        private Image _questImage;
-        [SerializeField]
         private Sprite[] _sprites;
-        private Animator _animator;
-        protected int RandomInt;
-        private int _count;
+        private Image _questImage;
         public int TargetCount => _targetCount;
+        public int CurrentCount { get; private set; }
+        protected int RandomInt;
+        private QuestManager _manager;
+        private TextMeshProUGUI _completedText;
 
-        private void Start()
+        public void Start()
         {
-            _animator = GetComponent<Animator>();
+            _manager = FindObjectOfType<QuestManager>();
+            _questImage = GetComponent<Image>();
+            _completedText = GetComponentInChildren<TextMeshProUGUI>();
+
             RandomInt = UnityEngine.Random.Range(0, _sprites.Length);
             _questImage.sprite = _sprites[RandomInt];
+            _completedText.enabled = false;
+            Init();
         }
 
-        protected void ConditionMatch()
+        protected abstract void Init();
+        protected abstract void Completed();
+
+        protected void ConditionMet()
         {
-            _count++;
+            CurrentCount++;
             CheckTarget();
+            _manager.UpdateCount();
         }
 
         private void CheckTarget()
         {
-            if (_count >= _targetCount) QuestCompleted();
+            if (CurrentCount >= _targetCount) QuestCompleted();
         }
 
         private void QuestCompleted()
         {
-            // _animator
+            _questImage.enabled = false;
+            _completedText.enabled = true;
+            Completed();
         }
     }
 }

@@ -16,10 +16,6 @@ namespace Match3
         public static readonly int EndFall = Animator.StringToHash("endFall");
         public static readonly int ActionTrigger = Animator.StringToHash("action");
 
-        /// <summary>
-        /// Для избежания повторий кода этот метод был сделан расширением
-        /// т.к его используют два класса Cell и MatchHelper
-        /// </summary>
         public static bool CompareChips(Cell cell, Cell comparativeCell)
         {
             return cell.NotNull() &&
