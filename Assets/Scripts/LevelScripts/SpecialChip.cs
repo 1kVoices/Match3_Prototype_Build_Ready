@@ -30,11 +30,7 @@ namespace Match3
                 case SpecialChipType.Sun:
                     StandardChip targetChip = CurrentCell.PreviousChip;
 
-                    var activeChips = LevelManager.Singleton.AllCells
-                        .Where(z => z.CurrentChip.NotNull())
-                        .Where(x => x.CurrentChip.Type != ChipType.None)
-                        .Select(c => c.CurrentChip)
-                        .ToArray();
+                    var activeChips = Extensions.ChipsOnMap();
 
                     StandardChip randomChip = activeChips[UnityEngine.Random.Range(0, activeChips.Length)];
 
@@ -42,7 +38,7 @@ namespace Match3
 
                     var affectedCells =
                         LevelManager.Singleton.AllCells
-                            .Where(z => z.CurrentChip.NotNull() && z.CurrentChip.Type == targetChip.Type).ToArray();
+                            .Where(cell => cell.CurrentChip.NotNull() && cell.CurrentChip.Type == targetChip.Type).ToArray();
 
                     if (targetChip.Type == ChipType.None)
                         affectedCells = LevelManager.Singleton.AllCells.ToArray();

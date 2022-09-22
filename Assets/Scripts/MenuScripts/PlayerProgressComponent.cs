@@ -11,6 +11,8 @@ namespace Match3
         {
             PlayerData player = SaveData.LoadData();
 
+            if (player.IsNull()) return;
+
             PedroQuestProgress = player.GameProgress;
             IsVeryFirstStart = player.IsVeryFirstStart;
         }

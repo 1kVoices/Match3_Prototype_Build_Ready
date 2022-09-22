@@ -49,10 +49,11 @@ namespace Match3
         public int ChipsCount { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public float ChipsFallTime => _chipsFallTime;
-        public bool IsPlayerInput { get; private set; }
         public event Action<Cell> OnPlayerClick;
         public event Action<SpecialChipType> OnSpecialActivateEvent;
         public event Action OnSpawnSpecial;
+        public event Action<ChipType> OnDestroyChip;
+        public event Action OnPlayerInput;
 
         private IEnumerator Start()
         {
@@ -100,7 +101,7 @@ namespace Match3
                     yield return null;
                 }
             }
-            yield return new WaitUntil(() => _level.LevelLayout.All(z => z.LineCells.All(x => x.CurrentChip.IsInteractable)));
+            yield return new WaitUntil(() => _level.LevelLayout.All(line => line.LineCells.All(x => x.CurrentChip.IsInteractable)));
             CheckPossibleMatches();
             SetInputState(true);
 
@@ -166,14 +167,18 @@ namespace Match3
                         _cellsToSpawnSpecial.Add(sender, _specialM18);
                 }
 
-                if (cells.Length >= 4 && IsPlayerInput)
-                {
-                    IsPlayerInput = false;
+                if (cells.Length >= 4 && cells.All(cell => !cell.CurrentChip.IsTransferred))
                     OnSpawnSpecial?.Invoke();
+
+                if (cells.All(cell => !cell.CurrentChip.IsTransferred))
+                {
+                    OnDestroyChip?.Invoke(cells.First().CurrentChip.Type);
+                    if (cells.Length >= 4)
+                        OnSpawnSpecial?.Invoke();
                 }
             }
 
-            var cleared = cells.Where(z => z.NotNull()).ToArray();
+            var cleared = cells.Where(cell => cell.NotNull()).ToArray();
             cells = cleared;
 
             foreach (Cell cell in cells)
@@ -199,14 +204,13 @@ namespace Match3
         /// </summary>
         private IEnumerator WaitForDestroy()
         {
-            IsPlayerInput = false;
             yield return _destroyDelay;
             while (_fadingCells.Count > 0)
             {
                 _hintTime = _hintDelay;
-                foreach (Cell cell in _fadingCells)
+                foreach (Cell cell in _fadingCells.Where(cell => cell.CurrentChip.NotNull()))
                 {
-                    if (cell.CurrentChip.NotNull() && cell.CurrentChip.Type == _level.TargetType)
+                    if (cell.CurrentChip.Type == _level.TargetType)
                         _playerObjective.UpdateCount();
 
                     cell.ChipFade();
@@ -216,15 +220,15 @@ namespace Match3
                     StartCoroutine(pair.Key.SetSpecialChip(pair.Value));
 
                 yield return new WaitWhile(() => _fadingCells
-                    .Where(z => z.PreviousChip.NotNull())
-                    .Any(x => x.PreviousChip.IsAnimating));
+                    .Where(cell => cell.PreviousChip.NotNull())
+                    .Any(cell => cell.PreviousChip.IsAnimating));
 
                 _cellsToSpawnSpecial.Clear();
                 _fadingCells.Clear();
 
                 GetNewChip();
 
-                yield return new WaitUntil(() => AllCells.All(z => z.CurrentChip.NotNull() && !z.CurrentChip.IsAnimating));
+                yield return new WaitUntil(() => AllCells.All(cell => cell.CurrentChip.NotNull() && !cell.CurrentChip.IsAnimating));
             }
 
             if (_playerObjective.CurrentCount <= 0)
@@ -261,7 +265,7 @@ namespace Match3
         private void CheckHint()
         {
             if (!_hintActive) return;
-            var highlightingCells = AllCells.Where(z => z.IsHighlighting);
+            var highlightingCells = AllCells.Where(cell => cell.IsHighlighting);
 
             foreach (Cell cell in highlightingCells)
                 cell.Highlight(false);
@@ -284,6 +288,7 @@ namespace Match3
             CheckHint();
             _hintActive = true;
             SetInputState(false);
+            Debug.Log("You lost");
         }
 
         /// <summary>
@@ -334,7 +339,7 @@ namespace Match3
         private void SwapChips(DirectionType direction)
         {
             _isReading = false;
-            IsPlayerInput = true;
+            OnPlayerInput?.Invoke();
             _secondaryCell = GetNeighbour(_primaryCell, direction);
             if (_secondaryCell.IsNull()) return;
 

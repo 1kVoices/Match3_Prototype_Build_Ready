@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +14,15 @@ namespace Match3
         public static readonly int Fall = Animator.StringToHash("fall");
         public static readonly int EndFall = Animator.StringToHash("endFall");
         public static readonly int ActionTrigger = Animator.StringToHash("action");
+
+        public static StandardChip[] ChipsOnMap()
+        {
+            return LevelManager.Singleton.AllCells
+                .Where(cell => cell.CurrentChip.NotNull())
+                .Where(cell => cell.CurrentChip.Type != ChipType.None)
+                .Select(cell => cell.CurrentChip)
+                .ToArray();
+        }
 
         public static bool CompareChips(Cell cell, Cell comparativeCell)
         {
@@ -133,10 +141,10 @@ namespace Match3
         public static bool HasChip(this Cell cell) => cell.CurrentChip.NotNull();
 
         public static bool PosYIdentical(this Cell[] array) =>
-            array.ToList().TrueForAll(z => z.transform.position.y.Equals(array.First().transform.position.y));
+            array.ToList().TrueForAll(cell => cell.transform.position.y.Equals(array.First().transform.position.y));
 
         public static bool PosXIdentical(this Cell[] array) =>
-            array.ToList().TrueForAll(z => z.transform.position.x.Equals(array.First().transform.position.x));
+            array.ToList().TrueForAll(cell => cell.transform.position.x.Equals(array.First().transform.position.x));
 
         public static bool NotNull(this object obj) => obj != null;
         public static bool IsNull(this object obj) => obj == null;

@@ -44,9 +44,9 @@ namespace Match3
                 }
             }
 
-            if (LevelManager.Singleton.AllCells.Any(z => z.CurrentChip.Type == ChipType.None))
+            if (LevelManager.Singleton.AllCells.Any(cell => cell.CurrentChip.Type == ChipType.None))
             {
-                PossibleMatches.Add(LevelManager.Singleton.AllCells.FirstOrDefault(z => z.CurrentChip.Type == ChipType.None));
+                PossibleMatches.Add(LevelManager.Singleton.AllCells.FirstOrDefault(cell => cell.CurrentChip.Type == ChipType.None));
                 return true;
             }
 

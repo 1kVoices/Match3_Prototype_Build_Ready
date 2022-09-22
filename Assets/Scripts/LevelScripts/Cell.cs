@@ -44,13 +44,13 @@ namespace Match3
             StartCoroutine(GenerateChipRoutine());
         }
 
-        public void CheckMatches(StandardChip newChip, bool isChipTransferred)
+        public void CheckMatches(StandardChip newChip)
         {
             IsMatch = false;
             _poolingNeighbours.Clear();
             SetPreviousChip(CurrentChip);
             SetCurrentChip(newChip);
-            if (newChip.Type == ChipType.None && !isChipTransferred)
+            if (newChip.Type == ChipType.None && !newChip.IsTransferred)
             {
                 _currentSpecial = CurrentChip.GetComponent<SpecialChip>();
                 IsMatch = true;
@@ -86,6 +86,7 @@ namespace Match3
                 case false:
                     CurrentChip.SetPreviousCell(null);
                     CurrentChip.SetInteractionState(true);
+                    CurrentChip.SetTransferState(false);
                     break;
             }
         }
@@ -217,9 +218,9 @@ namespace Match3
             Cell[] neighbours = { Top, Bot, Left, Right };
 
             var allowedChips = LevelManager.Singleton.ChipPrefabs
-                .Where(z => !neighbours.Where(x => x.NotNull())
-                .Select(c => c.CurrentChip.Type)
-                .Contains(z.Type)).ToArray();
+                .Where(chip => !neighbours.Where(cell => cell.NotNull())
+                .Select(cell => cell.CurrentChip.Type)
+                .Contains(chip.Type)).ToArray();
 
             ChipInstance(allowedChips);
         }

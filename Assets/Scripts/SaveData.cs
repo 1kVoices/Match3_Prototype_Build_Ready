@@ -31,7 +31,7 @@ namespace Match3
 
                 return data;
             }
-            else return new PlayerData(new PlayerProgressComponent());
+            return null;
         }
     }
 }

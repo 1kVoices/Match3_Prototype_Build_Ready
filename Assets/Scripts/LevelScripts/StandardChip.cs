@@ -21,6 +21,7 @@ namespace Match3
         public ChipType Type => _type;
         public bool IsInteractable { get; private set; }
         public bool IsAnimating { get; private set; }
+        public bool IsTransferred { get; private set; }
 
         public void Move(DirectionType direction, bool isPrimaryChip, Cell targetCell)
         {
@@ -55,7 +56,7 @@ namespace Match3
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
 
-            if (!_isSentBack) CurrentCell.CheckMatches(this, false);
+            if (!_isSentBack) CurrentCell.CheckMatches(this);
         }
 
         public void SendBack()
@@ -94,6 +95,7 @@ namespace Match3
 
         public IEnumerator Transfer(Cell targetCell, float transferTime)
         {
+            SetTransferState(true);
             SetAnimationState(true);
             SetInteractionState(false);
             LevelManager.Singleton.SetInputState(false);
@@ -113,12 +115,13 @@ namespace Match3
             transform.position = target;
             _animator.SetTrigger(Extensions.EndFall);
             transform.parent = targetCell.transform;
-            CurrentCell.CheckMatches(this, true);
+            CurrentCell.CheckMatches(this);
         }
 
         public void SetCurrentCell(Cell cell) => CurrentCell = cell;
         public void SetPreviousCell(Cell cell) => PreviousCell = cell;
         public void SetInteractionState(bool state) => IsInteractable = state;
+        public void SetTransferState(bool state) => IsTransferred = state;
         protected void SetAnimationState(bool state) => IsAnimating = state;
 
         public void ShowUp()

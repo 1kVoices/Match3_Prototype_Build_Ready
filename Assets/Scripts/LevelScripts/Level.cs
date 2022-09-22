@@ -9,7 +9,7 @@ namespace Match3
         private ChipType _targetType;
         [SerializeField, Range(10,100)]
         private int _chipsToDestroy;
-        [SerializeField,Range(0,4)]
+        [SerializeField,Range(0,3)]
         private int _removeChips;
         [SerializeField, Range(5, 15), Tooltip("Minutes")]
         private float _levelTime;

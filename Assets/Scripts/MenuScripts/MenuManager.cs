@@ -25,18 +25,22 @@ namespace Match3
         {
             MenuEvents.BlackScreenBleached += OnBlackScreenBleached;
             MenuEvents.PedroAskedHelp += OnPedroAskedHelp;
-            MenuEvents.BlackScreenDarken +=  OnBlackScreenDarken;
+            MenuEvents.BlackScreenDarken += OnBlackScreenDarken;
         }
-        private void OnBlackScreenDarken()
+
+        private static void OnBlackScreenDarken()
         {
             SceneManager.LoadScene(1);
         }
+
         public void LoadLevel(int i) => GameEvents.Singleton.OnLoadLevel(i);
+
         public void AnimateLevelCircle(Animator levelAnimator)
         {
             _blackScreenAnimator.SetTrigger(Darkening);
             levelAnimator.SetTrigger(Highlight);
         }
+
         private void OnBlackScreenBleached()
         {
             foreach (Animator anim in _pedroAnimators)
@@ -44,6 +48,7 @@ namespace Match3
                 anim.SetTrigger(ShowUp);
             }
         }
+
         private async void OnPedroAskedHelp()
         {
             foreach (Animator anim in _levelAnimators)
@@ -57,12 +62,13 @@ namespace Match3
                 _levelAnimators[i].SetTrigger(Coloring);
             }
         }
+
         private void OnDestroy()
         {
             SaveData.SavePlayerData(_player);
             MenuEvents.BlackScreenBleached -= OnBlackScreenBleached;
             MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
-            MenuEvents.BlackScreenDarken -=  OnBlackScreenDarken;
+            MenuEvents.BlackScreenDarken -= OnBlackScreenDarken;
         }
     }
 }

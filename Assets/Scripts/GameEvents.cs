@@ -8,7 +8,8 @@ namespace Match3
         public static GameEvents Singleton;
 
         public event Action<int> LoadLevel;
-        public int CurrentLevel { get; set; }
+        public int CurrentLevel { get;  private set; }
+
         private void Start()
         {
             if (!Singleton)
@@ -17,12 +18,12 @@ namespace Match3
                 DontDestroyOnLoad(gameObject);
             }
             else Destroy(gameObject);
-
         }
-        public void OnLoadLevel(int obj)
+
+        public void OnLoadLevel(int i)
         {
-            CurrentLevel = obj;
-            LoadLevel?.Invoke(obj);
+            CurrentLevel = i;
+            LoadLevel?.Invoke(i);
         }
     }
 }
