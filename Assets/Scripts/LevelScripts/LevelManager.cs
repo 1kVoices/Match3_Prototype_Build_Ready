@@ -2,14 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Match3.Data;
 using UnityEngine;
 
 namespace Match3
 {
-    public class LevelManager : MonoBehaviour
+    public class LevelManager : MonoBehaviour, IData
     {
+        private GameData _data;
         [SerializeField]
-        private Level _level;
+        private Level[] _levels;
         [SerializeField, Range(0.1f, 0.7f)]
         private float _chipsFallTime;
         [SerializeField]
@@ -26,6 +28,7 @@ namespace Match3
         private float _dragSens;
         [SerializeField]
         private float _hintDelay;
+        private Level _level;
         private GameTime _gameTime;
         private PlayerObjective _playerObjective;
         private MatchHelper _matchHelper;
@@ -58,6 +61,7 @@ namespace Match3
         private IEnumerator Start()
         {
             Singleton = this;
+            _level = _levels[_data.CurrentLevel];
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
             _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
@@ -234,7 +238,7 @@ namespace Match3
             if (_playerObjective.CurrentCount <= 0)
             {
                 print("You win");
-                UnityEditor.EditorApplication.isPaused = true;
+                _data.CurrentLevel++;
             }
             _destroyingRoutine = null;
             CheckPossibleMatches();
@@ -384,6 +388,16 @@ namespace Match3
                     cell.PointerClickEvent -= OnCellPointerClickEvent;
                 }
             }
+        }
+
+        public void LoadData(GameData data)
+        {
+            _data = data;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.CurrentLevel = _data.CurrentLevel;
         }
     }
 }

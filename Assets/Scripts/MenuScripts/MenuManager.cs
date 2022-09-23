@@ -1,20 +1,19 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Match3.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Match3
 {
-    public class MenuManager : MonoBehaviour
+    public class MenuManager : MonoBehaviour, IData
     {
-        [SerializeField]
-        private PlayerProgressComponent _player;
         [SerializeField]
         private Animator[] _pedroAnimators;
         [SerializeField]
         private Animator[] _levelAnimators;
         [SerializeField]
         private Animator _blackScreenAnimator;
+        private GameData _data;
 
         private static readonly int ShowUp = Animator.StringToHash("showUp");
         private static readonly int Coloring = Animator.StringToHash("coloring");
@@ -33,7 +32,10 @@ namespace Match3
             SceneManager.LoadScene(1);
         }
 
-        public void LoadLevel(int i) => GameEvents.Singleton.OnLoadLevel(i);
+        public void LoadLevel(int i)
+        {
+            GameEvents.Singleton.OnLoadLevel(i);
+        }
 
         public void AnimateLevelCircle(Animator levelAnimator)
         {
@@ -57,7 +59,7 @@ namespace Match3
                 await Task.Delay(100);
             }
 
-            for (int i = 0; i <= _player.PedroQuestProgress; i++)
+            for (int i = 0; i <= _data.CurrentLevel; i++)
             {
                 _levelAnimators[i].SetTrigger(Coloring);
             }
@@ -65,10 +67,16 @@ namespace Match3
 
         private void OnDestroy()
         {
-            SaveData.SavePlayerData(_player);
             MenuEvents.BlackScreenBleached -= OnBlackScreenBleached;
             MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
             MenuEvents.BlackScreenDarken -= OnBlackScreenDarken;
         }
+
+        public void LoadData(GameData data)
+        {
+            _data = data;
+        }
+
+        public void SaveData(ref GameData data) {}
     }
 }

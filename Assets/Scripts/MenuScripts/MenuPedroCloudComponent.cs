@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Linq;
+using Match3.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Match3
 {
-    public class MenuPedroCloudComponent : MonoBehaviour
+    public class MenuPedroCloudComponent : MonoBehaviour, IData
     {
         [SerializeField, Range(0, 0.1f)]
         private float _textDelay;
@@ -15,13 +16,12 @@ namespace Match3
         [SerializeField]
         private TextMeshProUGUI _cloudText;
         [SerializeField]
-        private PlayerProgressComponent _player;
-        [SerializeField]
         private Sprite[] _pedroEmotions;
         [SerializeField]
         private Image _pedroImage;
         private string[] _pedroQuestPhrases;
         private string[] _pedroHelloAgain;
+        private GameData _data;
 
         private void Start()
         {
@@ -43,9 +43,7 @@ namespace Match3
 
         public IEnumerator PedroQuestLine()
         {
-            bool isFirstStartUp = !_player.IsVeryFirstStart;
-
-            if (isFirstStartUp)
+            if (_data.WasFirstStart == false)
             {
                 for (int i = 0; i < _pedroQuestPhrases.Length; i++)
                 {
@@ -53,7 +51,7 @@ namespace Match3
                     if (_pedroImage.sprite != null) _pedroImage.sprite = _pedroEmotions[i];
                     yield return new WaitForSeconds(_phrasesDelay);
                 }
-                _player.IsVeryFirstStart = true;
+                _data.WasFirstStart = true;
             }
             else
             {
@@ -74,6 +72,16 @@ namespace Match3
                 index++;
                 yield return new WaitForSeconds(_textDelay);
             }
+        }
+
+        public void LoadData(GameData data)
+        {
+            _data = data;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.WasFirstStart = _data.WasFirstStart;
         }
     }
 }

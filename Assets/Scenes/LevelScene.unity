@@ -551,13 +551,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd1f07800363cbd4e9142581f24eb2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: {fileID: 1521800752}
+  _levels: []
   _chipsFallTime: 0.2
   _chipPrefabs:
   - {fileID: 8937101037149388376, guid: 2fbf6a7de6aecec4faf5b77b1f0ed377, type: 3}
   - {fileID: 2664799021703462553, guid: 72a53ad2419e4ce4593851f47807e10d, type: 3}
-  - {fileID: 2664799021703462553, guid: e1330abc3b52be34e8d4dd204f6addd8, type: 3}
   - {fileID: 2664799021703462553, guid: dd5ebf870dfcfdb43834855ecc050e9c, type: 3}
+  - {fileID: 2664799021703462553, guid: e1330abc3b52be34e8d4dd204f6addd8, type: 3}
   - {fileID: 2664799021703462553, guid: 6d389d68152bb2c4587b241ada814f35, type: 3}
   - {fileID: 2664799021703462553, guid: 422384ba2fe93884d9fffa4a028f55f5, type: 3}
   _specialM18: {fileID: 4913037546357221978, guid: fe10ff9b84fdd3a46b8830915980824f,
@@ -1452,18 +1452,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1521800752 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
-    type: 3}
-  m_PrefabInstance: {fileID: 1747885502}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e0cda1420b74d10a116d6446bbfd047, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1523882740
 GameObject:
   m_ObjectHideFlags: 0
