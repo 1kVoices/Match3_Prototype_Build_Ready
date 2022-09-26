@@ -11,8 +11,19 @@ namespace Match3.Data
         private GameData _gameData;
         private DataFileHandler _dataHandler;
         private List<IData> _dataObjects;
+        public static DataManager Singleton;
 
-        private void Start()
+        private void Awake()
+        {
+            if (!Singleton)
+            {
+                Singleton = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else Destroy(gameObject);
+        }
+
+        public void Start()
         {
             _dataHandler = new DataFileHandler(_encrypt);
             _dataObjects = FindAllData();

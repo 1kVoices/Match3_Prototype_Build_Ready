@@ -7,7 +7,7 @@ namespace Match3
     {
         [SerializeField]
         private ChipType _targetType;
-        [SerializeField, Range(10,100)]
+        [SerializeField, Range(10,300)]
         private int _chipsToDestroy;
         [SerializeField,Range(0,3)]
         private int _removeChips;

@@ -1,19 +1,15 @@
-﻿using System.Threading.Tasks;
-using Match3.Data;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Match3
 {
-    public class MenuManager : MonoBehaviour, IData
+    public class MenuManager : MonoBehaviour
     {
         [SerializeField]
         private Animator[] _pedroAnimators;
         [SerializeField]
-        private Animator[] _levelAnimators;
-        [SerializeField]
         private Animator _blackScreenAnimator;
-        private GameData _data;
+        private DifficultySwitcher _switcher;
 
         private static readonly int ShowUp = Animator.StringToHash("showUp");
         private static readonly int Coloring = Animator.StringToHash("coloring");
@@ -25,6 +21,7 @@ namespace Match3
             MenuEvents.BlackScreenBleached += OnBlackScreenBleached;
             MenuEvents.PedroAskedHelp += OnPedroAskedHelp;
             MenuEvents.BlackScreenDarken += OnBlackScreenDarken;
+            _switcher = FindObjectOfType<DifficultySwitcher>();
         }
 
         private static void OnBlackScreenDarken()
@@ -46,23 +43,12 @@ namespace Match3
         private void OnBlackScreenBleached()
         {
             foreach (Animator anim in _pedroAnimators)
-            {
                 anim.SetTrigger(ShowUp);
-            }
         }
 
-        private async void OnPedroAskedHelp()
+        private void OnPedroAskedHelp()
         {
-            foreach (Animator anim in _levelAnimators)
-            {
-                anim.SetTrigger(ShowUp);
-                await Task.Delay(100);
-            }
-
-            for (int i = 0; i <= _data.CurrentLevel; i++)
-            {
-                _levelAnimators[i].SetTrigger(Coloring);
-            }
+            _switcher.ActivateSwitchers();
         }
 
         private void OnDestroy()
@@ -71,12 +57,5 @@ namespace Match3
             MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
             MenuEvents.BlackScreenDarken -= OnBlackScreenDarken;
         }
-
-        public void LoadData(GameData data)
-        {
-            _data = data;
-        }
-
-        public void SaveData(ref GameData data) {}
     }
 }

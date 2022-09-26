@@ -6,6 +6,7 @@ namespace Match3
     {
         [SerializeField]
         private bool _isWhitening;
+
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             if (_isWhitening) MenuEvents.OnBlackScreenBleached();

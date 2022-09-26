@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Match3
 {
-    public class AnimatorEventReceiver : MonoBehaviour
+    public class ChipAnimatorEventReceiver : MonoBehaviour
     {
         [SerializeField]
         private StandardChip _chip;

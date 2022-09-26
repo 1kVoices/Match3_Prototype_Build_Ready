@@ -32,6 +32,7 @@ namespace Match3
         }
 
         public void StartTimer() => _isActive = true;
+        public void StopTimer() => _isActive = false;
 
         private void ConvertToTimeSpan()
         {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Match3
 {
@@ -13,10 +15,13 @@ namespace Match3
         private string _colorElement0;
         private string _colorElement1;
         private string _colorElement2;
+        private WaitForSecondsRealtime _delay;
 
         protected override void Init()
         {
-            LevelManager.Singleton.OnDestroyChip += ChipDestroyed;
+            LevelManager.Singleton.OnChipSequenceDestroy += Destroyed;
+            LevelManager.Singleton.OnSpecialActivateEvent += SpecialActivate;
+            _delay = new WaitForSecondsRealtime(1f);
             _questText.fontSize = 25;
             _baseColor = "2C3E50";
             _greenColor = "27AE60";
@@ -40,7 +45,13 @@ namespace Match3
             UpdateCount();
         }
 
-        private void ChipDestroyed(ChipType chip)
+        private void SpecialActivate(SpecialChipType obj)
+        {
+            DarkenAll();
+            _currentElement = 0;
+        }
+
+        private void Destroyed(ChipType chip)
         {
             _incomingChip = chip;
 
@@ -56,10 +67,17 @@ namespace Match3
             }
             if (_currentElement == 3)
             {
-                ConditionMet();
-                DarkenAll();
+                StartCoroutine(DelayedDarken());
                 _currentElement = 0;
+                ConditionMet();
             }
+            UpdateCount();
+        }
+
+        private IEnumerator DelayedDarken()
+        {
+            yield return _delay;
+            DarkenAll();
             UpdateCount();
         }
 
@@ -88,7 +106,8 @@ namespace Match3
 
         protected override void Completed()
         {
-            LevelManager.Singleton.OnDestroyChip -= ChipDestroyed;
+            LevelManager.Singleton.OnChipSequenceDestroy -= Destroyed;
+            LevelManager.Singleton.OnSpecialActivateEvent -= SpecialActivate;
         }
 
         protected override void UpdateCount()

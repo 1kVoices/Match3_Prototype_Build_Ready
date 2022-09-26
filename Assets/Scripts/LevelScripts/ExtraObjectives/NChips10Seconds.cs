@@ -9,7 +9,7 @@ namespace Match3
 
         protected override void Init()
         {
-            LevelManager.Singleton.OnDestroyChip += ChipDestroyed;
+            LevelManager.Singleton.OnDefaultDestroy += Destroyed;
             LevelManager.Singleton.OnPlayerInput += PlayerInput;
             _timerReady = false;
             _timer = 10;
@@ -17,7 +17,7 @@ namespace Match3
             UpdateText();
         }
 
-        private void ChipDestroyed(ChipType obj)
+        private void Destroyed()
         {
             ConditionMet();
         }
@@ -49,7 +49,7 @@ namespace Match3
         protected override void Completed()
         {
             LevelManager.Singleton.OnPlayerInput -= PlayerInput;
-            LevelManager.Singleton.OnDestroyChip -= ChipDestroyed;
+            LevelManager.Singleton.OnDefaultDestroy -= Destroyed;
         }
     }
 }

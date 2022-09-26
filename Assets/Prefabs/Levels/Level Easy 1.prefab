@@ -321,20 +321,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Easy 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6816897839586155932, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c62bbde08a5acf94bad9794db2513f80,
+        type: 3}
     - target: {fileID: 6816897839586155933, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: m_Color.r
-      value: 0.5849056
+      value: 0.4933718
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155933, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.5849056
+      value: 0.5943396
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155933, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.5849056
+      value: 0.09251513
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155933, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
@@ -550,7 +556,7 @@ PrefabInstance:
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: _removeChips
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}

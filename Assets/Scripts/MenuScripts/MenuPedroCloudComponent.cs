@@ -48,7 +48,7 @@ namespace Match3
                 for (int i = 0; i < _pedroQuestPhrases.Length; i++)
                 {
                     StartCoroutine(TextFiller(_pedroQuestPhrases[i]));
-                    if (_pedroImage.sprite != null) _pedroImage.sprite = _pedroEmotions[i];
+                    _pedroImage.sprite = _pedroEmotions[i];
                     yield return new WaitForSeconds(_phrasesDelay);
                 }
                 _data.WasFirstStart = true;
@@ -58,9 +58,10 @@ namespace Match3
                 StartCoroutine(TextFiller(_pedroHelloAgain[Random.Range(0, _pedroHelloAgain.Length)]));
                 _pedroImage.sprite = _pedroEmotions.First();
             }
-
             MenuEvents.OnPedroAskedHelp();
         }
+
+        // private IEnumerator Delayed
 
         private IEnumerator TextFiller(string entireText)
         {

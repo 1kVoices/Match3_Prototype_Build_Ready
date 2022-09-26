@@ -55,19 +55,21 @@ namespace Match3
         public event Action<Cell> OnPlayerClick;
         public event Action<SpecialChipType> OnSpecialActivateEvent;
         public event Action OnSpawnSpecial;
-        public event Action<ChipType> OnDestroyChip;
+        public event Action<ChipType> OnChipSequenceDestroy;
+        public event Action OnDefaultDestroy;
         public event Action OnPlayerInput;
 
         private IEnumerator Start()
         {
+            DataManager.Singleton.Start();
+            _level = Instantiate(_levels[GameEvents.Singleton.LoadingLevel]);
             Singleton = this;
-            _level = _levels[_data.CurrentLevel];
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
             _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
             _playerObjective = FindObjectOfType<PlayerObjective>();
             _gameTime = FindObjectOfType<GameTime>();
-            _gameTime.OutOfTimeEvent += GameTimeIsUp;
+            _gameTime.OutOfTimeEvent += GameOver;
             _hintTime = _hintDelay;
             ChipsCount = _level.RemoveChips;
             _destroyDelay = new WaitForSeconds(0.05f);
@@ -155,6 +157,7 @@ namespace Match3
             SpecialChip specialChip = null;
             if (sender.NotNull())
                 specialChip = sender.CurrentChip.GetComponent<SpecialChip>();
+
             if (specialChip.IsNull() && sender.NotNull())
             {
                 if (cells.Length == 4)
@@ -171,12 +174,9 @@ namespace Match3
                         _cellsToSpawnSpecial.Add(sender, _specialM18);
                 }
 
-                if (cells.Length >= 4 && cells.All(cell => !cell.CurrentChip.IsTransferred))
-                    OnSpawnSpecial?.Invoke();
-
                 if (cells.All(cell => !cell.CurrentChip.IsTransferred))
                 {
-                    OnDestroyChip?.Invoke(cells.First().CurrentChip.Type);
+                    OnChipSequenceDestroy?.Invoke(cells.First().CurrentChip.Type);
                     if (cells.Length >= 4)
                         OnSpawnSpecial?.Invoke();
                 }
@@ -218,6 +218,7 @@ namespace Match3
                         _playerObjective.UpdateCount();
 
                     cell.ChipFade();
+                    OnDefaultDestroy?.Invoke();
                 }
 
                 foreach (var pair in _cellsToSpawnSpecial)
@@ -237,8 +238,11 @@ namespace Match3
 
             if (_playerObjective.CurrentCount <= 0)
             {
-                print("You win");
-                _data.CurrentLevel++;
+                GameOver();
+                if (_data.CurrentLevel < 11)
+                    _data.CurrentLevel++;
+                yield break;
+                //todo
             }
             _destroyingRoutine = null;
             CheckPossibleMatches();
@@ -287,12 +291,12 @@ namespace Match3
                 SuggestMatch(_matchHelper.PossibleMatches);
         }
 
-        private void GameTimeIsUp()
+        private void GameOver()
         {
             CheckHint();
             _hintActive = true;
+            _gameTime.StopTimer();
             SetInputState(false);
-            Debug.Log("You lost");
         }
 
         /// <summary>
@@ -390,10 +394,7 @@ namespace Match3
             }
         }
 
-        public void LoadData(GameData data)
-        {
-            _data = data;
-        }
+        public void LoadData(GameData data) => _data = data;
 
         public void SaveData(ref GameData data)
         {

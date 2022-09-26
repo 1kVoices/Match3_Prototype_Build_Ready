@@ -8,7 +8,7 @@ namespace Match3
         public static GameEvents Singleton;
 
         public event Action<int> LoadLevel;
-        public int CurrentLevel { get;  private set; }
+        public int LoadingLevel { get;  private set; }
 
         private void Start()
         {
@@ -22,7 +22,7 @@ namespace Match3
 
         public void OnLoadLevel(int i)
         {
-            CurrentLevel = i;
+            LoadingLevel = i;
             LoadLevel?.Invoke(i);
         }
     }
