@@ -46,74 +46,65 @@ namespace Match3
                 cell.SetCurrentChip(caller.CurrentChip);
             }
 
-            Cell top = cell.Top;
-            Cell bot = cell.Bot;
-            Cell left = cell.Left;
-            Cell right = cell.Right;
-            Cell topTop = cell.TopTop;
-            Cell botBot = cell.BotBot;
-            Cell leftLeft = cell.LeftLeft;
-            Cell rightRight = cell.RightRight;
-
             #region Horizontal
-            if (CompareChips(cell, left) && CompareChips(cell, right))
+            if (CompareChips(cell, cell.Left) && CompareChips(cell, cell.Right))
             {
                 //00_00
-                if (CompareChips(cell, leftLeft) && CompareChips(cell, rightRight))
+                if (CompareChips(cell, cell.Left.Left) && CompareChips(cell, cell.Right.Right))
                 {
-                    fillingList.Add(leftLeft);
-                    fillingList.Add(rightRight);
+                    fillingList.Add(cell.Left.Left);
+                    fillingList.Add(cell.Right.Right);
                 }
                 //00_0
-                if (CompareChips(cell, leftLeft)) fillingList.Add(leftLeft);
+                if (CompareChips(cell, cell.Left.Left)) fillingList.Add(cell.Left.Left);
                 //0_00
-                if (CompareChips(cell, rightRight)) fillingList.Add(rightRight);
+                if (CompareChips(cell, cell.Right.Right)) fillingList.Add(cell.Right.Right);
                 //0_0
-                fillingList.Add(left);
-                fillingList.Add(right);
+                fillingList.Add(cell.Left);
+                fillingList.Add(cell.Right);
             }
             //00_
-            if (CompareChips(cell, left) && CompareChips(cell, leftLeft))
+            if (CompareChips(cell, cell.Left) && CompareChips(cell, cell.Left.Left))
             {
-                fillingList.Add(left);
-                fillingList.Add(leftLeft);
+                fillingList.Add(cell.Left);
+                fillingList.Add(cell.Left.Left);
             }
             //_00
-            if (CompareChips(cell, right) && CompareChips(cell, rightRight))
+            if (CompareChips(cell, cell.Right) && CompareChips(cell, cell.Right.Right))
             {
-                fillingList.Add(right);
-                fillingList.Add(rightRight);
+                fillingList.Add(cell.Right);
+                fillingList.Add(cell.Right.Right);
             }
             #endregion
 
             #region Vertical
-            if (CompareChips(cell, top) && CompareChips(cell, bot)) //top is left
+            if (CompareChips(cell, cell.Top) && CompareChips(cell, cell.Bot)) //top is left
             {
                 //00_00
-                if (CompareChips(cell, topTop) && CompareChips(cell, botBot))
+                if (CompareChips(cell, cell.Top.Top) && CompareChips(cell, cell.Bot.Bot))
                 {
-                    fillingList.Add(topTop);
-                    fillingList.Add(botBot);
+                    fillingList.Add(cell.Top.Top);
+                    fillingList.Add(cell.Bot.Bot);
                 }
                 //00_0
-                if (CompareChips(cell, topTop)) fillingList.Add(topTop);
+                if (CompareChips(cell, cell.Top.Top)) fillingList.Add(cell.Top.Top);
                 //0_00
-                if (CompareChips(cell, botBot)) fillingList.Add(botBot);
+                if (CompareChips(cell, cell.Bot.Bot)) fillingList.Add(cell.Bot.Bot);
                 //0_0
-                fillingList.Add(top);
-                fillingList.Add(bot);
+                fillingList.Add(cell.Top);
+                fillingList.Add(cell.Bot);
             }
             //00_
-            if (CompareChips(cell, top) && CompareChips(cell, topTop))
+            if (CompareChips(cell, cell.Top) && CompareChips(cell, cell.Top.Top))
             {
-                fillingList.Add(top);
-                fillingList.Add(topTop);
+                fillingList.Add(cell.Top);
+                fillingList.Add(cell.Top.Top);
             }
             //_00
-            if (CompareChips(cell, bot) && CompareChips(cell, botBot))
+            if (CompareChips(cell, cell.Bot) && CompareChips(cell, cell.Bot.Bot))
             {
-                fillingList.Add(bot);
-                fillingList.Add(botBot);
+                fillingList.Add(cell.Bot);
+                fillingList.Add(cell.Bot.Bot);
             }
             #endregion
 

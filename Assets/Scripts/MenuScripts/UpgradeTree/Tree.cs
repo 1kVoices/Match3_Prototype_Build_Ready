@@ -10,6 +10,7 @@ namespace Match3
         protected Branch MidBranch;
         [SerializeField]
         protected Branch RightBranch;
+        protected GameData Data;
 
         public abstract void Upgrade(Branch branch, int level);
     }

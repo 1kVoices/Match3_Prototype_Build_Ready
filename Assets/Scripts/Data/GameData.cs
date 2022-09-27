@@ -1,4 +1,4 @@
-﻿namespace Match3.Data
+﻿namespace Match3
 {
     [System.Serializable]
     public class GameData
@@ -8,7 +8,6 @@
         public int Money;
         public int PlayerLevel;
         public int UpgradePoints;
-        public int M18RadiusLevel;
         public int HammerAmountLevel;
         public int HammerAmount;
         public int HammerHitAmountLevel;
@@ -16,9 +15,16 @@
         public int HammerCdLevel;
         public int HammerCd;
         public int SledgeHammerAmountLevel;
+        public int SledgeHammerAmount;
         public int SledgeHammerHitAmountLevel;
+        public int SledgeHammerHitAmount;
+        public int SledgeHammerCdLevel;
+        public int SledgeHammerCd;
+        public int SpawnChanceLevel;
+        public int ExtraChance;
         public int ExpAmountLevel;
-        public int SpawnChance;
+        public int ExtraExp;
+        public int M18RadiusLevel;
 
         public GameData()
         {
@@ -35,9 +41,16 @@
             HammerCdLevel = 0;
             HammerCd = 15;
             SledgeHammerAmountLevel = 0;
+            SledgeHammerAmount = 1;
             SledgeHammerHitAmountLevel = 0;
+            SledgeHammerHitAmount = 1;
+            SledgeHammerCdLevel = 0;
+            SledgeHammerCd = 15;
+            SpawnChanceLevel = 0;
+            ExtraChance = 0;
             ExpAmountLevel = 0;
-            SpawnChance = 0;
+            ExtraExp = 0;
+            M18RadiusLevel = 0;
         }
     }
 }

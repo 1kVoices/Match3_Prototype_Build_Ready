@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Match3.Data
+namespace Match3
 {
     public class DataManager : MonoBehaviour
     {
@@ -11,17 +11,17 @@ namespace Match3.Data
         private GameData _gameData;
         private DataFileHandler _dataHandler;
         private List<IData> _dataObjects;
-        public static DataManager Singleton;
+        // public static DataManager Singleton;
 
-        private void Awake()
-        {
-            if (!Singleton)
-            {
-                Singleton = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else Destroy(gameObject);
-        }
+        // private void Awake()
+        // {
+        //     if (!Singleton)
+        //     {
+        //         Singleton = this;
+        //         DontDestroyOnLoad(gameObject);
+        //     }
+        //     else Destroy(gameObject);
+        // }
 
         public void Start()
         {

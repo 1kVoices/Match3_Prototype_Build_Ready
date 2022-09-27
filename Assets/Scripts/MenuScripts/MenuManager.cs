@@ -3,13 +3,14 @@ using UnityEngine.SceneManagement;
 
 namespace Match3
 {
-    public class MenuManager : MonoBehaviour
+    public class MenuManager : MonoBehaviour, IData
     {
         [SerializeField]
         private Animator[] _pedroAnimators;
         [SerializeField]
         private Animator _blackScreenAnimator;
         private DifficultySwitcher _switcher;
+        private GameData _data;
 
         private static readonly int ShowUp = Animator.StringToHash("showUp");
         private static readonly int Coloring = Animator.StringToHash("coloring");
@@ -31,7 +32,7 @@ namespace Match3
 
         public void LoadLevel(int i)
         {
-            GameEvents.Singleton.OnLoadLevel(i);
+            _data.CurrentLevel = i;
         }
 
         public void AnimateLevelCircle(Animator levelAnimator)
@@ -56,6 +57,16 @@ namespace Match3
             MenuEvents.BlackScreenBleached -= OnBlackScreenBleached;
             MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
             MenuEvents.BlackScreenDarken -= OnBlackScreenDarken;
+        }
+
+        public void LoadData(GameData data)
+        {
+            _data = data;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.CurrentLevel = _data.CurrentLevel;
         }
     }
 }

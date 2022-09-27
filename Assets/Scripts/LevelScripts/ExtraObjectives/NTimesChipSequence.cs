@@ -31,7 +31,7 @@ namespace Match3
 
             _sequence = new LinkedList<ChipType>();
 
-            var activeChipTypes = Extensions.ChipsOnMap().Select(chip => chip.Type).Distinct().ToArray();
+            var activeChipTypes = LevelManager.Singleton.ChipChances.Select(chip => chip.Key.Type).ToArray();
 
             while (_sequence.Count != 3)
             {
@@ -49,6 +49,7 @@ namespace Match3
         {
             DarkenAll();
             _currentElement = 0;
+            UpdateCount();
         }
 
         private void Destroyed(ChipType chip)

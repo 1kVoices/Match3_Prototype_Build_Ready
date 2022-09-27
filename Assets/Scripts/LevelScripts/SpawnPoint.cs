@@ -6,8 +6,7 @@ namespace Match3
     {
         public void GenerateChip(Cell callerCell)
         {
-            StandardChip[] prefabs = LevelManager.Singleton.ChipPrefabs;
-            StandardChip newChip = Instantiate(prefabs[UnityEngine.Random.Range(0, prefabs.Length-LevelManager.Singleton.ChipsCount)], transform);
+            StandardChip newChip = Instantiate(LevelManager.Singleton.RandomChip(), transform);
             newChip.FastShowUp();
             StartCoroutine(newChip.Transfer(callerCell, LevelManager.Singleton.ChipsFallTime));
 
@@ -22,6 +21,5 @@ namespace Match3
             // chip.ReservedBy = callerCell;
             // chip.Transfer(callerCell);
         }
-
     }
 }

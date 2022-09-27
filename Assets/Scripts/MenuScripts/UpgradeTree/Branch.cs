@@ -28,7 +28,7 @@ namespace Match3
             switch (i)
             {
                 case 0:
-                    return true;
+                    return true; //cost
                 case 1:
                     return _leaves[0].IsUpgraded;
                 case 2:

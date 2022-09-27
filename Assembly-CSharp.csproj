@@ -63,7 +63,6 @@
      <Compile Include="Assets\Scripts\Data\GameData.cs" />
      <Compile Include="Assets\Scripts\Data\IData.cs" />
      <Compile Include="Assets\Scripts\Extensions.cs" />
-     <Compile Include="Assets\Scripts\GameEvents.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Cell.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\CellHighlighter.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ChipAnimatorEventReceiver.cs" />
@@ -96,9 +95,13 @@
      <Compile Include="Assets\Scripts\MenuScripts\MenuPedroCloudComponent.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeManager.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Branch.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\FruitsTree.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\HammerTree.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Hint.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Leaf.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\SledgeHammerTree.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Tree.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\TreeManager.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

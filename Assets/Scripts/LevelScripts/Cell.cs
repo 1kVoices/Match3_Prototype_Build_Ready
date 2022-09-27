@@ -9,21 +9,16 @@ namespace Match3
 {
     public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
-        [SerializeField] //todo
-        public StandardChip CurrentChip; //{ get; private set; }
+        public StandardChip CurrentChip { get; private set; }
         public StandardChip PreviousChip { get; private set; }
         public StandardChip TemporaryChip { get; private set; }
         private SpecialChip _currentSpecial;
         private int _cellsLayer;
         private int _spawnsLayer;
         public Cell Top { get; private set; }
-        public Cell TopTop { get; private set; }
         public Cell Bot { get; private set; }
-        public Cell BotBot { get; private set; }
         public Cell Left { get; private set; }
-        public Cell LeftLeft { get; private set; }
         public Cell Right { get; private set; }
-        public Cell RightRight { get; private set; }
         private List<Cell> _poolingNeighbours;
         private bool IsMatch { get; set; }
         private Cell _pulledBy;
@@ -41,7 +36,6 @@ namespace Match3
             _cellsLayer = LayerMask.GetMask("Level");
             _spawnsLayer = LayerMask.GetMask("Spawn");
             FindNeighbours();
-            StartCoroutine(GenerateChipRoutine());
         }
 
         public void CheckMatches(StandardChip newChip)
@@ -90,7 +84,11 @@ namespace Match3
                     break;
             }
         }
-
+        /// <summary>
+        /// Пуллинг - вытягивание.
+        /// Этот метод устанавливает всем cells в поле _pulledBy себя. Если у клетки уже есть _pulledBy, то данная клетка
+        /// объединяет свой _poolingNeighbours лист с первой. Это позволяет находить редкие комбинации типа зиг-заг и прочие
+        /// </summary>
         private void Pulling(Cell[] cells)
         {
             if (!_poolingNeighbours.Contains(this))
@@ -114,7 +112,10 @@ namespace Match3
                 }
             }
         }
-
+        /// <summary>
+        /// Пуллинг - отправка в пул.
+        /// В данном случае сначала отправка к менеджеру и потом в пул
+        /// </summary>
         private void Pooling()
         {
             if (CurrentChip.IsNull()) return;
@@ -176,53 +177,6 @@ namespace Match3
             if (leftRay.collider.NotNull()) Left = leftRay.collider.GetComponent<Cell>();
             if (rightRay.collider.NotNull()) Right = rightRay.collider.GetComponent<Cell>();
             if (spawnRay.collider.NotNull()) SpawnPoint = spawnRay.collider.GetComponent<SpawnPoint>();
-
-            StartCoroutine(FindExtraNeighbours());
-        }
-
-        private IEnumerator FindExtraNeighbours()
-        {
-            yield return null;
-            TopTop = Top.NotNull()
-                ? Top.Top
-                : null;
-            BotBot = Bot.NotNull()
-                ? Bot.Bot
-                : null;
-            LeftLeft = Left.NotNull()
-                ? Left.Left
-                : null;
-            RightRight = Right.NotNull()
-                ? Right.Right
-                : null;
-        }
-
-        private IEnumerator GenerateChipRoutine()
-        {
-            if (CurrentChip.NotNull()) //todo
-            {
-                CurrentChip = Instantiate(CurrentChip, transform);
-                CurrentChip.SetCurrentCell(this);
-                yield break;
-            }
-
-            ChipInstance(LevelManager.Singleton.ChipPrefabs);
-            yield return null;
-
-            if ((!Extensions.CompareChips(this, Top) || !Extensions.CompareChips(this, Bot)) &&
-                (!Extensions.CompareChips(this, Left) || !Extensions.CompareChips(this, Right)))
-                yield break;
-
-            Pool.Singleton.Pull(CurrentChip);
-
-            Cell[] neighbours = { Top, Bot, Left, Right };
-
-            var allowedChips = LevelManager.Singleton.ChipPrefabs
-                .Where(chip => !neighbours.Where(cell => cell.NotNull())
-                .Select(cell => cell.CurrentChip.Type)
-                .Contains(chip.Type)).ToArray();
-
-            ChipInstance(allowedChips);
         }
 
         public void Highlight(bool isActivate)
@@ -238,13 +192,6 @@ namespace Match3
         public void SetTemporaryChip(StandardChip newChip) => TemporaryChip = newChip;
         public void SetPulledByCell(Cell cell) => _pulledBy = cell;
         public void SetHighlightState(bool state) => IsHighlighting = state;
-
-        private void ChipInstance(IReadOnlyList<StandardChip> array)
-        {
-            SetCurrentChip(Instantiate(array[UnityEngine.Random.Range(0, array.Count - LevelManager.Singleton.ChipsCount)], transform));
-            CurrentChip.SetCurrentCell(this);
-        }
-
         public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
         public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
 

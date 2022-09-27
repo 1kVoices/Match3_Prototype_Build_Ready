@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Match3.Data;
 using UnityEngine;
 
 namespace Match3
@@ -43,14 +42,15 @@ namespace Match3
         private bool _toolActive;
         private bool _hintActive;
         private float _hintTime;
+        private int _chipsCount;
         private Coroutine _destroyingRoutine;
         private LinkedList<Cell> _fadingCells;
         private Dictionary<Cell, SpecialChip> _cellsToSpawnSpecial;
         private WaitForSeconds _destroyDelay;
         public static LevelManager Singleton;
         public LinkedList<Cell> AllCells { get; private set; }
-        public int ChipsCount { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
+        public Dictionary<StandardChip, int> ChipChances { get; private set; }
         public float ChipsFallTime => _chipsFallTime;
         public event Action<Cell> OnPlayerClick;
         public event Action<SpecialChipType> OnSpecialActivateEvent;
@@ -61,22 +61,33 @@ namespace Match3
 
         private IEnumerator Start()
         {
-            DataManager.Singleton.Start();
-            _level = Instantiate(_levels[GameEvents.Singleton.LoadingLevel]);
             Singleton = this;
+            _level = Instantiate(_levels[_data.CurrentLevel]);
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
+            ChipChances = new Dictionary<StandardChip, int>();
             _cellsToSpawnSpecial = new Dictionary<Cell, SpecialChip>();
             _playerObjective = FindObjectOfType<PlayerObjective>();
+            _playerObjective.SetCurrentObjective(_level.TargetType, _level.ChipsToDestroy);
             _gameTime = FindObjectOfType<GameTime>();
             _gameTime.OutOfTimeEvent += GameOver;
             _hintTime = _hintDelay;
-            ChipsCount = _level.RemoveChips;
+            _chipsCount = _level.RemoveChips;
             _destroyDelay = new WaitForSeconds(0.05f);
             _hintActive = true;
             _matchHelper = new MatchHelper();
             _controls = new Controls();
             _controls.Enable();
+
+            for (int i = 0; i < _chipPrefabs.Length - _chipsCount; i++)
+            {
+                if (_chipPrefabs[i].Type == _level.TargetType)
+                {
+                    ChipChances.Add(_chipPrefabs[i],  1 + _data.ExtraChance);
+                    continue;
+                }
+                ChipChances.Add(_chipPrefabs[i], 1);
+            }
 
             foreach (Line line in _level.LevelLayout)
             {
@@ -88,25 +99,69 @@ namespace Match3
                     AllCells.AddLast(cell);
                 }
             }
-            StartCoroutine(ChipsShowUp());
             yield return null;
             _gameTime.SetTimer(_level.LevelTime * 60);
+            GenerateChip();
+            StartCoroutine(ChipsShowUp());
+        }
+
+        public StandardChip RandomChip()
+        {
+            var sum = ChipChances.Sum(chip => chip.Value);
+            var random = UnityEngine.Random.Range(0, sum);
+
+            foreach (var kvp in ChipChances)
+            {
+                if (random < kvp.Value)
+                    return kvp.Key;
+                random -= kvp.Value;
+            }
+            return null;
+        }
+
+        private void GenerateChip()
+        {
+            foreach (Cell currentCell in AllCells)
+            {
+                StandardChip newChip = RandomChip();
+                if (currentCell.Left.NotNull() && currentCell.Left.CurrentChip.Type == newChip.Type &&
+                    currentCell.Left.Left.NotNull() && currentCell.Left.Left.CurrentChip.Type == newChip.Type ||
+                    currentCell.Bot.NotNull() && currentCell.Bot.CurrentChip.Type == newChip.Type &&
+                    currentCell.Bot.Bot.NotNull() && currentCell.Bot.Bot.CurrentChip.Type == newChip.Type)
+                {
+                    {
+                        Cell[] neighbours =
+                        {
+                            currentCell.Left, currentCell.Left ? currentCell.Left.Left : null,
+                            currentCell.Bot, currentCell.Bot ? currentCell.Bot.Bot : null
+                        };
+
+                        var allowedChips = _chipPrefabs
+                            .Where(chip => !neighbours.Where(cell => cell.NotNull())
+                                .Select(cell => cell.CurrentChip.Type)
+                                .Contains(chip.Type)).ToArray();
+
+                        newChip = allowedChips[UnityEngine.Random.Range(0, allowedChips.Length - _chipsCount)];
+                        currentCell.SetCurrentChip(newChip);
+                    }
+                }
+                else currentCell.SetCurrentChip(newChip);
+
+                currentCell.SetCurrentChip(Instantiate(currentCell.CurrentChip, currentCell.transform));
+                currentCell.CurrentChip.SetCurrentCell(currentCell);
+            }
         }
 
         private IEnumerator ChipsShowUp() //todo
         {
             yield return new WaitForSeconds(0.3f);
 
-            _playerObjective.SetCurrentObjective(_level.TargetType, _level.ChipsToDestroy);
-
-            foreach (Line line in _level.LevelLayout)
+            foreach (Cell cell in AllCells)
             {
-                foreach (Cell cell in line.LineCells)
-                {
-                    cell.CurrentChip.ShowUp();
-                    yield return null;
-                }
+                cell.CurrentChip.ShowUp();
+                yield return null;
             }
+
             yield return new WaitUntil(() => _level.LevelLayout.All(line => line.LineCells.All(x => x.CurrentChip.IsInteractable)));
             CheckPossibleMatches();
             SetInputState(true);
@@ -114,7 +169,6 @@ namespace Match3
             _hintActive = false;
             _gameTime.StartTimer();
         }
-
         /// <summary>
         /// Метод получения новой фишки.
         /// Идет по списку всех клеток на поле и если у клетки нет фишки,
@@ -200,7 +254,6 @@ namespace Match3
             if (_destroyingRoutine.IsNull())
                 _destroyingRoutine = StartCoroutine(WaitForDestroy());
         }
-
         /// <summary>
         /// Задача этой корутины запустится один раз и неважно кто именно ее запустит
         /// Поэтому в самом начале есть оджидание наполнения списка _fadingCells
@@ -266,7 +319,6 @@ namespace Match3
             foreach (Cell cell in cells)
                 cell.Highlight(true);
         }
-
         /// <summary>
         /// Если подсказка активна - метод ее выключает
         /// </summary>
@@ -298,7 +350,6 @@ namespace Match3
             _gameTime.StopTimer();
             SetInputState(false);
         }
-
         /// <summary>
         /// В прототипе есть редкие и крайне редкие события, инпут пользователя в которых
         /// может привести к ошибкам, и в связи с этим он блокируется
@@ -395,10 +446,6 @@ namespace Match3
         }
 
         public void LoadData(GameData data) => _data = data;
-
-        public void SaveData(ref GameData data)
-        {
-            data.CurrentLevel = _data.CurrentLevel;
-        }
+        public void SaveData(ref GameData data) => data.CurrentLevel = _data.CurrentLevel;
     }
 }

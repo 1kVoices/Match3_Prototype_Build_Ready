@@ -225,8 +225,7 @@ PrefabInstance:
         type: 3}
       propertyPath: CurrentChip
       value: 
-      objectReference: {fileID: 4913037546357221978, guid: 2656f057e07a1e448963cb873a014b68,
-        type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 6114473469264753175, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: m_IsActive

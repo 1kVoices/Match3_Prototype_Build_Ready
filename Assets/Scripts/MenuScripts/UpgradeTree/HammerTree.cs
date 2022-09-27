@@ -1,27 +1,17 @@
-﻿using Match3.Data;
-
-namespace Match3
+﻿namespace Match3
 {
     public class HammerTree : Tree, IData
     {
-        private GameData _data;
-
         private void Start()
         {
-            for (int i = 0; i < _data.HammerAmountLevel; i++)
-            {
+            for (int i = 0; i < Data.HammerAmountLevel; i++)
                 LeftBranch.Leaves[i].Upgrade();
-            }
 
-            for (int i = 0; i < _data.HammerHitAmount; i++)
-            {
-                // MidBranch.Leaves[i].Upgrade();
-            }
+            for (int i = 0; i < Data.HammerHitAmountLevel; i++)
+                MidBranch.Leaves[i].Upgrade();
 
-            for (int i = 0; i < _data.HammerCdLevel; i++)
-            {
-                // RightBranch.Leaves[i].Upgrade();
-            }
+            for (int i = 0; i < Data.HammerCdLevel; i++)
+                RightBranch.Leaves[i].Upgrade();
         }
 
         public override void Upgrade(Branch branch, int level)
@@ -31,16 +21,16 @@ namespace Match3
                 switch (level)
                 {
                     case 0:
-                        _data.HammerAmount = 2;
-                        _data.HammerAmountLevel = 1;
+                        Data.HammerAmount = 2;
+                        Data.HammerAmountLevel = 1;
                         break;
                     case 1:
-                        _data.HammerAmount = 3;
-                        _data.HammerAmountLevel = 2;
+                        Data.HammerAmount = 3;
+                        Data.HammerAmountLevel = 2;
                         break;
                     case 2:
-                        _data.HammerAmount = 4;
-                        _data.HammerAmountLevel = 3;
+                        Data.HammerAmount = 4;
+                        Data.HammerAmountLevel = 3;
                         break;
                 }
             }
@@ -49,16 +39,16 @@ namespace Match3
                 switch (level)
                 {
                     case 0:
-                        _data.HammerHitAmount = 2;
-                        _data.HammerAmountLevel = 1;
+                        Data.HammerHitAmount = 2;
+                        Data.HammerHitAmountLevel = 1;
                         break;
                     case 1:
-                        _data.HammerHitAmount = 3;
-                        _data.HammerAmountLevel = 2;
+                        Data.HammerHitAmount = 3;
+                        Data.HammerHitAmountLevel = 2;
                         break;
                     case 2:
-                        _data.HammerHitAmount = 4;
-                        _data.HammerAmountLevel = 3;
+                        Data.HammerHitAmount = 4;
+                        Data.HammerHitAmountLevel = 3;
                         break;
                 }
             }
@@ -67,16 +57,16 @@ namespace Match3
                 switch (level)
                 {
                     case 0:
-                        _data.HammerCd = 10;
-                        _data.HammerCdLevel = 1;
+                        Data.HammerCd = 10;
+                        Data.HammerCdLevel = 1;
                         break;
                     case 1:
-                        _data.HammerCd = 5;
-                        _data.HammerCdLevel = 2;
+                        Data.HammerCd = 5;
+                        Data.HammerCdLevel = 2;
                         break;
                     case 2:
-                        _data.HammerCd = 3;
-                        _data.HammerCdLevel = 3;
+                        Data.HammerCd = 3;
+                        Data.HammerCdLevel = 3;
                         break;
                 }
             }
@@ -84,18 +74,18 @@ namespace Match3
 
         public void LoadData(GameData data)
         {
-            _data = data;
+            Data = data;
         }
 
         public void SaveData(ref GameData data)
         {
-            data.HammerAmountLevel = _data.HammerAmountLevel;
-            data.HammerHitAmountLevel = _data.HammerHitAmountLevel;
-            data.HammerCdLevel = _data.HammerCdLevel;
+            data.HammerAmountLevel = Data.HammerAmountLevel;
+            data.HammerHitAmountLevel = Data.HammerHitAmountLevel;
+            data.HammerCdLevel = Data.HammerCdLevel;
 
-            data.HammerAmount = _data.HammerAmount;
-            data.HammerHitAmount = _data.HammerHitAmount;
-            data.HammerCd = _data.HammerCd;
+            data.HammerAmount = Data.HammerAmount;
+            data.HammerHitAmount = Data.HammerHitAmount;
+            data.HammerCd = Data.HammerCd;
         }
     }
 }

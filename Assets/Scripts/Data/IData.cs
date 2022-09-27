@@ -1,4 +1,4 @@
-﻿namespace Match3.Data
+﻿namespace Match3
 {
     public interface IData
     {
