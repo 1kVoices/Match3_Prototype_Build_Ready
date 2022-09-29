@@ -8,14 +8,14 @@ namespace Match3
         [SerializeField]
         private Animator[] _pedroAnimators;
         [SerializeField]
-        private Animator _blackScreenAnimator;
+        private Animator _blackScreen;
         private DifficultySwitcher _switcher;
         private GameData _data;
 
         private static readonly int ShowUp = Animator.StringToHash("showUp");
         private static readonly int Coloring = Animator.StringToHash("coloring");
         private static readonly int Highlight = Animator.StringToHash("highlight");
-        private static readonly int Darkening = Animator.StringToHash("darkening");
+        private static readonly int Hide = Animator.StringToHash("hide");
 
         private void Start()
         {
@@ -23,6 +23,7 @@ namespace Match3
             MenuEvents.PedroAskedHelp += OnPedroAskedHelp;
             MenuEvents.BlackScreenDarken += OnBlackScreenDarken;
             _switcher = FindObjectOfType<DifficultySwitcher>();
+            _blackScreen.SetTrigger(ShowUp);
         }
 
         private static void OnBlackScreenDarken()
@@ -37,7 +38,7 @@ namespace Match3
 
         public void AnimateLevelCircle(Animator levelAnimator)
         {
-            _blackScreenAnimator.SetTrigger(Darkening);
+            _blackScreen.SetTrigger(Hide);
             levelAnimator.SetTrigger(Highlight);
         }
 

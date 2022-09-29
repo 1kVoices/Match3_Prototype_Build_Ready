@@ -21,7 +21,7 @@ namespace Match3
         private static readonly int RightShow = Animator.StringToHash("rightShow");
         private static readonly int RightHide = Animator.StringToHash("rightHide");
         private static readonly int HalfDarken = Animator.StringToHash("halfDarken");
-        private static readonly int Whitening = Animator.StringToHash("whitening");
+        private static readonly int Whitening = Animator.StringToHash("halfWhitening");
 
         public void ShowTrees()
         {

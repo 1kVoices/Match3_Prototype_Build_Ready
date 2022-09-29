@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Match3
 {
@@ -27,6 +28,8 @@ namespace Match3
         private float _dragSens;
         [SerializeField]
         private float _hintDelay;
+        [SerializeField]
+        private GameObject _blur;
         private Level _level;
         private GameTime _gameTime;
         private PlayerObjective _playerObjective;
@@ -41,8 +44,13 @@ namespace Match3
         private bool _allowInput;
         private bool _toolActive;
         private bool _hintActive;
+        private bool _noMoveScreenShown;
         private float _hintTime;
         private int _chipsCount;
+        private int _dictSum;
+        private ToolsManager _toolsManager;
+        private BlackScreen _blackScreen;
+        private CanvasManager _canvasManager;
         private Coroutine _destroyingRoutine;
         private LinkedList<Cell> _fadingCells;
         private Dictionary<Cell, SpecialChip> _cellsToSpawnSpecial;
@@ -52,6 +60,8 @@ namespace Match3
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public Dictionary<StandardChip, int> ChipChances { get; private set; }
         public float ChipsFallTime => _chipsFallTime;
+        public event Action<Cell> CellPointerEnter;
+        public event Action<Cell> CellPointerExit;
         public event Action<Cell> OnPlayerClick;
         public event Action<SpecialChipType> OnSpecialActivateEvent;
         public event Action OnSpawnSpecial;
@@ -62,7 +72,7 @@ namespace Match3
         private IEnumerator Start()
         {
             Singleton = this;
-            _level = Instantiate(_levels[_data.CurrentLevel]);
+            _level = Instantiate(_levels[0]);
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
             ChipChances = new Dictionary<StandardChip, int>();
@@ -70,14 +80,17 @@ namespace Match3
             _playerObjective = FindObjectOfType<PlayerObjective>();
             _playerObjective.SetCurrentObjective(_level.TargetType, _level.ChipsToDestroy);
             _gameTime = FindObjectOfType<GameTime>();
+            _toolsManager = FindObjectOfType<ToolsManager>();
+            _blackScreen = FindObjectOfType<BlackScreen>();
+            _canvasManager = FindObjectOfType<CanvasManager>();
             _gameTime.OutOfTimeEvent += GameOver;
             _hintTime = _hintDelay;
             _chipsCount = _level.RemoveChips;
             _destroyDelay = new WaitForSeconds(0.05f);
-            _hintActive = true;
             _matchHelper = new MatchHelper();
             _controls = new Controls();
             _controls.Enable();
+            DeactivateHint();
 
             for (int i = 0; i < _chipPrefabs.Length - _chipsCount; i++)
             {
@@ -88,27 +101,29 @@ namespace Match3
                 }
                 ChipChances.Add(_chipPrefabs[i], 1);
             }
+            _dictSum = ChipChances.Sum(chip => chip.Value);
 
             foreach (Line line in _level.LevelLayout)
             {
                 foreach (Cell cell in line.LineCells)
                 {
+                    cell.PointerEnter += OnCellPointerEnter;
+                    cell.PointerExit += OnCellPointerExit;
                     cell.PointerDownEvent += OnCellPointerDownEvent;
                     cell.PointerUpEvent += OnCellPointerUpEvent;
                     cell.PointerClickEvent += OnCellPointerClickEvent;
                     AllCells.AddLast(cell);
                 }
             }
+            _blackScreen.OnScreenDarken += BlackScreenDarken;
             yield return null;
             _gameTime.SetTimer(_level.LevelTime * 60);
             GenerateChip();
-            StartCoroutine(ChipsShowUp());
         }
 
         public StandardChip RandomChip()
         {
-            var sum = ChipChances.Sum(chip => chip.Value);
-            var random = UnityEngine.Random.Range(0, sum);
+            var random = UnityEngine.Random.Range(0, _dictSum);
 
             foreach (var kvp in ChipChances)
             {
@@ -121,53 +136,61 @@ namespace Match3
 
         private void GenerateChip()
         {
-            foreach (Cell currentCell in AllCells)
+            while (_matchHelper.IsMatchPossible() == false)
             {
-                StandardChip newChip = RandomChip();
-                if (currentCell.Left.NotNull() && currentCell.Left.CurrentChip.Type == newChip.Type &&
-                    currentCell.Left.Left.NotNull() && currentCell.Left.Left.CurrentChip.Type == newChip.Type ||
-                    currentCell.Bot.NotNull() && currentCell.Bot.CurrentChip.Type == newChip.Type &&
-                    currentCell.Bot.Bot.NotNull() && currentCell.Bot.Bot.CurrentChip.Type == newChip.Type)
+                foreach (Cell currentCell in AllCells)
                 {
+                    StandardChip newChip = RandomChip();
+                    if (currentCell.Left.NotNull() &&
+                        currentCell.Left.CurrentChip.Type == newChip.Type &&
+                        currentCell.Left.Left.NotNull() &&
+                        currentCell.Left.Left.CurrentChip.Type == newChip.Type ||
+                        currentCell.Bot.NotNull() &&
+                        currentCell.Bot.CurrentChip.Type == newChip.Type &&
+                        currentCell.Bot.Bot.NotNull() &&
+                        currentCell.Bot.Bot.CurrentChip.Type == newChip.Type)
                     {
-                        Cell[] neighbours =
                         {
-                            currentCell.Left, currentCell.Left ? currentCell.Left.Left : null,
-                            currentCell.Bot, currentCell.Bot ? currentCell.Bot.Bot : null
-                        };
+                            Cell[] neighbours =
+                            {
+                                currentCell.Left,
+                                currentCell.Left ? currentCell.Left.Left : null,
+                                currentCell.Bot,
+                                currentCell.Bot ? currentCell.Bot.Bot : null
+                            };
 
-                        var allowedChips = _chipPrefabs
-                            .Where(chip => !neighbours.Where(cell => cell.NotNull())
-                                .Select(cell => cell.CurrentChip.Type)
-                                .Contains(chip.Type)).ToArray();
+                            var allowedChips = _chipPrefabs
+                                .Where(chip => !neighbours.Where(cell => cell.NotNull())
+                                    .Select(cell => cell.CurrentChip.Type)
+                                    .Contains(chip.Type)).ToArray();
 
-                        newChip = allowedChips[UnityEngine.Random.Range(0, allowedChips.Length - _chipsCount)];
-                        currentCell.SetCurrentChip(newChip);
+                            newChip = allowedChips[UnityEngine.Random.Range(0, allowedChips.Length - _chipsCount)];
+                            currentCell.SetCurrentChip(newChip);
+                        }
                     }
-                }
-                else currentCell.SetCurrentChip(newChip);
+                    else currentCell.SetCurrentChip(newChip);
 
-                currentCell.SetCurrentChip(Instantiate(currentCell.CurrentChip, currentCell.transform));
-                currentCell.CurrentChip.SetCurrentCell(currentCell);
+                    currentCell.SetCurrentChip(Instantiate(currentCell.CurrentChip, currentCell.transform));
+                    currentCell.CurrentChip.SetCurrentCell(currentCell);
+                }
             }
         }
 
-        private IEnumerator ChipsShowUp() //todo
+        public IEnumerator ChipsShowUp() //todo
         {
-            yield return new WaitForSeconds(0.3f);
-
             foreach (Cell cell in AllCells)
             {
                 cell.CurrentChip.ShowUp();
                 yield return null;
             }
 
-            yield return new WaitUntil(() => _level.LevelLayout.All(line => line.LineCells.All(x => x.CurrentChip.IsInteractable)));
+            yield return new WaitUntil(() => AllCells.Where(cell => cell.HasChip()).All(cell => cell.CurrentChip.IsInteractable));
             CheckPossibleMatches();
             SetInputState(true);
 
-            _hintActive = false;
+            ActivateHint();
             _gameTime.StartTimer();
+            _toolsManager.ActivateButtons();
         }
         /// <summary>
         /// Метод получения новой фишки.
@@ -267,7 +290,7 @@ namespace Match3
                 _hintTime = _hintDelay;
                 foreach (Cell cell in _fadingCells.Where(cell => cell.CurrentChip.NotNull()))
                 {
-                    if (cell.CurrentChip.Type == _level.TargetType)
+                    if (cell.CurrentChip.Type == _level.TargetType && !_noMoveScreenShown)
                         _playerObjective.UpdateCount();
 
                     cell.ChipFade();
@@ -275,7 +298,20 @@ namespace Match3
                 }
 
                 foreach (var pair in _cellsToSpawnSpecial)
-                    StartCoroutine(pair.Key.SetSpecialChip(pair.Value));
+                {
+                    //во избежание багов этот массив пересозоздается
+                    SpecialChip special = Pool.Singleton.ChipPool
+                        .Where(chip => chip.Type == ChipType.None)
+                        .Select(chip => (SpecialChip)chip)
+                        .FirstOrDefault(chip => chip.SpecialType == pair.Value.SpecialType);
+
+                    if (special.IsNull())
+                        special = Instantiate(pair.Value);
+                    else
+                        Pool.Singleton.ChipPool.Remove(special);
+
+                    StartCoroutine(pair.Key.SetSpecialChip(special));
+                }
 
                 yield return new WaitWhile(() => _fadingCells
                     .Where(cell => cell.PreviousChip.NotNull())
@@ -291,7 +327,7 @@ namespace Match3
 
             if (_playerObjective.CurrentCount <= 0)
             {
-                GameOver();
+                GameOver(true);
                 if (_data.CurrentLevel < 11)
                     _data.CurrentLevel++;
                 yield break;
@@ -304,11 +340,29 @@ namespace Match3
 
         private void CheckPossibleMatches()
         {
-            if (_matchHelper.IsMatchPossible()) return;
+            if (_matchHelper.IsMatchPossible())
+            {
+                if (!_noMoveScreenShown) return;
+                _canvasManager.HideNoMoveScreen();
+                _noMoveScreenShown = false;
+                _blur.SetActive(false);
+                _gameTime.StartTimer();
+                return;
+            }
+            StartCoroutine(DelayedDestroy());
+        }
 
+        private IEnumerator DelayedDestroy()
+        {
+            if (!_noMoveScreenShown)
+            {
+                _canvasManager.ShowNoMoveScreen();
+                _noMoveScreenShown = true;
+                _blur.SetActive(true);
+                _gameTime.StopTimer();
+            }
+            yield return new WaitForSeconds(0.5f);
             DestroyChips(null, AllCells.ToArray());
-            print("No match possible");
-            UnityEditor.EditorApplication.isPaused = true;
         }
 
         private void SuggestMatch(List<Cell> cells)
@@ -343,23 +397,36 @@ namespace Match3
                 SuggestMatch(_matchHelper.PossibleMatches);
         }
 
-        private void GameOver()
+        public void DeactivateHint()
+        {
+            CheckHint();
+            _hintActive = true;
+        }
+
+        public void ActivateHint() => _hintActive = false;
+
+        private void GameOver(bool isWin)
         {
             CheckHint();
             _hintActive = true;
             _gameTime.StopTimer();
             SetInputState(false);
+            if (isWin) _canvasManager.ShowWinScreen();
+            else _canvasManager.ShowLostScreen();
         }
         /// <summary>
         /// В прототипе есть редкие и крайне редкие события, инпут пользователя в которых
         /// может привести к ошибкам, и в связи с этим он блокируется
         /// </summary>
         public bool GetInputState() => _allowInput;
+        public bool GetToolState() => _toolActive;
         public void SetInputState(bool state) => _allowInput = state;
         public void SetToolState(bool state) => _toolActive = state;
         public void OnSpecialActivate(SpecialChipType obj) => OnSpecialActivateEvent?.Invoke(obj);
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
         private void OnCellPointerClickEvent(Cell cell) => OnPlayerClick?.Invoke(cell);
+        private void OnCellPointerEnter(Cell cell) => CellPointerEnter?.Invoke(cell);
+        private void OnCellPointerExit(Cell cell) => CellPointerExit?.Invoke(cell);
 
         private void OnCellPointerDownEvent(Cell cell, Vector2 cellPos)
         {
@@ -370,6 +437,8 @@ namespace Match3
             _startDragMousePos = cellPos;
             _isReading = true;
         }
+
+        private static void BlackScreenDarken() => SceneManager.LoadScene(0);
 
         private void Update()
         {
@@ -434,6 +503,7 @@ namespace Match3
         private void OnDestroy()
         {
             _controls.Dispose();
+            _blackScreen.OnScreenDarken -= BlackScreenDarken;
             foreach (Line line in _level.LevelLayout)
             {
                 foreach (Cell cell in line.LineCells)
@@ -441,6 +511,8 @@ namespace Match3
                     cell.PointerDownEvent -= OnCellPointerDownEvent;
                     cell.PointerUpEvent -= OnCellPointerUpEvent;
                     cell.PointerClickEvent -= OnCellPointerClickEvent;
+                    cell.PointerEnter -= OnCellPointerEnter;
+                    cell.PointerExit -= OnCellPointerExit;
                 }
             }
         }

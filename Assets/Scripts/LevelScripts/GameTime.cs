@@ -11,7 +11,7 @@ namespace Match3
         private float _time;
         private TimeSpan _timeSpan;
         private bool _isActive;
-        public event Action OutOfTimeEvent;
+        public event Action<bool> OutOfTimeEvent;
 
         private void Start() => _text = GetComponent<TextMeshProUGUI>();
 
@@ -23,12 +23,12 @@ namespace Match3
 
         private void Update()
         {
-            if (!_isActive|| _time <= 0) return;
+            if (!_isActive || _time <= 0) return;
 
             _time -= Time.deltaTime;
             ConvertToTimeSpan();
 
-            if (_time <= 0) OutOfTimeEvent?.Invoke();
+            if (_time <= 0) OutOfTimeEvent?.Invoke(false);
         }
 
         public void StartTimer() => _isActive = true;

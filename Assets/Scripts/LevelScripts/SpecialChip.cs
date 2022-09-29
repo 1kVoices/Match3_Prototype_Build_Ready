@@ -88,6 +88,11 @@ namespace Match3
             }
         }
 
+        public void ExecutionEnded()
+        {
+            _isExecuted = false;
+        }
+
         public override void FadeOut(SpecialChip specialChip) { }
     }
 }

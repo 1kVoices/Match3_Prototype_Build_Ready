@@ -44,7 +44,7 @@ namespace Match3
                 }
             }
 
-            if (LevelManager.Singleton.AllCells.Any(cell => cell.CurrentChip.Type == ChipType.None))
+            if (LevelManager.Singleton.AllCells.Where(cell => cell.HasChip()).Any(cell => cell.CurrentChip.Type == ChipType.None))
             {
                 PossibleMatches.Add(LevelManager.Singleton.AllCells.FirstOrDefault(cell => cell.CurrentChip.Type == ChipType.None));
                 return true;

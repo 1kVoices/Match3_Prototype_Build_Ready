@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Match3
 {
-    public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
+    public class Cell : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         public StandardChip CurrentChip { get; private set; }
         public StandardChip PreviousChip { get; private set; }
@@ -28,6 +28,8 @@ namespace Match3
         public event Action<Cell,Vector2> PointerDownEvent;
         public event Action<Cell> PointerUpEvent;
         public event Action<Cell> PointerClickEvent;
+        public event Action<Cell> PointerEnter;
+        public event Action<Cell> PointerExit;
 
         private void Start()
         {
@@ -159,9 +161,12 @@ namespace Match3
         public IEnumerator SetSpecialChip(SpecialChip specialChip)
         {
             yield return null;
-            SetCurrentChip(Instantiate(specialChip, transform));
-            CurrentChip.SetCurrentCell(this);
-            CurrentChip.ShowUp();
+            specialChip.SetPreviousCell(null);
+            specialChip.transform.parent = transform;
+            specialChip.transform.position = transform.position;
+            specialChip.SetCurrentCell(this);
+            specialChip.ShowUp();
+            SetCurrentChip(specialChip);
         }
 
         private void FindNeighbours()
@@ -194,6 +199,9 @@ namespace Match3
         public void SetHighlightState(bool state) => IsHighlighting = state;
         public void OnPointerDown(PointerEventData eventData) => PointerDownEvent?.Invoke(this, eventData.position);
         public void OnPointerUp(PointerEventData eventData) => PointerUpEvent?.Invoke(this);
+        public void OnPointerEnter(PointerEventData eventData) => PointerEnter?.Invoke(this);
+        public void OnPointerExit(PointerEventData eventData) => PointerExit?.Invoke(this);
+        public void Redness(bool state) => _highlighter.Redness(state);
 
         public void OnPointerClick(PointerEventData eventData)
         {

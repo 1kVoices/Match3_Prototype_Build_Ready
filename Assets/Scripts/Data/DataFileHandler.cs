@@ -35,7 +35,6 @@ namespace Match3
             if (_encrypt)
                 storeData = EncryptDecrypt(storeData);
 
-
             FileStream stream = new FileStream(path, FileMode.Create);
             StreamWriter writer = new StreamWriter(stream);
 

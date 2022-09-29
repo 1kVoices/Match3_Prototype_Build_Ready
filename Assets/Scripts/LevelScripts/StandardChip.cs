@@ -126,6 +126,8 @@ namespace Match3
 
         public void ShowUp()
         {
+            _direction = DirectionType.None;
+            if (_animator.enabled == false) _animator.enabled = true;
             _animator.SetTrigger(Extensions.Show);
             transform.localScale = Vector3.one;
         }

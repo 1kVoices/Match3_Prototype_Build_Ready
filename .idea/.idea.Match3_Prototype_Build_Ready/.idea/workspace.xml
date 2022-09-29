@@ -23,6 +23,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/351e49e2a5bf4fd6beabb458ce2255f3ff600/87/272badaa/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4af5bea1b7b2442494fd73f6f9b3d7f45e00/b5/1e0e348e/Canvas.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6b1444477c1d41c692ef6c02a838308529ac30/5e/c6f2746b/Action.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7c9351e74716407cb3fd2ed83382c1683f000/dc/93817239/IPointerEnterHandler.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7c9351e74716407cb3fd2ed83382c1683f000/e0/090a5b23/IPointerDownHandler.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/0b/eeaf401a/RootEditorUtils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/8004fcc221b54f98ba547350ea71d812783800/8c/7ec9754a/EditorCompilationInterface.cs" root0="SKIP_HIGHLIGHTING" />
@@ -47,10 +48,12 @@
     <setting file="file://$PROJECT_DIR$/../ArcadeRace_Prototype_Build_Ready/Assets/Scripts/TutorialScene/Scenario.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Data/DataFileHandler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Extensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/CanvasManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/LevelManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/MatchHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/Pool.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/SpecialChip.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/LevelScripts/Tools/ToolsManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/MenuScripts/DifficultySwitcher.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/MenuScripts/LevelButton.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.2d.spriteshape@3.0.13/Runtime/External/LibTessDotNet/Tess.cs" root0="SKIP_HIGHLIGHTING" />
@@ -160,6 +163,11 @@
       <workItem from="1664251861423" duration="18640000" />
       <workItem from="1664276719921" duration="5649000" />
       <workItem from="1664282530572" duration="686000" />
+      <workItem from="1664341621344" duration="3047000" />
+      <workItem from="1664357050691" duration="190000" />
+      <workItem from="1664357413816" duration="7742000" />
+      <workItem from="1664442854903" duration="12801000" />
+      <workItem from="1664459536393" duration="823000" />
     </task>
     <servers />
   </component>

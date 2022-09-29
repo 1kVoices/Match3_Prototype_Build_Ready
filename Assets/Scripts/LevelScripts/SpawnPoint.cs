@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Match3
 {
@@ -6,20 +7,20 @@ namespace Match3
     {
         public void GenerateChip(Cell callerCell)
         {
-            StandardChip newChip = Instantiate(LevelManager.Singleton.RandomChip(), transform);
+            StandardChip newChip = LevelManager.Singleton.RandomChip();
+            StandardChip pooledChip = Pool.Singleton.ChipPool.FirstOrDefault(chip => chip.Type == newChip.Type);
+
+            if (pooledChip.IsNull())
+                newChip = Instantiate(newChip);
+            else
+            {
+                newChip = pooledChip;
+                Pool.Singleton.ChipPool.Remove(pooledChip);
+            }
+            newChip.transform.parent = transform;
+            newChip.transform.position = transform.position;
             newChip.FastShowUp();
             StartCoroutine(newChip.Transfer(callerCell, LevelManager.Singleton.ChipsFallTime));
-
-            // LinkedList<ChipComponent> pool = Pool.Singleton.ChipPool;
-            //
-            // if (pool.Count == 0) return;
-            // ChipComponent chip = pool.ElementAt(UnityEngine.Random.Range(0, pool.Count));
-            // pool.Remove(chip);
-            // chip.transform.parent = transform;
-            // chip.transform.position = transform.position;
-            // chip.FastShowUp();
-            // chip.ReservedBy = callerCell;
-            // chip.Transfer(callerCell);
         }
     }
 }
