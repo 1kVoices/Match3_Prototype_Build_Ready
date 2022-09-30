@@ -15,6 +15,7 @@ namespace Match3
         private Button _button;
         [SerializeField]
         private Tool _brother;
+        public bool IsInteractable { get; private set; }
         protected bool IsInput;
         protected int UseAmount;
         protected int HitAmount;
@@ -32,6 +33,7 @@ namespace Match3
             if (UseAmount < 1) _button.interactable = false;
             _amountText.text = UseAmount.ToString();
             _button.interactable = false;
+            IsInteractable = true;
             _colors = _button.colors;
             _cdText.text = "";
         }
@@ -65,7 +67,9 @@ namespace Match3
             _button.colors = _colors;
             _amountText.text = UseAmount.ToString();
             _button.interactable = false;
-            _brother.EnableButton();
+            IsInteractable = false;
+            if (_brother.IsInteractable)
+                _brother.EnableButton();
             if (UseAmount > 0) _isCd = true;
         }
 
@@ -85,13 +89,12 @@ namespace Match3
             _cooldown -= Time.deltaTime;
             _timeSpan = TimeSpan.FromSeconds(_cooldown);
             _cdText.text = _timeSpan.ToString(@"mm\:ss");
-            if (_cooldown <= 0)
-            {
-                _isCd = false;
-                _button.interactable = true;
-                HitAmount = _baseHitAmount;
-                _cdText.text = "";
-            }
+            if (_cooldown >= 0) return;
+            _isCd = false;
+            _button.interactable = true;
+            HitAmount = _baseHitAmount;
+            _cdText.text = "";
+            IsInteractable = true;
         }
 
         private void OnDestroy()

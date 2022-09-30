@@ -19,15 +19,19 @@ namespace Match3
 
         public void ActivateButtons()
         {
-            _hammer.EnableButton();
-            _sledgeHammer.EnableButton();
+            if (_hammer.IsInteractable)
+                _hammer.EnableButton();
+            if (_sledgeHammer.IsInteractable)
+                _sledgeHammer.EnableButton();
         }
 
-        public void LoadData(GameData data)
+        public void DisableButtons()
         {
-            _data = data;
+            _hammer.DisableButton();
+            _sledgeHammer.DisableButton();
         }
 
+        public void LoadData(GameData data) => _data = data;
         public void SaveData(ref GameData data) { }
     }
 }

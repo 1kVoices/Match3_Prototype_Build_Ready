@@ -7,67 +7,56 @@ namespace Match3
     {
         [SerializeField]
         private Animator[] _pedroAnimators;
-        [SerializeField]
-        private Animator _blackScreen;
         private DifficultySwitcher _switcher;
+        private BlackScreen _blackScreen;
+        private PedroCloud _pedro;
         private GameData _data;
-
-        private static readonly int ShowUp = Animator.StringToHash("showUp");
-        private static readonly int Coloring = Animator.StringToHash("coloring");
+        private MoneyManager _moneyManager;
         private static readonly int Highlight = Animator.StringToHash("highlight");
-        private static readonly int Hide = Animator.StringToHash("hide");
 
         private void Start()
         {
-            MenuEvents.BlackScreenBleached += OnBlackScreenBleached;
-            MenuEvents.PedroAskedHelp += OnPedroAskedHelp;
-            MenuEvents.BlackScreenDarken += OnBlackScreenDarken;
+            _pedro = FindObjectOfType<PedroCloud>();
+            _pedro.AskedHelp += OnPedroAskedHelp;
+            _blackScreen = FindObjectOfType<BlackScreen>();
+            _blackScreen.OnScreenDarken += OnBlackScreenDarken;
+            _blackScreen.OnScreenWhitening += OnBlackScreenBleached;
             _switcher = FindObjectOfType<DifficultySwitcher>();
-            _blackScreen.SetTrigger(ShowUp);
+            _moneyManager = FindObjectOfType<MoneyManager>();
+            _blackScreen.Whitening();
+            _moneyManager.gameObject.SetActive(false);
         }
 
-        private static void OnBlackScreenDarken()
-        {
-            SceneManager.LoadScene(1);
-        }
+        private static void OnBlackScreenDarken() => SceneManager.LoadScene(1);
 
-        public void LoadLevel(int i)
-        {
-            _data.CurrentLevel = i;
-        }
+        public void LoadLevel(int i) => _data.CurrentLevel = i;
 
         public void AnimateLevelCircle(Animator levelAnimator)
         {
-            _blackScreen.SetTrigger(Hide);
+            _blackScreen.Darken();
             levelAnimator.SetTrigger(Highlight);
         }
 
         private void OnBlackScreenBleached()
         {
             foreach (Animator anim in _pedroAnimators)
-                anim.SetTrigger(ShowUp);
+                anim.SetTrigger(Extensions.Show);
         }
 
         private void OnPedroAskedHelp()
         {
             _switcher.ActivateSwitchers();
+            _moneyManager.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
         {
-            MenuEvents.BlackScreenBleached -= OnBlackScreenBleached;
-            MenuEvents.PedroAskedHelp -= OnPedroAskedHelp;
-            MenuEvents.BlackScreenDarken -= OnBlackScreenDarken;
+            _pedro.AskedHelp -= OnPedroAskedHelp;
+            _blackScreen.OnScreenDarken -= OnBlackScreenDarken;
+            _blackScreen.OnScreenWhitening -= OnBlackScreenBleached;
         }
 
-        public void LoadData(GameData data)
-        {
-            _data = data;
-        }
-
-        public void SaveData(ref GameData data)
-        {
-            data.CurrentLevel = _data.CurrentLevel;
-        }
+        public void LoadData(GameData data) => _data = data;
+        public void SaveData(ref GameData data) => data.CurrentLevel = _data.CurrentLevel;
     }
 }

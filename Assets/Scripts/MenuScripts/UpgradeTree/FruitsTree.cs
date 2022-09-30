@@ -54,25 +54,17 @@
             }
             else if (branch == RightBranch)
             {
-                switch (level)
+                Data.M18RadiusLevel = level switch
                 {
-                    case 0:
-                        Data.M18RadiusLevel = 1;
-                        break;
-                    case 1:
-                        Data.M18RadiusLevel = 2;
-                        break;
-                    case 2:
-                        Data.M18RadiusLevel = 3;
-                        break;
-                }
+                    0 => 1,
+                    1 => 2,
+                    2 => 3,
+                    _ => Data.M18RadiusLevel
+                };
             }
         }
 
-        public void LoadData(GameData data)
-        {
-            Data = data;
-        }
+        public void LoadData(GameData data) => Data = data;
 
         public void SaveData(ref GameData data)
         {

@@ -52,6 +52,7 @@ namespace Match3
                 case DirectionType.Right:
                     _animator.SetTrigger(string.Concat("right", priority));
                     break;
+                case DirectionType.None:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
@@ -88,10 +89,7 @@ namespace Match3
             CurrentCell.ChipMoved();
         }
 
-        public void ChipReady()
-        {
-            SetInteractionState(true);
-        }
+        public void ChipReady() => SetInteractionState(true);
 
         public IEnumerator Transfer(Cell targetCell, float transferTime)
         {
@@ -153,7 +151,7 @@ namespace Match3
             SetInteractionState(false);
             transform.parent = null;
 
-            if (specialChip.IsNull())
+            if (specialChip is null)
             {
                 _animator.SetTrigger(Extensions.Fade);
                 return;
@@ -173,6 +171,7 @@ namespace Match3
                 case SpecialChipType.BlasterV:
                     _animator.SetTrigger(Extensions.FastFade);
                     break;
+                case SpecialChipType.None:
                 default:
                     throw new ArgumentOutOfRangeException();
             }

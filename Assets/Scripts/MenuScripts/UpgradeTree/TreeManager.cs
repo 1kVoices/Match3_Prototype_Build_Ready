@@ -15,7 +15,7 @@ namespace Match3
         private Button _previous;
         [SerializeField]
         private Button _exit;
-        private int _currentTree = 0;
+        private int _currentTree;
         private static readonly int LeftShow = Animator.StringToHash("leftShow");
         private static readonly int LeftHide = Animator.StringToHash("leftHide");
         private static readonly int RightShow = Animator.StringToHash("rightShow");

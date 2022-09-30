@@ -43,6 +43,6 @@
             if (special == _targetSpecial) ConditionMet();
         }
 
-        protected override void Completed() =>LevelManager.Singleton.OnSpecialActivateEvent -= SpecialActivateEvent;
+        protected override void Completed() => LevelManager.Singleton.OnSpecialActivateEvent -= SpecialActivateEvent;
     }
 }

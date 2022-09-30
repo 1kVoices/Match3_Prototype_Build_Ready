@@ -6,16 +6,15 @@ namespace Match3
     {
         [SerializeField]
         private ExtraObjective[] _objectives;
-        private ExtraObjective _current;
+        [SerializeField, Range(10, 50)]
+        private int _rewardExp;
+        public int RewardExp => _rewardExp;
 
-        private void Start()
-        {
-            _current = Instantiate(_objectives[UnityEngine.Random.Range(0, _objectives.Length)], transform);
-        }
+        private void Start() => Instantiate(_objectives[UnityEngine.Random.Range(0, _objectives.Length)], transform);
 
         public void QuestCompleted()
         {
-            //todo reward
+            LevelManager.Singleton.RewardPlayer(this);
         }
     }
 }

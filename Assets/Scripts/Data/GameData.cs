@@ -25,9 +25,25 @@
         public int SpawnChanceLevel;
         public int ExpAmountLevel;
         public int M18RadiusLevel;
+        public SerializableDictionary<int, bool> LevelsCompleted;
 
         public GameData()
         {
+            LevelsCompleted = new SerializableDictionary<int, bool>
+            {
+                {0, false},
+                {1, false},
+                {2, false},
+                {3, false},
+                {4, false},
+                {5, false},
+                {6, false},
+                {7, false},
+                {8, false},
+                {9, false},
+                {10, false},
+                {11, false},
+            };
             CurrentLevel = 0;
             WasFirstStart = false;
             Money = 0;

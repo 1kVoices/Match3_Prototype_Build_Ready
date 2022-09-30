@@ -17,16 +17,8 @@ namespace Match3
             UpdateText();
         }
 
-        private void Destroyed()
-        {
-            ConditionMet();
-        }
-
-        private void PlayerInput()
-        {
-            _timerReady = true;
-        }
-
+        private void Destroyed() => ConditionMet();
+        private void PlayerInput() => _timerReady = true;
         private void Update()
         {
             if (IsCompleted || !_timerReady) return;

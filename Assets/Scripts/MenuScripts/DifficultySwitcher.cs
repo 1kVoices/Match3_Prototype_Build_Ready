@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Match3
@@ -20,8 +21,14 @@ namespace Match3
             _mediumLevels = new LinkedList<LevelButton>();
             _hardLevels = new LinkedList<LevelButton>();
 
-            for (int i = 0; i <= _data.CurrentLevel; i++)
+            var levelsCount = _data.LevelsCompleted.Count(kvp => kvp.Value);
+
+            for (int i = 0; i <= levelsCount; i++)
+            {
                 _allLevels[i].SetInteractionState(true);
+                if (i == levelsCount) continue;
+                _allLevels[i].SetRewardState(true);
+            }
 
             for (int i = 0; i < _allLevels.Length; i++)
             {
@@ -74,19 +81,18 @@ namespace Match3
                         levelButton.gameObject.SetActive(true);
                         if (levelButton.IsShowedUp == false)
                             levelButton.ShowUp();
+                        if (levelButton.IsRewardShowed)
+                            levelButton.ShowReward();
                         break;
                     case false:
                         levelButton.gameObject.SetActive(false);
+                        levelButton.HideReward();
                         break;
                 }
             }
         }
 
-        public void LoadData(GameData data)
-        {
-            _data = data;
-        }
-
+        public void LoadData(GameData data) => _data = data;
         public void SaveData(ref GameData data) { }
     }
 }

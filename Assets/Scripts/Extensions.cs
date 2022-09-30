@@ -8,27 +8,30 @@ namespace Match3
     {
         public static readonly int Show = Animator.StringToHash("showUp");
         public static readonly int Fade = Animator.StringToHash("fadeOut");
+        public static readonly int Hide = Animator.StringToHash("hide");
+        public static readonly int Coloring = Animator.StringToHash("coloring");
         public static readonly int FastFade = Animator.StringToHash("fastFade");
         public static readonly int SunFade = Animator.StringToHash("sunFade");
         public static readonly int FastShow = Animator.StringToHash("fastShowUp");
         public static readonly int Fall = Animator.StringToHash("fall");
         public static readonly int EndFall = Animator.StringToHash("endFall");
         public static readonly int ActionTrigger = Animator.StringToHash("action");
+        public static readonly int ExtraActionTrigger = Animator.StringToHash("extraAction");
 
         public static StandardChip[] ChipsOnMap()
         {
             return LevelManager.Singleton.AllCells
-                .Where(cell => cell.CurrentChip.NotNull())
+                .Where(cell => cell.HasChip())
                 .Where(cell => cell.CurrentChip.Type != ChipType.None)
                 .Select(cell => cell.CurrentChip)
                 .ToArray();
         }
 
-        public static bool CompareChips(Cell cell, Cell comparativeCell)
+        private static bool CompareChips(Cell cell, Cell comparativeCell)
         {
-            return cell.NotNull() &&
-                   comparativeCell.NotNull() &&
-                   comparativeCell.CurrentChip.NotNull() &&
+            return cell is not null &&
+                   comparativeCell is not null &&
+                   comparativeCell.HasChip() &&
                    comparativeCell.CurrentChip != cell.CurrentChip &&
                    comparativeCell.CurrentChip.Type != ChipType.None &&
                    comparativeCell.CurrentChip.Type == cell.CurrentChip.Type;
@@ -39,8 +42,8 @@ namespace Match3
         /// </summary>
         public static void FindMatches(List<Cell> fillingList, Cell cell, Cell caller = null)
         {
-            if (cell.IsNull()) return;
-            if (caller.NotNull())
+            if (cell is null) return;
+            if (caller is not null)
             {
                 cell.SetTemporaryChip(cell.CurrentChip);
                 cell.SetCurrentChip(caller.CurrentChip);
@@ -108,37 +111,33 @@ namespace Match3
             }
             #endregion
 
-            if (cell.TemporaryChip.IsNull()) return;
+            if (cell.TemporaryChip is null) return;
             cell.SetCurrentChip(cell.TemporaryChip);
             cell.SetTemporaryChip(null);
         }
 
         public static DirectionType OppositeDirection(this DirectionType direction)
         {
-            switch (direction)
+            return direction switch
             {
-                case DirectionType.Top:
-                    return DirectionType.Bot;
-                case DirectionType.Bot:
-                    return DirectionType.Top;
-                case DirectionType.Left:
-                    return DirectionType.Right;
-                case DirectionType.Right:
-                    return DirectionType.Left;
-                default: return DirectionType.None;
-            }
+                DirectionType.Top => DirectionType.Bot,
+                DirectionType.Bot => DirectionType.Top,
+                DirectionType.Left => DirectionType.Right,
+                DirectionType.Right => DirectionType.Left,
+                _ => DirectionType.None
+            };
         }
 
-        public static bool HasChip(this Cell cell) => cell.CurrentChip.NotNull();
+        public static bool HasChip(this Cell cell)
+        {
+            return cell.CurrentChip is not null;
+        }
 
         public static bool PosYIdentical(this Cell[] array) =>
             array.ToList().TrueForAll(cell => cell.transform.position.y.Equals(array.First().transform.position.y));
 
         public static bool PosXIdentical(this Cell[] array) =>
             array.ToList().TrueForAll(cell => cell.transform.position.x.Equals(array.First().transform.position.x));
-
-        public static bool NotNull(this object obj) => obj != null;
-        public static bool IsNull(this object obj) => obj == null;
     }
 
     public enum DirectionType : byte
@@ -159,6 +158,14 @@ namespace Match3
         Banana,
         Orange,
         Peach
+    }
+
+    [System.Flags]
+    public enum TypeChip
+    {
+        None = 0<<0,
+        One = 1<<1,
+        Two = 1<<2
     }
 
     public enum SpecialChipType : byte

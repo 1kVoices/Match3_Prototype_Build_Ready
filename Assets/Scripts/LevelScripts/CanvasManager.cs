@@ -15,51 +15,33 @@ namespace Match3
         [SerializeField]
         private Animator _noMoveScreen;
 
-        private static readonly int Hide = Animator.StringToHash("hide");
-        private static readonly int ShowUp = Animator.StringToHash("showUp");
-
         private void Start()
         {
-            _tutorialScreen.SetTrigger(ShowUp);
-            _blackScreen.SetTrigger(ShowUp);
+            _tutorialScreen.SetTrigger(Extensions.Show);
+            _blackScreen.SetTrigger(Extensions.Show);
         }
 
         public void CloseTutorial()
         {
-            _tutorialScreen.SetTrigger(Hide);
+            _tutorialScreen.SetTrigger(Extensions.Hide);
             StartCoroutine(LevelManager.Singleton.ChipsShowUp());
         }
 
         public void CloseLostScreen()
         {
-            _lostScreen.SetTrigger(Hide);
-            _blackScreen.SetTrigger(Hide);
+            _lostScreen.SetTrigger(Extensions.Hide);
+            _blackScreen.SetTrigger(Extensions.Hide);
         }
 
         public void CloseWinScreen()
         {
-            _winScreen.SetTrigger(Hide);
-            _blackScreen.SetTrigger(Hide);
+            _winScreen.SetTrigger(Extensions.Hide);
+            _blackScreen.SetTrigger(Extensions.Hide);
         }
 
-        public void ShowLostScreen()
-        {
-            _lostScreen.SetTrigger(ShowUp);
-        }
-
-        public void ShowWinScreen()
-        {
-            _winScreen.SetTrigger(ShowUp);
-        }
-
-        public void ShowNoMoveScreen()
-        {
-            _noMoveScreen.SetTrigger(ShowUp);
-        }
-
-        public void HideNoMoveScreen()
-        {
-            _noMoveScreen.SetTrigger(Hide);
-        }
+        public void ShowLostScreen() => _lostScreen.SetTrigger(Extensions.Show);
+        public void ShowWinScreen() => _winScreen.SetTrigger(Extensions.Show);
+        public void ShowNoMoveScreen() => _noMoveScreen.SetTrigger(Extensions.Show);
+        public void HideNoMoveScreen() => _noMoveScreen.SetTrigger(Extensions.Hide);
     }
 }

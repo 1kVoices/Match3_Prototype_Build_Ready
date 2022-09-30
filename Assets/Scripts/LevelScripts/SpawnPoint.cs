@@ -10,7 +10,7 @@ namespace Match3
             StandardChip newChip = LevelManager.Singleton.RandomChip();
             StandardChip pooledChip = Pool.Singleton.ChipPool.FirstOrDefault(chip => chip.Type == newChip.Type);
 
-            if (pooledChip.IsNull())
+            if (pooledChip is null)
                 newChip = Instantiate(newChip);
             else
             {

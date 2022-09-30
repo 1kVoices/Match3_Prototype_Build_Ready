@@ -4,7 +4,7 @@
     {
         protected override void PlayerClicked(Cell cell)
         {
-            if (!IsInput || cell.IsNull() || !cell.HasChip()
+            if (!IsInput || cell is null || !cell.HasChip()
                 || !cell.CurrentChip.IsInteractable || cell.CurrentChip.IsAnimating) return;
 
             base.PlayerClicked(cell);
@@ -30,10 +30,10 @@
         private void HighlightCells(Cell cell, bool isOn)
         {
             cell.Redness(isOn);
-            if(cell.Top.NotNull()) cell.Top.Redness(isOn);
-            if (cell.Bot.NotNull()) cell.Bot.Redness(isOn);
-            if (cell.Left.NotNull()) cell.Left.Redness(isOn);
-            if (cell.Right.NotNull()) cell.Right.Redness(isOn);
+            if(cell.Top is not null) cell.Top.Redness(isOn);
+            if (cell.Bot is not null) cell.Bot.Redness(isOn);
+            if (cell.Left is not null) cell.Left.Redness(isOn);
+            if (cell.Right is not null) cell.Right.Redness(isOn);
         }
     }
 }

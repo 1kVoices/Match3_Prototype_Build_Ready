@@ -16,25 +16,20 @@ namespace Match3
 
         public void Upgrade(int i)
         {
-            if (IsUpgradable(i))
-            {
-                _parent.Upgrade(this, i);
-                _leaves[i].Upgrade();
-            }
+            if (!IsUpgradable(i)) return;
+            _parent.Upgrade(this, i);
+            _leaves[i].Upgrade();
         }
 
         private bool IsUpgradable(int i)
         {
-            switch (i)
+            return i switch
             {
-                case 0:
-                    return true; //cost
-                case 1:
-                    return _leaves[0].IsUpgraded;
-                case 2:
-                    return _leaves[0].IsUpgraded && _leaves[1].IsUpgraded;
-            }
-            return false;
+                0 => true, //cost
+                1 => _leaves[0].IsUpgraded,
+                2 => _leaves[0].IsUpgraded && _leaves[1].IsUpgraded,
+                _ => false
+            };
         }
     }
 }

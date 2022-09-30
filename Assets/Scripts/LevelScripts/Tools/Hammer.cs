@@ -4,7 +4,7 @@
     {
         protected override void PlayerClicked(Cell cell)
         {
-            if (!IsInput || cell.IsNull() || !cell.HasChip() ||
+            if (!IsInput || cell is null || !cell.HasChip() ||
                 !cell.CurrentChip.IsInteractable || cell.CurrentChip.IsAnimating) return;
 
             base.PlayerClicked(cell);

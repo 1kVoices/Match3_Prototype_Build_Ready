@@ -11,19 +11,8 @@ namespace Match3
         private GameData _gameData;
         private DataFileHandler _dataHandler;
         private List<IData> _dataObjects;
-        // public static DataManager Singleton;
 
-        // private void Awake()
-        // {
-        //     if (!Singleton)
-        //     {
-        //         Singleton = this;
-        //         DontDestroyOnLoad(gameObject);
-        //     }
-        //     else Destroy(gameObject);
-        // }
-
-        public void Start()
+        private void Start()
         {
             _dataHandler = new DataFileHandler(_encrypt);
             _dataObjects = FindAllData();
@@ -42,7 +31,7 @@ namespace Match3
         {
             _gameData = _dataHandler.Load();
 
-            if (_gameData.IsNull())
+            if (_gameData is null)
                 NewGame();
 
             foreach (IData data in _dataObjects)
@@ -57,6 +46,6 @@ namespace Match3
             _dataHandler.Save(_gameData);
         }
 
-        private void OnApplicationQuit() => SaveGame();
+        private void OnDestroy() => SaveGame();
     }
 }

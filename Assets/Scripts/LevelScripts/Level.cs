@@ -5,6 +5,8 @@ namespace Match3
 {
     public class Level : MonoBehaviour
     {
+        [SerializeField, Range(100, 500)]
+        private int _rewardExp;
         [SerializeField]
         private ChipType _targetType;
         [SerializeField, Range(10,300)]
@@ -20,6 +22,7 @@ namespace Match3
         public int RemoveChips => _removeChips;
         public ChipType TargetType => _targetType;
         public float LevelTime => _levelTime;
+        public int RewardExp => _rewardExp;
 
         public IEnumerable<Line> LevelLayout => _levelLayout;
     }

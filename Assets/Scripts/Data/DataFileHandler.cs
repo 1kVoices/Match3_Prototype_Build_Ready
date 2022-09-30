@@ -15,14 +15,13 @@ namespace Match3
         {
             if (!File.Exists(path)) return null;
 
-            FileStream stream = new FileStream(path, FileMode.Open);
-            StreamReader reader = new StreamReader(stream);
+            using FileStream stream = new FileStream(path, FileMode.Open);
+            using StreamReader reader = new StreamReader(stream);
 
             string loadedString = reader.ReadToEnd();
 
             if (_encrypt)
                 loadedString = EncryptDecrypt(loadedString);
-
 
             GameData loadedData = JsonUtility.FromJson<GameData>(loadedString);
             return loadedData;
@@ -35,12 +34,9 @@ namespace Match3
             if (_encrypt)
                 storeData = EncryptDecrypt(storeData);
 
-            FileStream stream = new FileStream(path, FileMode.Create);
-            StreamWriter writer = new StreamWriter(stream);
-
+            using FileStream stream = new FileStream(path, FileMode.Create);
+            using StreamWriter writer = new StreamWriter(stream);
             writer.Write(storeData);
-            writer.Close();
-            stream.Close();
         }
 
         private static string EncryptDecrypt(string data)

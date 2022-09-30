@@ -37,7 +37,7 @@ namespace Match3
         private void ConvertToTimeSpan()
         {
             _timeSpan = TimeSpan.FromSeconds(_time);
-            _text.text = _timeSpan.ToString(@"mm\:ss\:f");
+            _text.text = _timeSpan.ToString(@"mm\:ss");
         }
     }
 }

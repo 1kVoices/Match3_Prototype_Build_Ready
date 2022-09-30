@@ -72,10 +72,7 @@
             }
         }
 
-        public void LoadData(GameData data)
-        {
-            Data = data;
-        }
+        public void LoadData(GameData data) => Data = data;
 
         public void SaveData(ref GameData data)
         {

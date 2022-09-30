@@ -6,20 +6,15 @@ namespace Match3
     {
         [SerializeField]
         private Animator _animator;
-        private static readonly int Coloring = Animator.StringToHash("coloring");
-        private static readonly int Show = Animator.StringToHash("showUp");
+        [SerializeField]
+        private Animator _rewardAnimator;
         private bool _isInteractable;
         public bool IsShowedUp { get; private set; }
+        public bool IsRewardShowed { get; private set; }
 
-        private void Colorize()
-        {
-            _animator.SetTrigger(Coloring);
-        }
+        private void Colorize() => _animator.SetTrigger(Extensions.Coloring);
 
-        public void ShowUp()
-        {
-            _animator.SetTrigger(Show);
-        }
+        public void ShowUp() => _animator.SetTrigger(Extensions.Show);
 
         public void ShowedUp()
         {
@@ -28,6 +23,11 @@ namespace Match3
                 Colorize();
         }
 
+        public void ShowReward() => _rewardAnimator.SetTrigger(Extensions.Show);
+
+        public void HideReward() => _rewardAnimator.SetTrigger(Extensions.Hide);
+
         public void SetInteractionState(bool state) => _isInteractable = state;
+        public void SetRewardState(bool state) => IsRewardShowed = state;
     }
 }

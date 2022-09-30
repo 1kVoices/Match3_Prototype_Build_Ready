@@ -45,29 +45,16 @@ namespace Match3
             CurrentCount = count;
             _count.text = CurrentCount.ToString();
 
-            switch (type)
+            _objectiveChip.sprite = type switch
             {
-                case ChipType.Apple:
-                    _objectiveChip.sprite = _apple;
-                    break;
-                case ChipType.Avocado:
-                    _objectiveChip.sprite = _avocado;
-                    break;
-                case ChipType.Kiwi:
-                    _objectiveChip.sprite = _kiwi;
-                    break;
-                case ChipType.Banana:
-                    _objectiveChip.sprite = _banana;
-                    break;
-                case ChipType.Orange:
-                    _objectiveChip.sprite = _orange;
-                    break;
-                case ChipType.Peach:
-                    _objectiveChip.sprite = _peach;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                ChipType.Apple => _apple,
+                ChipType.Avocado => _avocado,
+                ChipType.Kiwi => _kiwi,
+                ChipType.Banana => _banana,
+                ChipType.Orange => _orange,
+                ChipType.Peach => _peach,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }

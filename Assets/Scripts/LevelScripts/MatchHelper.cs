@@ -20,22 +20,14 @@ namespace Match3
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Cell neighbour = null;
-                    switch (i)
+                    Cell neighbour = i switch
                     {
-                        case 0:
-                            neighbour = cell.Top;
-                            break;
-                        case 1:
-                            neighbour = cell.Bot;
-                            break;
-                        case 2:
-                            neighbour = cell.Left;
-                            break;
-                        case 3:
-                            neighbour = cell.Right;
-                            break;
-                    }
+                        0 => cell.Top,
+                        1 => cell.Bot,
+                        2 => cell.Left,
+                        3 => cell.Right,
+                        _ => null
+                    };
                     Extensions.FindMatches(PossibleMatches, neighbour, cell);
 
                     if (PossibleMatches.Count <= 0) continue;

@@ -61,10 +61,10 @@ namespace Match3
 
         public void ChipMoved()
         {
-            if (CurrentChip.IsNull()) return;
+            if (!this.HasChip()) return;
             switch (IsMatch)
             {
-                case true when _currentSpecial.NotNull():
+                case true when _currentSpecial is not null:
                     _currentSpecial.Action();
                     SetPreviousChip(CurrentChip);
                     SetCurrentChip(null);
@@ -74,7 +74,7 @@ namespace Match3
                     CurrentChip.SetPreviousCell(null);
                     Pooling();
                     break;
-                case false when CurrentChip.PreviousCell.NotNull() && CurrentChip.PreviousCell.IsMatch == false:
+                case false when CurrentChip.PreviousCell is not null && CurrentChip.PreviousCell.IsMatch == false:
                     CurrentChip.SendBack();
                     SetCurrentChip(PreviousChip);
                     SetPreviousChip(null);
@@ -98,14 +98,13 @@ namespace Match3
 
             foreach (Cell cell in cells)
             {
-                if (cell.IsNull() || cell.CurrentChip.IsNull()) continue;
+                if (cell is null || !cell.HasChip()) continue;
 
                 cell.CurrentChip.SetInteractionState(false);
 
-                if (cell._pulledBy.IsNull())
+                if (cell._pulledBy is null)
                     cell.SetPulledByCell(this);
-
-                else if (cell._pulledBy.NotNull())
+                else
                 {
                     _poolingNeighbours.AddRange(cell._pulledBy._poolingNeighbours);
 
@@ -120,10 +119,10 @@ namespace Match3
         /// </summary>
         private void Pooling()
         {
-            if (CurrentChip.IsNull()) return;
+            if (!this.HasChip()) return;
             if (CurrentChip.Type != ChipType.None)
             {
-                if (_pulledBy.NotNull() && _pulledBy != this)
+                if (_pulledBy is not null && _pulledBy != this)
                 {
                     _pulledBy._poolingNeighbours.AddRange(_poolingNeighbours);
                     _poolingNeighbours.Clear();
@@ -144,12 +143,12 @@ namespace Match3
 
         public void ChipFade()
         {
-            if (CurrentChip.IsNull()) return;
+            if (!this.HasChip()) return;
 
-            CurrentChip.FadeOut(_pulledBy.NotNull()
-                ? _pulledBy.CurrentChip.NotNull()
+            CurrentChip.FadeOut(_pulledBy is not null
+                ? _pulledBy.HasChip()
                     ? _pulledBy.CurrentChip.GetComponent<SpecialChip>()
-                    : _pulledBy.PreviousChip.NotNull()
+                    : _pulledBy.PreviousChip is not null
                         ? _pulledBy.PreviousChip.GetComponent<SpecialChip>()
                         : null
                 : null);
@@ -177,11 +176,11 @@ namespace Match3
             RaycastHit2D rightRay = Physics2D.Raycast(transform.position, transform.right, 1f, _cellsLayer);
             RaycastHit2D spawnRay = Physics2D.Raycast(transform.position, transform.up, 10f, _spawnsLayer);
 
-            if (topRay.collider.NotNull()) Top = topRay.collider.GetComponent<Cell>();
-            if (botRay.collider.NotNull()) Bot = botRay.collider.GetComponent<Cell>();
-            if (leftRay.collider.NotNull()) Left = leftRay.collider.GetComponent<Cell>();
-            if (rightRay.collider.NotNull()) Right = rightRay.collider.GetComponent<Cell>();
-            if (spawnRay.collider.NotNull()) SpawnPoint = spawnRay.collider.GetComponent<SpawnPoint>();
+            if (topRay.collider is not null) Top = topRay.collider.GetComponent<Cell>();
+            if (botRay.collider is not null) Bot = botRay.collider.GetComponent<Cell>();
+            if (leftRay.collider is not null) Left = leftRay.collider.GetComponent<Cell>();
+            if (rightRay.collider is not null) Right = rightRay.collider.GetComponent<Cell>();
+            if (spawnRay.collider is not null) SpawnPoint = spawnRay.collider.GetComponent<SpawnPoint>();
         }
 
         public void Highlight(bool isActivate)
@@ -207,7 +206,7 @@ namespace Match3
         {
             PointerClickEvent?.Invoke(this);
             if (LevelManager.Singleton.GetInputState() == false) return;
-            if (CurrentChip.IsNull() || !CurrentChip.IsInteractable || CurrentChip.Type != ChipType.None) return;
+            if (!this.HasChip() || !CurrentChip.IsInteractable || CurrentChip.Type != ChipType.None) return;
 
             LevelManager.Singleton.DestroyChips(this, this);
         }

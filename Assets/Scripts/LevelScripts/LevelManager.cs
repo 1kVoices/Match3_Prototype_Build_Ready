@@ -9,7 +9,6 @@ namespace Match3
 {
     public class LevelManager : MonoBehaviour, IData
     {
-        private GameData _data;
         [SerializeField]
         private Level[] _levels;
         [SerializeField, Range(0.1f, 0.7f)]
@@ -28,8 +27,6 @@ namespace Match3
         private float _dragSens;
         [SerializeField]
         private float _hintDelay;
-        [SerializeField]
-        private GameObject _blur;
         private Level _level;
         private GameTime _gameTime;
         private PlayerObjective _playerObjective;
@@ -48,8 +45,10 @@ namespace Match3
         private float _hintTime;
         private int _chipsCount;
         private int _dictSum;
+        private GameData _data;
         private ToolsManager _toolsManager;
         private BlackScreen _blackScreen;
+        private MoneyManager _moneyManager;
         private CanvasManager _canvasManager;
         private Coroutine _destroyingRoutine;
         private LinkedList<Cell> _fadingCells;
@@ -59,6 +58,7 @@ namespace Match3
         public LinkedList<Cell> AllCells { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public Dictionary<StandardChip, int> ChipChances { get; private set; }
+        public int M18Level { get; private set; }
         public float ChipsFallTime => _chipsFallTime;
         public event Action<Cell> CellPointerEnter;
         public event Action<Cell> CellPointerExit;
@@ -72,7 +72,7 @@ namespace Match3
         private IEnumerator Start()
         {
             Singleton = this;
-            _level = Instantiate(_levels[0]);
+            _level = Instantiate(_levels[_data.CurrentLevel]);
             AllCells = new LinkedList<Cell>();
             _fadingCells = new LinkedList<Cell>();
             ChipChances = new Dictionary<StandardChip, int>();
@@ -83,6 +83,7 @@ namespace Match3
             _toolsManager = FindObjectOfType<ToolsManager>();
             _blackScreen = FindObjectOfType<BlackScreen>();
             _canvasManager = FindObjectOfType<CanvasManager>();
+            _moneyManager = FindObjectOfType<MoneyManager>();
             _gameTime.OutOfTimeEvent += GameOver;
             _hintTime = _hintDelay;
             _chipsCount = _level.RemoveChips;
@@ -134,6 +135,14 @@ namespace Match3
             return null;
         }
 
+        public void RewardPlayer(QuestManager manager = null)
+        {
+            if (manager is null)
+                _moneyManager.AddMoney(_level.RewardExp + _data.ExtraExp);
+            else
+                _moneyManager.AddMoney(manager.RewardExp + _data.ExtraExp);
+        }
+
         private void GenerateChip()
         {
             while (_matchHelper.IsMatchPossible() == false)
@@ -141,13 +150,13 @@ namespace Match3
                 foreach (Cell currentCell in AllCells)
                 {
                     StandardChip newChip = RandomChip();
-                    if (currentCell.Left.NotNull() &&
+                    if (currentCell.Left is not null &&
                         currentCell.Left.CurrentChip.Type == newChip.Type &&
-                        currentCell.Left.Left.NotNull() &&
+                        currentCell.Left.Left is not null &&
                         currentCell.Left.Left.CurrentChip.Type == newChip.Type ||
-                        currentCell.Bot.NotNull() &&
+                        currentCell.Bot is not null &&
                         currentCell.Bot.CurrentChip.Type == newChip.Type &&
-                        currentCell.Bot.Bot.NotNull() &&
+                        currentCell.Bot.Bot is not null &&
                         currentCell.Bot.Bot.CurrentChip.Type == newChip.Type)
                     {
                         {
@@ -160,7 +169,7 @@ namespace Match3
                             };
 
                             var allowedChips = _chipPrefabs
-                                .Where(chip => !neighbours.Where(cell => cell.NotNull())
+                                .Where(chip => !neighbours.Where(cell => cell is not null)
                                     .Select(cell => cell.CurrentChip.Type)
                                     .Contains(chip.Type)).ToArray();
 
@@ -206,7 +215,7 @@ namespace Match3
                     if (cell.HasChip()) continue;
                     Cell topNeighbour = cell.Top;
 
-                    while (topNeighbour.NotNull())
+                    while (topNeighbour is not null)
                     {
                         if (topNeighbour.HasChip())
                         {
@@ -217,7 +226,7 @@ namespace Match3
                             topNeighbour = topNeighbour.Top;
                     }
 
-                    if (topNeighbour.IsNull())
+                    if (topNeighbour is null)
                         cell.SpawnPoint.GenerateChip(cell);
                 }
             }
@@ -229,37 +238,40 @@ namespace Match3
         /// </summary>
         public void DestroyChips(Cell sender, params Cell[] cells)
         {
+            _toolsManager.DisableButtons();
             CheckHint();
             SetInputState(false);
             SpecialChip specialChip = null;
-            if (sender.NotNull())
+            if (sender is not null)
                 specialChip = sender.CurrentChip.GetComponent<SpecialChip>();
 
-            if (specialChip.IsNull() && sender.NotNull())
+            if (specialChip is null && sender is not null)
             {
-                if (cells.Length == 4)
+                switch (cells.Length)
                 {
-                    _cellsToSpawnSpecial.Add(sender, cells.PosYIdentical()
-                        ? _specialBlasterV
-                        : _specialBlasterH);
-                }
-                else if (cells.Length >= 5)
-                {
-                    if (cells.PosXIdentical() || cells.PosYIdentical())
+                    case 4:
+                        _cellsToSpawnSpecial.Add(sender, cells.PosYIdentical()
+                            ? _specialBlasterV
+                            : _specialBlasterH);
+                        break;
+                    case >= 5 when cells.PosXIdentical() || cells.PosYIdentical():
                         _cellsToSpawnSpecial.Add(sender, _specialSun);
-                    else
+                        break;
+                    case >= 5:
                         _cellsToSpawnSpecial.Add(sender, _specialM18);
+                        break;
                 }
 
                 if (cells.All(cell => !cell.CurrentChip.IsTransferred))
                 {
-                    OnChipSequenceDestroy?.Invoke(cells.First().CurrentChip.Type);
+                    if (!_noMoveScreenShown)
+                        OnChipSequenceDestroy?.Invoke(cells.First().CurrentChip.Type);
                     if (cells.Length >= 4)
                         OnSpawnSpecial?.Invoke();
                 }
             }
 
-            var cleared = cells.Where(cell => cell.NotNull()).ToArray();
+            var cleared = cells.Where(cell => cell is not null).ToArray();
             cells = cleared;
 
             foreach (Cell cell in cells)
@@ -267,15 +279,14 @@ namespace Match3
                 cell.SetPulledByCell(sender);
                 _fadingCells.AddLast(cell);
 
-                if (cell.CurrentChip.IsNull()) continue;
+                if (!cell.HasChip()) continue;
                 if (cell.CurrentChip.Type != ChipType.None) continue;
 
                 SpecialChip special = cell.CurrentChip as SpecialChip;
-                special.Action();
+                special!.Action();
             }
 
-            if (_destroyingRoutine.IsNull())
-                _destroyingRoutine = StartCoroutine(WaitForDestroy());
+            _destroyingRoutine ??= StartCoroutine(WaitForDestroy());
         }
         /// <summary>
         /// Задача этой корутины запустится один раз и неважно кто именно ее запустит
@@ -288,13 +299,15 @@ namespace Match3
             while (_fadingCells.Count > 0)
             {
                 _hintTime = _hintDelay;
-                foreach (Cell cell in _fadingCells.Where(cell => cell.CurrentChip.NotNull()))
+                foreach (Cell cell in _fadingCells.Where(cell => cell.HasChip()))
                 {
                     if (cell.CurrentChip.Type == _level.TargetType && !_noMoveScreenShown)
+                    {
                         _playerObjective.UpdateCount();
+                        OnDefaultDestroy?.Invoke();
+                    }
 
                     cell.ChipFade();
-                    OnDefaultDestroy?.Invoke();
                 }
 
                 foreach (var pair in _cellsToSpawnSpecial)
@@ -305,7 +318,7 @@ namespace Match3
                         .Select(chip => (SpecialChip)chip)
                         .FirstOrDefault(chip => chip.SpecialType == pair.Value.SpecialType);
 
-                    if (special.IsNull())
+                    if (special is null)
                         special = Instantiate(pair.Value);
                     else
                         Pool.Singleton.ChipPool.Remove(special);
@@ -314,7 +327,7 @@ namespace Match3
                 }
 
                 yield return new WaitWhile(() => _fadingCells
-                    .Where(cell => cell.PreviousChip.NotNull())
+                    .Where(cell => cell.PreviousChip is not null)
                     .Any(cell => cell.PreviousChip.IsAnimating));
 
                 _cellsToSpawnSpecial.Clear();
@@ -322,20 +335,21 @@ namespace Match3
 
                 GetNewChip();
 
-                yield return new WaitUntil(() => AllCells.All(cell => cell.CurrentChip.NotNull() && !cell.CurrentChip.IsAnimating));
+                yield return new WaitUntil(() => AllCells.All(cell => cell.HasChip() && !cell.CurrentChip.IsAnimating));
             }
 
             if (_playerObjective.CurrentCount <= 0)
             {
                 GameOver(true);
                 if (_data.CurrentLevel < 11)
-                    _data.CurrentLevel++;
+                    _data.LevelsCompleted[_data.CurrentLevel] = true;
+                RewardPlayer();
                 yield break;
-                //todo
             }
             _destroyingRoutine = null;
             CheckPossibleMatches();
             SetInputState(true);
+            _toolsManager.ActivateButtons();
         }
 
         private void CheckPossibleMatches()
@@ -345,7 +359,6 @@ namespace Match3
                 if (!_noMoveScreenShown) return;
                 _canvasManager.HideNoMoveScreen();
                 _noMoveScreenShown = false;
-                _blur.SetActive(false);
                 _gameTime.StartTimer();
                 return;
             }
@@ -358,7 +371,6 @@ namespace Match3
             {
                 _canvasManager.ShowNoMoveScreen();
                 _noMoveScreenShown = true;
-                _blur.SetActive(true);
                 _gameTime.StopTimer();
             }
             yield return new WaitForSeconds(0.5f);
@@ -469,11 +481,11 @@ namespace Match3
             _isReading = false;
             OnPlayerInput?.Invoke();
             _secondaryCell = GetNeighbour(_primaryCell, direction);
-            if (_secondaryCell.IsNull()) return;
+            if (_secondaryCell is null) return;
 
             _secondaryChip = _secondaryCell.CurrentChip;
 
-            if (_primaryCell.IsNull() || _secondaryCell.IsNull()) return;
+            if (_primaryCell is null) return;
             if (!_primaryCell.HasChip() || !_secondaryCell.HasChip()) return;
 
             if (!_primaryChip.IsInteractable || !_secondaryChip.IsInteractable) return;
@@ -486,18 +498,14 @@ namespace Match3
 
         private static Cell GetNeighbour(Cell cell, DirectionType direction)
         {
-            switch (direction)
+            return direction switch
             {
-                case DirectionType.Top:
-                    return cell.Top;
-                case DirectionType.Bot:
-                    return cell.Bot;
-                case DirectionType.Left:
-                    return cell.Left;
-                case DirectionType.Right:
-                    return cell.Right;
-                default: return null;
-            }
+                DirectionType.Top => cell.Top,
+                DirectionType.Bot => cell.Bot,
+                DirectionType.Left => cell.Left,
+                DirectionType.Right => cell.Right,
+                _ => null
+            };
         }
 
         private void OnDestroy()
@@ -517,7 +525,16 @@ namespace Match3
             }
         }
 
-        public void LoadData(GameData data) => _data = data;
-        public void SaveData(ref GameData data) => data.CurrentLevel = _data.CurrentLevel;
+        public void LoadData(GameData data)
+        {
+            _data = data;
+            M18Level = data.M18RadiusLevel;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.CurrentLevel = _data.CurrentLevel;
+            data.LevelsCompleted = _data.LevelsCompleted;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -18,7 +16,7 @@ namespace Match3
         public int Cost => _cost;
         public bool IsUpgraded { get; private set; }
 
-        private  void Start()
+        private void Start()
         {
             _image = GetComponent<Image>();
             _button = GetComponent<Button>();
@@ -40,14 +38,7 @@ namespace Match3
             _image.color = Color.green;
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            _hint.gameObject.SetActive(true);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            _hint.gameObject.SetActive(false);
-        }
+        public void OnPointerEnter(PointerEventData eventData) => _hint.gameObject.SetActive(true);
+        public void OnPointerExit(PointerEventData eventData) => _hint.gameObject.SetActive(false);
     }
 }
