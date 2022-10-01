@@ -6,12 +6,18 @@ namespace Match3
     public class MoneyManager : MonoBehaviour, IData
     {
         private TextMeshProUGUI _text;
-        private int _money;
+        public int Money { get; private set; }
+        public static MoneyManager Singleton;
+
+        private void Awake()
+        {
+            Singleton = this;
+        }
 
         private void Start()
         {
             _text = GetComponentInChildren<TextMeshProUGUI>();
-            _text.text = _money.ToString();
+            _text.text = Money.ToString();
         }
 
         public void AddMoney(int money)
@@ -21,7 +27,13 @@ namespace Match3
             _text.text = current.ToString();
         }
 
-        public void LoadData(GameData data) => _money = data.Money;
+        public void RemoveMoney(int money)
+        {
+            Money -= money;
+            _text.text = Money.ToString();
+        }
+
+        public void LoadData(GameData data) => Money = data.Money;
         public void SaveData(ref GameData data) => data.Money = int.Parse(_text.text);
     }
 }

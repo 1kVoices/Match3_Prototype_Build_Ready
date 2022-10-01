@@ -23,7 +23,6 @@ namespace Match3
         public ChipType TargetType => _targetType;
         public float LevelTime => _levelTime;
         public int RewardExp => _rewardExp;
-
         public IEnumerable<Line> LevelLayout => _levelLayout;
     }
 }

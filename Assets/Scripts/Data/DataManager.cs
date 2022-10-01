@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +12,21 @@ namespace Match3
         private GameData _gameData;
         private DataFileHandler _dataHandler;
         private List<IData> _dataObjects;
+        public static DataManager Singleton;
 
-        private void Start()
+        private void Awake()
         {
             _dataHandler = new DataFileHandler(_encrypt);
+            if (!Singleton)
+            {
+                Singleton = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else Destroy(gameObject);
+        }
+
+        public void FindData()
+        {
             _dataObjects = FindAllData();
             LoadGame();
         }
@@ -38,7 +50,7 @@ namespace Match3
                 data.LoadData(_gameData);
         }
 
-        private void SaveGame()
+        public void SaveGame()
         {
             foreach (IData data in _dataObjects)
                 data.SaveData(ref _gameData);
@@ -46,6 +58,6 @@ namespace Match3
             _dataHandler.Save(_gameData);
         }
 
-        private void OnDestroy() => SaveGame();
+        private void OnApplicationQuit() => SaveGame();
     }
 }

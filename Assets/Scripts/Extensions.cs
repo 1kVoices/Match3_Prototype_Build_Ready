@@ -17,6 +17,8 @@ namespace Match3
         public static readonly int EndFall = Animator.StringToHash("endFall");
         public static readonly int ActionTrigger = Animator.StringToHash("action");
         public static readonly int ExtraActionTrigger = Animator.StringToHash("extraAction");
+        public static readonly int HalfDarken = Animator.StringToHash("halfDarken");
+        public static readonly int Whitening = Animator.StringToHash("halfWhitening");
 
         public static StandardChip[] ChipsOnMap()
         {
@@ -163,9 +165,13 @@ namespace Match3
     [System.Flags]
     public enum TypeChip
     {
-        None = 0<<0,
-        One = 1<<1,
-        Two = 1<<2
+        None = 0,
+        Apple = 1,
+        Avocado = 2,
+        Kiwi = 4,
+        Banana = 8,
+        Orange = 16,
+        Peach = 32
     }
 
     public enum SpecialChipType : byte

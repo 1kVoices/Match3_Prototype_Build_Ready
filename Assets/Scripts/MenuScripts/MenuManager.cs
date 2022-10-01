@@ -10,9 +10,11 @@ namespace Match3
         private DifficultySwitcher _switcher;
         private BlackScreen _blackScreen;
         private PedroCloud _pedro;
+        private PauseButton _pause;
         private GameData _data;
-        private MoneyManager _moneyManager;
         private static readonly int Highlight = Animator.StringToHash("highlight");
+
+        private TypeChip _type;
 
         private void Start()
         {
@@ -22,14 +24,24 @@ namespace Match3
             _blackScreen.OnScreenDarken += OnBlackScreenDarken;
             _blackScreen.OnScreenWhitening += OnBlackScreenBleached;
             _switcher = FindObjectOfType<DifficultySwitcher>();
-            _moneyManager = FindObjectOfType<MoneyManager>();
+            _pause = FindObjectOfType<PauseButton>();
+            _pause.PauseEvent += OnPauseEvent;
             _blackScreen.Whitening();
-            _moneyManager.gameObject.SetActive(false);
+            MoneyManager.Singleton.gameObject.SetActive(false);
+        }
+
+        private void OnPauseEvent()
+        {
+            Time.timeScale = 0f;
         }
 
         private static void OnBlackScreenDarken() => SceneManager.LoadScene(1);
 
-        public void LoadLevel(int i) => _data.CurrentLevel = i;
+        public void LoadLevel(int i)
+        {
+            _data.CurrentLevel = i;
+            DataManager.Singleton.SaveGame();
+        }
 
         public void AnimateLevelCircle(Animator levelAnimator)
         {
@@ -46,7 +58,7 @@ namespace Match3
         private void OnPedroAskedHelp()
         {
             _switcher.ActivateSwitchers();
-            _moneyManager.gameObject.SetActive(true);
+            MoneyManager.Singleton.gameObject.SetActive(true);
         }
 
         private void OnDestroy()
@@ -54,6 +66,7 @@ namespace Match3
             _pedro.AskedHelp -= OnPedroAskedHelp;
             _blackScreen.OnScreenDarken -= OnBlackScreenDarken;
             _blackScreen.OnScreenWhitening -= OnBlackScreenBleached;
+            _pause.PauseEvent -= OnPauseEvent;
         }
 
         public void LoadData(GameData data) => _data = data;

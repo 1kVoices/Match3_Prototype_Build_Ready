@@ -154,6 +154,7 @@ namespace Match3
             if (specialChip is null)
             {
                 _animator.SetTrigger(Extensions.Fade);
+                SoundManager.Singleton.Match();
                 return;
             }
 

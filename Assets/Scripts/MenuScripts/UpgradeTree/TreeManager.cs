@@ -20,13 +20,11 @@ namespace Match3
         private static readonly int LeftHide = Animator.StringToHash("leftHide");
         private static readonly int RightShow = Animator.StringToHash("rightShow");
         private static readonly int RightHide = Animator.StringToHash("rightHide");
-        private static readonly int HalfDarken = Animator.StringToHash("halfDarken");
-        private static readonly int Whitening = Animator.StringToHash("halfWhitening");
 
         public void ShowTrees()
         {
             _trees[_currentTree].SetTrigger(RightShow);
-            _blackScreen.SetTrigger(HalfDarken);
+            _blackScreen.SetTrigger(Extensions.HalfDarken);
             _next.gameObject.SetActive(true);
             _previous.gameObject.SetActive(true);
             _exit.gameObject.SetActive(true);
@@ -53,7 +51,7 @@ namespace Match3
             _next.gameObject.SetActive(false);
             _previous.gameObject.SetActive(false);
             _exit.gameObject.SetActive(false);
-            _blackScreen.SetTrigger(Whitening);
+            _blackScreen.SetTrigger(Extensions.Whitening);
             _trees[_currentTree].SetTrigger(LeftHide);
         }
     }

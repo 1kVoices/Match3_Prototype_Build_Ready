@@ -5,9 +5,8 @@
     {
         public int CurrentLevel;
         public bool WasFirstStart;
+        public bool TutorialShown;
         public int Money;
-        public int PlayerLevel;
-        public int UpgradePoints;
         public int HammerAmount;
         public int HammerHitAmount;
         public int HammerCd;
@@ -46,9 +45,8 @@
             };
             CurrentLevel = 0;
             WasFirstStart = false;
+            TutorialShown = false;
             Money = 0;
-            PlayerLevel = 0;
-            UpgradePoints = 0;
             M18RadiusLevel = 0;
             HammerAmountLevel = 0;
             HammerHitAmountLevel = 0;

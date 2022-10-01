@@ -31,7 +31,6 @@ namespace Match3
             }
             else
                 ChipAnimator.SetTrigger(Extensions.ActionTrigger);
-
             MarkNeighbours();
         }
 
@@ -58,6 +57,7 @@ namespace Match3
                         affectedCells = LevelManager.Singleton.AllCells.ToArray();
 
                     LevelManager.Singleton.DestroyChips(CurrentCell, affectedCells);
+                    SoundManager.Singleton.SunActive();
                     break;
                 case SpecialChipType.M18:
                     switch (LevelManager.Singleton.M18Level)
@@ -119,6 +119,7 @@ namespace Match3
                                 CurrentCell.Right? CurrentCell.Right.Right? CurrentCell.Right.Right.Bot? CurrentCell.Right.Right.Bot.Bot? CurrentCell.Right.Right.Bot.Bot : null : null : null : null);
                             break;
                     }
+                    SoundManager.Singleton.M18Active();
                     break;
                 case SpecialChipType.BlasterH:
                     Cell left = CurrentCell.Left;
@@ -133,6 +134,7 @@ namespace Match3
                         LevelManager.Singleton.DestroyChips(CurrentCell, right);
                         right = right.Right;
                     }
+                    SoundManager.Singleton.BlasterActive();
                     break;
                 case SpecialChipType.BlasterV:
                     Cell top = CurrentCell.Top;
@@ -147,6 +149,7 @@ namespace Match3
                         LevelManager.Singleton.DestroyChips(CurrentCell, bot);
                         bot = bot.Bot;
                     }
+                    SoundManager.Singleton.BlasterActive();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

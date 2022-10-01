@@ -116,7 +116,7 @@ namespace Match3
             base.UpdateCount();
             if (IsCompleted) return;
             _questText.text =
-                $"X{TargetCount - CurrentCount} Destroy in sequence of\n " +
+                $"<color=#FF0000>X{TargetCount - CurrentCount}</color> Destroy in sequence of\n " +
                 $"<color=#{_colorElement0}>{_sequence.ElementAt(0)}</color>, " +
                 $"<color=#{_colorElement1}>{_sequence.ElementAt(1)}</color>, " +
                 $"<color=#{_colorElement2}>{_sequence.ElementAt(2)}</color>";

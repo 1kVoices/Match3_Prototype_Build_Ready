@@ -35,7 +35,7 @@
         {
             base.UpdateCount();
             if (IsCompleted) return;
-            _questText.text = $"Activate {_special} X{TargetCount - CurrentCount}";
+            _questText.text = $"Activate {_special} <color=#FF0000>X{TargetCount - CurrentCount}</color>";
         }
 
         private void SpecialActivateEvent(SpecialChipType special)

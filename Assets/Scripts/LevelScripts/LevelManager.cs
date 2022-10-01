@@ -48,7 +48,6 @@ namespace Match3
         private GameData _data;
         private ToolsManager _toolsManager;
         private BlackScreen _blackScreen;
-        private MoneyManager _moneyManager;
         private CanvasManager _canvasManager;
         private Coroutine _destroyingRoutine;
         private LinkedList<Cell> _fadingCells;
@@ -83,7 +82,6 @@ namespace Match3
             _toolsManager = FindObjectOfType<ToolsManager>();
             _blackScreen = FindObjectOfType<BlackScreen>();
             _canvasManager = FindObjectOfType<CanvasManager>();
-            _moneyManager = FindObjectOfType<MoneyManager>();
             _gameTime.OutOfTimeEvent += GameOver;
             _hintTime = _hintDelay;
             _chipsCount = _level.RemoveChips;
@@ -97,10 +95,10 @@ namespace Match3
             {
                 if (_chipPrefabs[i].Type == _level.TargetType)
                 {
-                    ChipChances.Add(_chipPrefabs[i],  1 + _data.ExtraChance);
+                    ChipChances.Add(_chipPrefabs[i],  20 * (100 + _data.ExtraChance)/100);
                     continue;
                 }
-                ChipChances.Add(_chipPrefabs[i], 1);
+                ChipChances.Add(_chipPrefabs[i], 20);
             }
             _dictSum = ChipChances.Sum(chip => chip.Value);
 
@@ -138,9 +136,9 @@ namespace Match3
         public void RewardPlayer(QuestManager manager = null)
         {
             if (manager is null)
-                _moneyManager.AddMoney(_level.RewardExp + _data.ExtraExp);
+                MoneyManager.Singleton.AddMoney(_level.RewardExp * (100 + _data.ExtraExp)/100);
             else
-                _moneyManager.AddMoney(manager.RewardExp + _data.ExtraExp);
+                MoneyManager.Singleton.AddMoney(manager.RewardExp * (100 + _data.ExtraExp)/100);
         }
 
         private void GenerateChip()
@@ -183,9 +181,12 @@ namespace Match3
                     currentCell.CurrentChip.SetCurrentCell(currentCell);
                 }
             }
+
+            if (_canvasManager.IsTutorialShown)
+                StartCoroutine(ChipsShowUp());
         }
 
-        public IEnumerator ChipsShowUp() //todo
+        public IEnumerator ChipsShowUp()
         {
             foreach (Cell cell in AllCells)
             {
@@ -233,7 +234,7 @@ namespace Match3
         }
         /// <summary>
         /// Метод уничтожения фишек
-        /// Если sender не имеет супер фишки, то он добавляется в словарь и позже получит суперфишку.
+        /// Если sender не имеет супер фишки и если был матч больше 3, то он добавляется в словарь и позже получит суперфишку.
         /// Если в cells есть супер фишки - они активируются
         /// </summary>
         public void DestroyChips(Cell sender, params Cell[] cells)

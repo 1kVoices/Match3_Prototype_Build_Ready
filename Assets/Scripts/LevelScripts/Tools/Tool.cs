@@ -15,6 +15,8 @@ namespace Match3
         private Button _button;
         [SerializeField]
         private Tool _brother;
+        private bool _isUsed;
+        private bool _isBreak;
         public bool IsInteractable { get; private set; }
         protected bool IsInput;
         protected int UseAmount;
@@ -24,6 +26,8 @@ namespace Match3
         private ColorBlock _colors;
         private bool _isCd;
         private TimeSpan _timeSpan;
+        public event Action<Tool> ToolActive;
+        public event Action ToolUsed;
 
         private void Start()
         {
@@ -42,15 +46,19 @@ namespace Match3
         {
             if (LevelManager.Singleton.GetInputState() == false) return;
             _brother.DisableButton();
+            ToolActive?.Invoke(this);
             LevelManager.Singleton.SetToolState(true);
             LevelManager.Singleton.DeactivateHint();
             IsInput = true;
             _colors.normalColor = Color.red;
             _button.colors = _colors;
+            _isUsed = false;
+            _isBreak = false;
         }
 
         protected virtual void PlayerClicked(Cell cell)
         {
+            _isUsed = true;
             HitAmount--;
             _amountText.text = UseAmount.ToString();
         }
@@ -62,25 +70,26 @@ namespace Match3
         {
             LevelManager.Singleton.SetToolState(false);
             LevelManager.Singleton.ActivateHint();
+            ToolUsed?.Invoke();
             IsInput = false;
             _colors.normalColor = Color.black;
             _button.colors = _colors;
             _amountText.text = UseAmount.ToString();
-            _button.interactable = false;
+            if (_isBreak)
+                _button.interactable = false;
             IsInteractable = false;
             if (_brother.IsInteractable)
                 _brother.EnableButton();
-            if (UseAmount > 0) _isCd = true;
+            if (UseAmount > 0 && _isUsed) _isCd = true;
         }
 
-        public void EnableButton()
-        {
-            _button.interactable = true;
-        }
+        public void EnableButton() => _button.interactable = true;
+        public void DisableButton() => _button.interactable = false;
 
-        public void DisableButton()
+        public void BreakTool()
         {
-            _button.interactable = false;
+            UpdateState();
+            _isBreak = true;
         }
 
         private void Update()

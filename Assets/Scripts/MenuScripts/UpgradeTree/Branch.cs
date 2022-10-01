@@ -23,13 +23,23 @@ namespace Match3
 
         private bool IsUpgradable(int i)
         {
-            return i switch
+            switch (i)
             {
-                0 => true, //cost
-                1 => _leaves[0].IsUpgraded,
-                2 => _leaves[0].IsUpgraded && _leaves[1].IsUpgraded,
-                _ => false
-            };
+                case 0:
+                    if (MoneyManager.Singleton.Money < _leaves[0].Cost) return false;
+                    MoneyManager.Singleton.RemoveMoney(_leaves[0].Cost);
+                    return true;
+                case 1:
+                    if (MoneyManager.Singleton.Money < _leaves[1].Cost || !_leaves[0].IsUpgraded) return false;
+                    MoneyManager.Singleton.RemoveMoney(_leaves[1].Cost);
+                    return true;
+                case 2:
+                    if (MoneyManager.Singleton.Money < _leaves[2].Cost || !_leaves[0].IsUpgraded || !_leaves[1].IsUpgraded) return false;
+                    MoneyManager.Singleton.RemoveMoney(_leaves[2].Cost);
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

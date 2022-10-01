@@ -21,15 +21,15 @@
                 switch (level)
                 {
                     case 0:
-                        Data.ExtraChance = 1;
+                        Data.ExtraChance = 5;
                         Data.SpawnChanceLevel = 1;
                         break;
                     case 1:
-                        Data.ExtraChance = 2;
+                        Data.ExtraChance = 10;
                         Data.SpawnChanceLevel = 2;
                         break;
                     case 2:
-                        Data.ExtraChance = 3;
+                        Data.ExtraChance = 15;
                         Data.SpawnChanceLevel = 3;
                         break;
                 }
@@ -39,15 +39,15 @@
                 switch (level)
                 {
                     case 0:
-                        Data.ExtraExp = 100;
+                        Data.ExtraExp = 5;
                         Data.ExpAmountLevel = 1;
                         break;
                     case 1:
-                        Data.ExtraExp = 150;
+                        Data.ExtraExp = 10;
                         Data.ExpAmountLevel = 2;
                         break;
                     case 2:
-                        Data.ExtraExp = 200;
+                        Data.ExtraExp = 15;
                         Data.ExpAmountLevel = 3;
                         break;
                 }

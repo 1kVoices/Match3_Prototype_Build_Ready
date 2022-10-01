@@ -13,6 +13,8 @@ namespace Match3
         private Hint _hint;
         [SerializeField]
         private string _hintText;
+        [SerializeField]
+        private GameObject _costGameObject;
         public int Cost => _cost;
         public bool IsUpgraded { get; private set; }
 
@@ -30,6 +32,7 @@ namespace Match3
         {
             IsUpgraded = true;
             DeactivateButton();
+            _costGameObject.SetActive(false);
         }
 
         private void DeactivateButton()

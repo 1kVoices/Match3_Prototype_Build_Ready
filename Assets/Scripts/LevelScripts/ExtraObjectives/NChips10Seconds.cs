@@ -36,7 +36,7 @@ namespace Match3
             _timerReady = false;
         }
 
-        private void UpdateText() => _questText.text = $"Destroy {TargetCount - CurrentCount} chips within sec: {_timer:n0} ";
+        private void UpdateText() => _questText.text = $"Destroy <color=#FF0000>{TargetCount - CurrentCount}</color> chips within sec: {_timer:n0} ";
 
         protected override void Completed()
         {

@@ -13,7 +13,7 @@
         {
             base.UpdateCount();
             if (IsCompleted) return;
-            _questText.text = $"Create any Super Chip X{TargetCount - CurrentCount}";
+            _questText.text = $"Create any Super Chip <color=#FF0000>X{TargetCount - CurrentCount}</color>";
         }
     }
 }
