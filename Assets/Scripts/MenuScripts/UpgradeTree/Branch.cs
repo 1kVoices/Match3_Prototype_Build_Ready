@@ -26,16 +26,16 @@ namespace Match3
             switch (i)
             {
                 case 0:
-                    if (MoneyManager.Singleton.Money < _leaves[0].Cost) return false;
-                    MoneyManager.Singleton.RemoveMoney(_leaves[0].Cost);
+                    if (MenuManager.Singleton.MoneyManager.Money < _leaves[0].Cost) return false;
+                    MenuManager.Singleton.MoneyManager.RemoveMoney(_leaves[0].Cost);
                     return true;
                 case 1:
-                    if (MoneyManager.Singleton.Money < _leaves[1].Cost || !_leaves[0].IsUpgraded) return false;
-                    MoneyManager.Singleton.RemoveMoney(_leaves[1].Cost);
+                    if (MenuManager.Singleton.MoneyManager.Money < _leaves[1].Cost || !_leaves[0].IsUpgraded) return false;
+                    MenuManager.Singleton.MoneyManager.RemoveMoney(_leaves[1].Cost);
                     return true;
                 case 2:
-                    if (MoneyManager.Singleton.Money < _leaves[2].Cost || !_leaves[0].IsUpgraded || !_leaves[1].IsUpgraded) return false;
-                    MoneyManager.Singleton.RemoveMoney(_leaves[2].Cost);
+                    if (MenuManager.Singleton.MoneyManager.Money < _leaves[2].Cost || !_leaves[0].IsUpgraded || !_leaves[1].IsUpgraded) return false;
+                    MenuManager.Singleton.MoneyManager.RemoveMoney(_leaves[2].Cost);
                     return true;
                 default:
                     return false;

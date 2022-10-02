@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\MenuScripts\PedroCloud.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\GameTime.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\QuestManager.cs" />
+     <Compile Include="Assets\Scripts\PauseButton.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\PlayerObjective.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesPlayerCombo.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesSuperChip.cs" />
@@ -75,6 +76,7 @@
      <Compile Include="Assets\Scripts\LevelScripts\Controls\Controls.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\CellHighlighter.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\SpawnPoint.cs" />
+     <Compile Include="Assets\Scripts\SoundManager.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuAnimatorEventReceiver.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesChipSequence.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NChips10Seconds.cs" />
@@ -83,13 +85,12 @@
      <Compile Include="Assets\Scripts\LevelScripts\Pool.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\DataManagerInvocator.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\SledgeHammerTree.cs" />
+     <Compile Include="Assets\Scripts\MenuScripts\VolumeButton.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Tools\Tool.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Hint.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Tree.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\Leaf.cs" />
      <Compile Include="Assets\Scripts\Data\DataManager.cs" />
-     <Compile Include="Assets\Scripts\SoundManager.cs" />
-     <Compile Include="Assets\Scripts\MenuScripts\PauseButton.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

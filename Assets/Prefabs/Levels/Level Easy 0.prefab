@@ -386,6 +386,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
+      propertyPath: _typeChip
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
       propertyPath: _levelTime
       value: 15
       objectReference: {fileID: 0}
@@ -397,12 +402,17 @@ PrefabInstance:
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: _targetType
-      value: 1
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}
       propertyPath: _removeChips
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
+        type: 3}
+      propertyPath: _allowedTypes
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 6816897839586155935, guid: 64ad3f61758ea2549829385f59bf2427,
         type: 3}

@@ -58,6 +58,7 @@ namespace Match3
 
         protected virtual void PlayerClicked(Cell cell)
         {
+            ToolUsed?.Invoke();
             _isUsed = true;
             HitAmount--;
             _amountText.text = UseAmount.ToString();
@@ -70,13 +71,19 @@ namespace Match3
         {
             LevelManager.Singleton.SetToolState(false);
             LevelManager.Singleton.ActivateHint();
-            ToolUsed?.Invoke();
             IsInput = false;
             _colors.normalColor = Color.black;
             _button.colors = _colors;
             _amountText.text = UseAmount.ToString();
+
             if (_isBreak)
-                _button.interactable = false;
+            {
+                EnableButton();
+                if (_brother.IsInteractable)
+                    _brother.EnableButton();
+                return;
+            }
+
             IsInteractable = false;
             if (_brother.IsInteractable)
                 _brother.EnableButton();
@@ -88,8 +95,8 @@ namespace Match3
 
         public void BreakTool()
         {
-            UpdateState();
             _isBreak = true;
+            UpdateState();
         }
 
         private void Update()

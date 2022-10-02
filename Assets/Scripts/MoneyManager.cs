@@ -7,12 +7,6 @@ namespace Match3
     {
         private TextMeshProUGUI _text;
         public int Money { get; private set; }
-        public static MoneyManager Singleton;
-
-        private void Awake()
-        {
-            Singleton = this;
-        }
 
         private void Start()
         {

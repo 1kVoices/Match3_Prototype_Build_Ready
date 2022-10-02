@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,7 +51,7 @@ namespace Match3
 
         public void SaveGame()
         {
-            foreach (IData data in _dataObjects)
+            foreach (IData data in _dataObjects.Where(data => data is not null))
                 data.SaveData(ref _gameData);
 
             _dataHandler.Save(_gameData);

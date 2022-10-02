@@ -151,19 +151,8 @@ namespace Match3
         Right,
     }
 
-    public enum ChipType : byte
-    {
-        None,
-        Apple,
-        Avocado,
-        Kiwi,
-        Banana,
-        Orange,
-        Peach
-    }
-
     [System.Flags]
-    public enum TypeChip
+    public enum ChipType : byte
     {
         None = 0,
         Apple = 1,

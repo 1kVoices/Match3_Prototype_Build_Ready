@@ -5,7 +5,7 @@ namespace Match3
 {
     public class DataFileHandler
     {
-        private static readonly string path = Application.persistentDataPath + "/player.data";
+        private static readonly string path = Application.persistentDataPath + "/GameData.data";
         private const string _codeWord = "word";
         private readonly bool _encrypt;
 

@@ -9,8 +9,6 @@ namespace Match3
         [SerializeField]
         private AudioMixerGroup _mixer;
         [SerializeField]
-        private AudioSource _source;
-        [SerializeField]
         private AudioSource _matchSource;
         [SerializeField]
         private AudioSource _blasterSource;
@@ -40,7 +38,7 @@ namespace Match3
             else Destroy(gameObject);
         }
 
-        public void ToolHit() => _source.PlayOneShot(_toolHit);
+        public void ToolHit() => _matchSource.PlayOneShot(_toolHit);
 
         public void Match()
         {
