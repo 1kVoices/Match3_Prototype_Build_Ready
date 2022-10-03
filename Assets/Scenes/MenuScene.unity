@@ -2587,7 +2587,7 @@ PrefabInstance:
     - target: {fileID: 7797222453859408664, guid: b2fdec9ef49a53c4493203e6ed29c4c9,
         type: 3}
       propertyPath: _hintText
-      value: M18 Destroying 9 Fruits
+      value: M18 Destroying 8 Fruits
       objectReference: {fileID: 0}
     - target: {fileID: 7797222453859408665, guid: b2fdec9ef49a53c4493203e6ed29c4c9,
         type: 3}
