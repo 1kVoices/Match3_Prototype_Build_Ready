@@ -463,16 +463,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997037705400390220, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997037705400390220, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997037705400390220, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
-        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -547,6 +537,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 7093f1b5aaa7c8749bc9d3be652b8287,
         type: 3}
+    - target: {fileID: 8492892799508545544, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8492892799508545544, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2127701775}
+    - target: {fileID: 8492892799508545544, guid: 36d827b1e1bd31947a4c4cbb58c9d69a,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CloseTutorial
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36d827b1e1bd31947a4c4cbb58c9d69a, type: 3}
 --- !u!224 &276543433 stripped
