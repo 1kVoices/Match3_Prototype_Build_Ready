@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Match3
 {
@@ -14,7 +15,10 @@ namespace Match3
         private Animator _blackScreen;
         [SerializeField]
         private Animator _noMoveScreen;
+        [SerializeField]
+        private Button _nextLevel;
         public bool IsTutorialShown { get; private set; }
+        private int _currentLevel;
 
         private void Start()
         {
@@ -30,28 +34,37 @@ namespace Match3
             StartCoroutine(LevelManager.Singleton.ChipsShowUp());
         }
 
-        public void CloseLostScreen()
+        public void CloseLostScreen(bool isExit)
         {
             _lostScreen.SetTrigger(Extensions.Hide);
             _blackScreen.SetTrigger(Extensions.Hide);
+            LevelManager.Singleton.SetExitState(isExit);
             DataManager.Singleton.SaveGame();
         }
 
-        public void CloseWinScreen()
+        public void CloseWinScreen(bool isExit)
         {
             _winScreen.SetTrigger(Extensions.Hide);
             _blackScreen.SetTrigger(Extensions.Hide);
+            LevelManager.Singleton.SetExitState(isExit);
             DataManager.Singleton.SaveGame();
         }
 
         public void ShowLostScreen() => _lostScreen.SetTrigger(Extensions.Show);
-        public void ShowWinScreen() => _winScreen.SetTrigger(Extensions.Show);
+        public void ShowWinScreen()
+        {
+            _winScreen.SetTrigger(Extensions.Show);
+            if (_currentLevel >= 11)
+                _nextLevel.interactable = false;
+        }
+
         public void ShowNoMoveScreen() => _noMoveScreen.SetTrigger(Extensions.Show);
         public void HideNoMoveScreen() => _noMoveScreen.SetTrigger(Extensions.Hide);
 
         public void LoadData(GameData data)
         {
             IsTutorialShown = data.TutorialShown;
+            _currentLevel = data.CurrentLevel;
         }
 
         public void SaveData(ref GameData data)

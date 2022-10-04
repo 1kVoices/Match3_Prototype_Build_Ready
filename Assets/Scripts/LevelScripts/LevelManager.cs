@@ -42,6 +42,7 @@ namespace Match3
         private bool _toolActive;
         private bool _hintActive;
         private bool _noMoveScreenShown;
+        private bool _isExitToMenu;
         private float _hintTime;
         private int _dictSum;
         private GameData _data;
@@ -350,7 +351,10 @@ namespace Match3
             {
                 GameOver(true);
                 if (_data.CurrentLevel < 11)
+                {
                     _data.LevelsCompleted[_data.CurrentLevel] = true;
+                    _data.CurrentLevel++;
+                }
                 RewardPlayer();
                 yield break;
             }
@@ -442,6 +446,7 @@ namespace Match3
         public bool GetToolState() => _toolActive;
         public void SetInputState(bool state) => _allowInput = state;
         public void SetToolState(bool state) => _toolActive = state;
+        public void SetExitState(bool state) => _isExitToMenu = state;
         public void OnSpecialActivate(SpecialChipType obj) => OnSpecialActivateEvent?.Invoke(obj);
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
         private void OnCellPointerClickEvent(Cell cell)
@@ -463,7 +468,7 @@ namespace Match3
             _isReading = true;
         }
 
-        private static void BlackScreenDarken() => SceneManager.LoadScene(0);
+        private void BlackScreenDarken() => SceneManager.LoadScene(_isExitToMenu ? 0 : 1);
 
         private void Update()
         {

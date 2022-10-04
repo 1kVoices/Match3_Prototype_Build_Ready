@@ -25,6 +25,7 @@ namespace Match3
 
             for (int i = 0; i <= levelsCount; i++)
             {
+                if(i == 12) break;
                 _allLevels[i].SetInteractionState(true);
                 if (i == levelsCount) continue;
                 _allLevels[i].SetRewardState(true);
@@ -34,12 +35,18 @@ namespace Match3
             {
                 _allLevels[i].gameObject.SetActive(false);
 
-                if (i <= 3)
-                    _easyLevels.AddLast(_allLevels[i]);
-                else if (i <= 7)
-                    _mediumLevels.AddLast(_allLevels[i]);
-                else
-                    _hardLevels.AddLast(_allLevels[i]);
+                switch (i)
+                {
+                    case <= 3:
+                        _easyLevels.AddLast(_allLevels[i]);
+                        break;
+                    case <= 7:
+                        _mediumLevels.AddLast(_allLevels[i]);
+                        break;
+                    default:
+                        _hardLevels.AddLast(_allLevels[i]);
+                        break;
+                }
             }
         }
 

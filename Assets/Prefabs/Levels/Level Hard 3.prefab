@@ -152,7 +152,7 @@ PrefabInstance:
     - target: {fileID: 3225710688267894495, guid: 68858365948f3c841a8c0df20ac0f449,
         type: 3}
       propertyPath: _chipsToDestroy
-      value: 200
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3225710688481932761, guid: 68858365948f3c841a8c0df20ac0f449,
         type: 3}
