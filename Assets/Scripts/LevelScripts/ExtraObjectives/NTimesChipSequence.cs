@@ -54,6 +54,7 @@ namespace Match3
 
         private void Destroyed(ChipType chip)
         {
+            // if (_currentElement >= 3) return;
             _incomingChip = chip;
 
             if (_incomingChip == _sequence.ElementAt(_currentElement))
