@@ -9,8 +9,6 @@ namespace Match3
     {
         private LinkedList<ChipType> _sequence;
         private int _currentElement;
-        private ChipType _incomingChip1;
-        private ChipType _incomingChip2;
         private string _baseColor;
         private string _greenColor;
         private string _colorElement0;
@@ -56,17 +54,14 @@ namespace Match3
         private void Destroyed((ChipType chip1, ChipType chip2) chipPair)
         {
             if (_currentElement >= 3) return;
-            _incomingChip1 = chipPair.chip1;
-            _incomingChip2 = chipPair.chip2;
-
-            if (_incomingChip1 == _sequence.ElementAt(_currentElement))
+            if (chipPair.chip1 == _sequence.ElementAt(_currentElement))
             {
                 Highlight(_currentElement);
                 _currentElement++;
             }
-            else if (_incomingChip1 != _sequence.ElementAt(_currentElement))
+            else if (chipPair.chip1 != _sequence.ElementAt(_currentElement))
             {
-                if (_incomingChip2 == _sequence.ElementAt(_currentElement))
+                if (chipPair.chip2 == _sequence.ElementAt(_currentElement))
                 {
                     Highlight(_currentElement);
                     _currentElement++;
