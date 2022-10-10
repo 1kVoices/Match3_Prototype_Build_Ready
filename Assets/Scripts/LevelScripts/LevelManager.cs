@@ -66,7 +66,7 @@ namespace Match3
         public event Action<Cell> OnPlayerClick;
         public event Action<SpecialChipType> OnSpecialActivateEvent;
         public event Action OnSpawnSpecial;
-        public event Action<ChipType> OnChipSequenceDestroy;
+        public event Action<(ChipType, ChipType)> OnChipSequenceDestroy;
         public event Action OnDefaultDestroy;
         public event Action OnPlayerInput;
 
@@ -276,7 +276,7 @@ namespace Match3
                 if (cells.All(cell => !cell.CurrentChip.IsTransferred))
                 {
                     if (!_noMoveScreenShown)
-                        OnChipSequenceDestroy?.Invoke(cells.First().CurrentChip.Type);
+                        OnChipSequenceDestroy?.Invoke((cells[0].CurrentChip.Type, cells[1].CurrentChip.Type));
                     if (cells.Length >= 4)
                         OnSpawnSpecial?.Invoke();
                 }

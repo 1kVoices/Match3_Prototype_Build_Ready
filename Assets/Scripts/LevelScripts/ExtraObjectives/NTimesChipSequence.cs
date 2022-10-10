@@ -9,7 +9,8 @@ namespace Match3
     {
         private LinkedList<ChipType> _sequence;
         private int _currentElement;
-        private ChipType _incomingChip;
+        private ChipType _incomingChip1;
+        private ChipType _incomingChip2;
         private string _baseColor;
         private string _greenColor;
         private string _colorElement0;
@@ -52,18 +53,25 @@ namespace Match3
             UpdateCount();
         }
 
-        private void Destroyed(ChipType chip)
+        private void Destroyed((ChipType chip1, ChipType chip2) chipPair)
         {
-            // if (_currentElement >= 3) return;
-            _incomingChip = chip;
+            if (_currentElement >= 3) return;
+            _incomingChip1 = chipPair.chip1;
+            _incomingChip2 = chipPair.chip2;
 
-            if (_incomingChip == _sequence.ElementAt(_currentElement))
+            if (_incomingChip1 == _sequence.ElementAt(_currentElement))
             {
                 Highlight(_currentElement);
                 _currentElement++;
             }
-            else if (_incomingChip != _sequence.ElementAt(_currentElement))
+            else if (_incomingChip1 != _sequence.ElementAt(_currentElement))
             {
+                if (_incomingChip2 == _sequence.ElementAt(_currentElement))
+                {
+                    Highlight(_currentElement);
+                    _currentElement++;
+                    return;
+                }
                 DarkenAll();
                 _currentElement = 0;
             }
