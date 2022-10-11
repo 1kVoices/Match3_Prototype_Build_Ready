@@ -1,6 +1,6 @@
 ﻿namespace Match3
 {
-    public class NTimesPlayerCombo : ExtraObjective
+    public class Quest_PlayerCombo : ExtraObjective
     {
         protected override void Init()
         {

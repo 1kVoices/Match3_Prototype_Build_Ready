@@ -52,8 +52,8 @@
      <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\QuestManager.cs" />
      <Compile Include="Assets\Scripts\PauseButton.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\PlayerObjective.cs" />
-     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesPlayerCombo.cs" />
-     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesSuperChip.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\Quest_PlayerCombo.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\Quest_ActivateSuperChip.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Level.cs" />
      <Compile Include="Assets\Scripts\Data\GameData.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\DifficultySwitcher.cs" />
@@ -78,12 +78,11 @@
      <Compile Include="Assets\Scripts\LevelScripts\SpawnPoint.cs" />
      <Compile Include="Assets\Scripts\SoundManager.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\MenuAnimatorEventReceiver.cs" />
-     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NTimesChipSequence.cs" />
-     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\NChips10Seconds.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\Quest_ChipSequence.cs" />
+     <Compile Include="Assets\Scripts\LevelScripts\ExtraObjectives\Quest_Chips10Seconds.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Cell.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Tools\ToolsManager.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Pool.cs" />
-     <Compile Include="Assets\Scripts\LevelScripts\DataManagerInvocator.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\UpgradeTree\SledgeHammerTree.cs" />
      <Compile Include="Assets\Scripts\MenuScripts\VolumeButton.cs" />
      <Compile Include="Assets\Scripts\LevelScripts\Tools\Tool.cs" />

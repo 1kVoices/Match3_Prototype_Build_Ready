@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7962731918487926802}
   - component: {fileID: 8015125341225503251}
   m_Layer: 0
-  m_Name: NTimesDestroyWithinSeconds
+  m_Name: DestroyWithinSeconds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

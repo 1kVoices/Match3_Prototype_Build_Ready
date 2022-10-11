@@ -2,7 +2,7 @@
 
 namespace Match3
 {
-    public class NChips10Seconds : ExtraObjective
+    public class Quest_Chips10Seconds : ExtraObjective
     {
         private float _timer;
         private bool _timerReady;

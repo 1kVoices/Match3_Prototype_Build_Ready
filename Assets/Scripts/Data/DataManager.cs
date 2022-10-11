@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Match3
 {
@@ -22,9 +23,16 @@ namespace Match3
                 DontDestroyOnLoad(gameObject);
             }
             else Destroy(gameObject);
+
+            SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
-        public void FindData()
+        private void OnSceneChanged(Scene arg0, Scene arg1)
+        {
+            Start();
+        }
+
+        private void Start()
         {
             _dataObjects = FindAllData();
             LoadGame();
@@ -57,6 +65,10 @@ namespace Match3
             _dataHandler.Save(_gameData);
         }
 
-        private void OnApplicationQuit() => SaveGame();
+        private void OnApplicationQuit()
+        {
+            SceneManager.activeSceneChanged -= OnSceneChanged;
+            SaveGame();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Match3
 {
-    public class NTimesSuperChip : ExtraObjective
+    public class Quest_ActivateSuperChip : ExtraObjective
     {
         private SpecialChipType _targetSpecial;
         private string _special;

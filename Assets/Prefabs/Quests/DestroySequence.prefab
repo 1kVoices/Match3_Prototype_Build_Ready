@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7962731918487926802}
   - component: {fileID: -7293317398064289399}
   m_Layer: 0
-  m_Name: NTimesDestroySequence
+  m_Name: DestroySequence
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

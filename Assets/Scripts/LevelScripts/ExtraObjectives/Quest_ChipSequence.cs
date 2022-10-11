@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Match3
 {
-    public class NTimesChipSequence : ExtraObjective
+    public class Quest_ChipSequence : ExtraObjective
     {
         private LinkedList<ChipType> _sequence;
         private int _currentElement;
@@ -14,6 +14,9 @@ namespace Match3
         private string _colorElement0;
         private string _colorElement1;
         private string _colorElement2;
+        private ChipType _incomingChip1;
+        private ChipType _incomingChip2;
+        private Coroutine _sequenceRoutine;
         private WaitForSecondsRealtime _delay;
 
         protected override void Init()
@@ -51,24 +54,51 @@ namespace Match3
             UpdateCount();
         }
 
-        private void Destroyed((ChipType chip1, ChipType chip2) chipPair)
+        private void Destroyed(ChipType incomingChip)
         {
             if (_currentElement >= 3) return;
-            if (chipPair.chip1 == _sequence.ElementAt(_currentElement))
+
+            if (_incomingChip1 == ChipType.None)
+                _incomingChip1 = incomingChip;
+
+            else if (_incomingChip2 == ChipType.None)
+                _incomingChip2 = incomingChip;
+
+            _sequenceRoutine ??= StartCoroutine(Sequence());
+        }
+
+        private IEnumerator Sequence()
+        {
+            yield return null;
+            if (_incomingChip1 == _sequence.ElementAt(_currentElement))
             {
                 Highlight(_currentElement);
                 _currentElement++;
-            }
-            else if (chipPair.chip1 != _sequence.ElementAt(_currentElement))
-            {
-                if (chipPair.chip2 == _sequence.ElementAt(_currentElement))
+
+                if (_incomingChip2 != ChipType.None && _incomingChip2 == _sequence.ElementAt(_currentElement))
                 {
                     Highlight(_currentElement);
                     _currentElement++;
-                    return;
                 }
-                DarkenAll();
-                _currentElement = 0;
+            }
+            else if (_incomingChip1 != _sequence.ElementAt(_currentElement))
+            {
+                if (_incomingChip2 == _sequence.ElementAt(_currentElement))
+                {
+                    Highlight(_currentElement);
+                    _currentElement++;
+
+                    if (_currentElement < 3 && _incomingChip1 != ChipType.None && _incomingChip1 == _sequence.ElementAt(_currentElement))
+                    {
+                        Highlight(_currentElement);
+                        _currentElement++;
+                    }
+                }
+                else
+                {
+                    DarkenAll();
+                    _currentElement = 0;
+                }
             }
             if (_currentElement == 3)
             {
@@ -77,6 +107,10 @@ namespace Match3
                 ConditionMet();
             }
             UpdateCount();
+
+            _sequenceRoutine = null;
+            _incomingChip1 = ChipType.None;
+            _incomingChip2 = ChipType.None;
         }
 
         private IEnumerator DelayedDarken()
