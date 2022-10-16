@@ -148,7 +148,7 @@ namespace Match3
             CurrentChip.FadeOut(_pulledBy is not null
                 ? _pulledBy.HasChip()
                     ? _pulledBy.CurrentChip.GetComponent<SpecialChip>()
-                    : _pulledBy.PreviousChip is not null
+                    : _pulledBy.PreviousChip != null
                         ? _pulledBy.PreviousChip.GetComponent<SpecialChip>()
                         : null
                 : null);
@@ -205,7 +205,7 @@ namespace Match3
         public void OnPointerClick(PointerEventData eventData)
         {
             PointerClickEvent?.Invoke(this);
-            if (LevelManager.Singleton.GetInputState() == false) return;
+            if (LevelManager.Singleton.InputState == false) return;
             if (!this.HasChip() || !CurrentChip.IsInteractable || CurrentChip.Type != ChipType.None) return;
 
             LevelManager.Singleton.DestroyChips(this, this);

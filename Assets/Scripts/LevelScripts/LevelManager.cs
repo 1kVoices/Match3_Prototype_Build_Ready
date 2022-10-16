@@ -38,7 +38,6 @@ namespace Match3
         private Cell _primaryCell;
         private Cell _secondaryCell;
         private bool _isReading;
-        private bool _allowInput;
         private bool _toolActive;
         private bool _hintActive;
         private bool _noMoveScreenShown;
@@ -60,6 +59,7 @@ namespace Match3
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public Dictionary<StandardChip, int> ChipChances { get; private set; }
         public int M18Level { get; private set; }
+        public bool InputState { get; private set; }
         public float ChipsFallTime => _chipsFallTime;
         public event Action<Cell> CellPointerEnter;
         public event Action<Cell> CellPointerExit;
@@ -442,16 +442,14 @@ namespace Match3
         /// В прототипе есть редкие и крайне редкие события, инпут пользователя в которых
         /// может привести к ошибкам, и в связи с этим он блокируется
         /// </summary>
-        public bool GetInputState() => _allowInput;
-        public bool GetToolState() => _toolActive;
-        public void SetInputState(bool state) => _allowInput = state;
+        public void SetInputState(bool state) => InputState = state;
         public void SetToolState(bool state) => _toolActive = state;
         public void SetExitState(bool state) => _isExitToMenu = state;
         public void OnSpecialActivate(SpecialChipType obj) => OnSpecialActivateEvent?.Invoke(obj);
         private void OnCellPointerUpEvent(Cell cell) => _isReading = false;
         private void OnCellPointerClickEvent(Cell cell)
         {
-            if (GetInputState() == false) return;
+            if (InputState == false) return;
             OnPlayerClick?.Invoke(cell);
         }
 
@@ -460,7 +458,7 @@ namespace Match3
 
         private void OnCellPointerDownEvent(Cell cell, Vector2 cellPos)
         {
-            if (!_allowInput) return;
+            if (!InputState) return;
 
             _primaryCell = cell;
             _primaryChip = cell.CurrentChip;
@@ -478,7 +476,7 @@ namespace Match3
 
         private void ReadPlayerInput()
         {
-            if (!_isReading || _toolActive) return;
+            if (!InputState || !_isReading || _toolActive) return;
             Vector2 newMousePos = _controls.MainMap.Mouse.ReadValue<Vector2>();
 
             if (newMousePos.y - _startDragMousePos.y > _dragSens)

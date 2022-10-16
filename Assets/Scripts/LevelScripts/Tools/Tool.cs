@@ -44,7 +44,7 @@ namespace Match3
 
         public void OnClick()
         {
-            if (LevelManager.Singleton.GetInputState() == false) return;
+            if (LevelManager.Singleton.InputState == false) return;
             _brother.DisableButton();
             ToolActive?.Invoke(this);
             LevelManager.Singleton.SetToolState(true);
