@@ -27,6 +27,7 @@ namespace Match3
         private float _dragSens;
         [SerializeField]
         private float _hintDelay;
+        
         private Level _level;
         private GameTime _gameTime;
         private PlayerObjective _playerObjective;
@@ -35,32 +36,42 @@ namespace Match3
         private Vector2 _startDragMousePos;
         private StandardChip _primaryChip;
         private StandardChip _secondaryChip;
+        
         private Cell _primaryCell;
         private Cell _secondaryCell;
+        
         private bool _isReading;
         private bool _toolActive;
         private bool _hintActive;
         private bool _noMoveScreenShown;
         private bool _isExitToMenu;
+        
         private float _hintTime;
         private int _dictSum;
+        
         private GameData _data;
         private MoneyManager _moneyManager;
         private ToolsManager _toolsManager;
         private BlackScreen _blackScreen;
         private CanvasManager _canvasManager;
         private Coroutine _destroyingRoutine;
+        
         private LinkedList<Cell> _fadingCells;
         private IReadOnlyCollection<ChipType> _allowedTypes;
         private Dictionary<Cell, SpecialChip> _cellsToSpawnSpecial;
+        
         private WaitForSeconds _destroyDelay;
+        
         public static LevelManager Singleton;
+        
         public LinkedList<Cell> AllCells { get; private set; }
         public StandardChip[] ChipPrefabs => _chipPrefabs;
         public Dictionary<StandardChip, int> ChipChances { get; private set; }
+        
         public int M18Level { get; private set; }
         public bool InputState { get; private set; }
         public float ChipsFallTime => _chipsFallTime;
+        
         public event Action<Cell> CellPointerEnter;
         public event Action<Cell> CellPointerExit;
         public event Action<Cell> OnPlayerClick;
