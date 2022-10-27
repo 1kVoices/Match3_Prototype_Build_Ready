@@ -12,9 +12,12 @@ namespace Match3
         public StandardChip CurrentChip { get; private set; }
         public StandardChip PreviousChip { get; private set; }
         public StandardChip TemporaryChip { get; private set; }
+        
         private SpecialChip _currentSpecial;
+        
         private int _cellsLayer;
         private int _spawnsLayer;
+        
         public Cell Top { get; private set; }
         public Cell Bot { get; private set; }
         public Cell Left { get; private set; }
@@ -46,7 +49,7 @@ namespace Match3
             _poolingNeighbours.Clear();
             SetPreviousChip(CurrentChip);
             SetCurrentChip(newChip);
-            if (newChip.Type == ChipType.None && !newChip.IsTransferred)
+            if (newChip.Type == ChipType.None && newChip.IsTransferred == false)
             {
                 _currentSpecial = CurrentChip.GetComponent<SpecialChip>();
                 IsMatch = true;
